@@ -32,7 +32,6 @@ import {
 
 export default function CreateAgentPage() {
   const [createAgentStep, setCreateAgentStep] = useState(1);
-  const [showCreateAgent, setShowCreateAgent] = useState(false);
   const [urls, setUrls] = useState([""]);
 
   const handleNextStep = () => {
@@ -55,6 +54,10 @@ export default function CreateAgentPage() {
     const newUrls = [...urls];
     newUrls[index] = value;
     setUrls(newUrls);
+  };
+
+  const createAgent = () => {
+    console.log("Creating agent...");
   };
 
   return (
@@ -238,11 +241,7 @@ export default function CreateAgentPage() {
           <ChevronLeft className="mr-2 h-4 w-4" /> Previous
         </Button>
         <Button
-          onClick={
-            createAgentStep === 4
-              ? () => setShowCreateAgent(false)
-              : handleNextStep
-          }
+          onClick={createAgentStep === 4 ? createAgent : handleNextStep}
           className="bg-blue-600 text-white hover:bg-blue-700"
         >
           {createAgentStep === 4 ? "Create Agent" : "Next"}{" "}
