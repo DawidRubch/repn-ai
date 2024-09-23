@@ -1,19 +1,6 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import {
   Card,
   CardContent,
@@ -22,22 +9,27 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  PlusCircle,
-  Users,
-  Zap,
-  MessageSquare,
-  Building2,
-  Code,
-  CreditCard,
-  Settings,
-  Wrench,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Calendar,
   ChevronLeft,
   ChevronRight,
+  Code,
+  PlusCircle,
   X,
-  Calendar,
+  Zap,
 } from "lucide-react";
+import { useState } from "react";
 
 export function DashboardComponent() {
   const [showCreateAgent, setShowCreateAgent] = useState(false);
