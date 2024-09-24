@@ -94,6 +94,47 @@ export const stripeRouter = createTRPCRouter({
             url: checkoutSession.url
         }
 
+    },
+    ),
+    testReportUsage: protectedProcedutre.mutation(async ({ ctx }) => {
+
+        const user = await currentUser()
+
+        if (!user) {
+            throw new TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+                message: "User not found"
+            })
+
+        }
+
+        const { id } = await checkIfCustomerExists(user.emailAddresses[0].emailAddress)
+
+        if (!id) {
+            throw new TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+                message: "Customer not found"
+            })
+        }
+
+        const subscription = await checkIfSubscriptionExists(id)
+
+        if (!subscription) {
+            throw new TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+                message: "Subscription not found"
+            })
+        }
+
+        await stripe.billing.meterEvents.create({
+            event_name: env.STRIPE_AGENT_USAGE_MEETINGS_EVENT_NAME,
+            payload: {
+                value: "1",
+                stripe_customer_id: id
+            },
+        })
+
+
     }),
 });
 
@@ -110,7 +151,7 @@ const checkIfCustomerExists = async (email: string) => {
 const checkIfSubscriptionExists = async (customerID: string) => {
     const subscription = await stripe.subscriptions.list({
         customer: customerID,
-        status: "all"
+        status: "active"
     });
 
     return subscription.data[0]

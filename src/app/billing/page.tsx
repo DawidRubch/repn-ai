@@ -27,6 +27,7 @@ export default function BillingPage() {
         console.error(error);
       },
     });
+  const testReportUsage = trpc.stripe.testReportUsage.useMutation();
 
   const handleOpenStripePortal = async () => {
     // This function would typically make an API call to your backend
@@ -78,6 +79,9 @@ export default function BillingPage() {
           </CardContent>
         </Card>
       </div>
+      <Button onClick={() => testReportUsage.mutate()}>
+        Test Report Usage
+      </Button>
     </div>
   );
 }
