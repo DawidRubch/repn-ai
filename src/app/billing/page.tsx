@@ -10,10 +10,19 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Clock, Calendar } from "lucide-react";
+import { trpc } from "../../trpc/client";
 
 export default function BillingPage() {
   const [minutes, setMinutes] = useState(120); // Example value
   const [meetings, setMeetings] = useState(5); // Example value
+
+  const {
+    data: billingData,
+    error,
+    isError,
+  } = trpc.stripe.getBilling.useQuery();
+
+  console.log(billingData, error);
 
   const handleOpenStripePortal = async () => {
     // This function would typically make an API call to your backend

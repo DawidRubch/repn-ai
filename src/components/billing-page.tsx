@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Clock, Calendar } from "lucide-react";
+import { trpc } from "../trpc/client";
 
 export function BillingPageComponent() {
   const [minutes, setMinutes] = useState(120); // Example value

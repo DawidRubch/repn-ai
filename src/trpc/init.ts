@@ -38,13 +38,19 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
 export const createTRPCRouter = t.router;
 export const baseProcedure = t.procedure;
 export const createCallerFactory = t.createCallerFactory
+export const mergeRouters = t.mergeRouters
 
 
 const isAuthed = t.middleware((opts) => {
     if (!opts.ctx.auth?.userId) {
         throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Unauthorized' });
     }
-    return opts.next();
+    return opts.next({
+        ctx: {
+            ...opts.ctx,
+            auth: opts.ctx.auth,
+        },
+    });
 });
 
 export const protectedProcedutre = t.procedure.use(isAuthed);
