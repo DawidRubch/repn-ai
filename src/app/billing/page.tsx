@@ -11,27 +11,31 @@ import {
 } from "@/components/ui/card";
 import { Clock, Calendar } from "lucide-react";
 import { trpc } from "../../trpc/client";
+import { useRouter } from "next/navigation";
 
 export default function BillingPage() {
   const [minutes, setMinutes] = useState(120); // Example value
   const [meetings, setMeetings] = useState(5); // Example value
+  const router = useRouter();
 
-  const {
-    data: billingData,
-    error,
-    isError,
-  } = trpc.stripe.getBilling.useQuery();
-
-  console.log(billingData, error);
+  const { mutateAsync: createCheckoutSession } =
+    trpc.stripe.createSetupIntent.useMutation({
+      onSuccess: (data) => {
+        console.log(data);
+      },
+      onError: (error) => {
+        console.error(error);
+      },
+    });
 
   const handleOpenStripePortal = async () => {
     // This function would typically make an API call to your backend
     // to create a Stripe Billing Portal session and redirect the user
-    console.log("Opening Stripe Billing Portal");
-  };
-
-  const openCheckout = () => {
-    window.open("https://buy.stripe.com/test_14k5l6g5m5s13g2eU8", "_blank");
+    createCheckoutSession().then((data) => {
+      if (data.url) {
+        router.push(data.url);
+      }
+    });
   };
 
   return (
@@ -68,7 +72,7 @@ export default function BillingPage() {
             <CardDescription>Access your billing portal</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={openCheckout} className="w-full">
+            <Button onClick={handleOpenStripePortal} className="w-full">
               Billing Portal
             </Button>
           </CardContent>
