@@ -19,33 +19,28 @@ export const stripeRouter = createTRPCRouter({
             })
         }
 
-        let customerID: string | null = null
+        let customerID: string
 
         const existingCustomer = await checkIfCustomerExists(user.emailAddresses[0].emailAddress)
 
         if (existingCustomer) {
             customerID = existingCustomer.id
         } else {
-
             const customer = await stripe.customers.create({
-                email: user?.emailAddresses[0].emailAddress
+                email: user.emailAddresses[0].emailAddress
             });
 
             customerID = customer.id
         }
 
-
         const existingSubscription = await checkIfSubscriptionExists(customerID)
 
         if (existingSubscription) {
-
             throw new TRPCError({
                 code: "BAD_REQUEST",
                 message: "Subscription already exists"
             })
         }
-
-
 
         const subscription = await stripe.subscriptions.create({
             customer: customerID,
@@ -71,17 +66,13 @@ export const stripeRouter = createTRPCRouter({
 
         const clientSecret = setupIntent?.client_secret
 
-
-
         const checkoutSession = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
             mode: "setup",
             customer: customerID,
-            currency: "usd",
             success_url: "http://localhost:3000/dashboard",
             cancel_url: "http://localhost:3000/dashboard",
         })
-
-
 
         if (!clientSecret) {
             throw new TRPCError({
@@ -94,9 +85,9 @@ export const stripeRouter = createTRPCRouter({
             url: checkoutSession.url
         }
 
-    },
-    ),
-    testReportUsage: protectedProcedutre.mutation(async ({ ctx }) => {
+    }),
+
+    createBillingSession: protectedProcedutre.mutation(async ({ ctx }) => {
 
         const user = await currentUser()
 
@@ -105,39 +96,47 @@ export const stripeRouter = createTRPCRouter({
                 code: "INTERNAL_SERVER_ERROR",
                 message: "User not found"
             })
-
         }
 
-        const { id } = await checkIfCustomerExists(user.emailAddresses[0].emailAddress)
+        const existingCustomer = await checkIfCustomerExists(user.emailAddresses[0].emailAddress)
 
-        if (!id) {
+        if (!existingCustomer) {
             throw new TRPCError({
                 code: "INTERNAL_SERVER_ERROR",
                 message: "Customer not found"
             })
         }
 
-        const subscription = await checkIfSubscriptionExists(id)
+        const existingSubscription = await checkIfSubscriptionExists(existingCustomer.id)
 
-        if (!subscription) {
+        if (existingSubscription) {
             throw new TRPCError({
                 code: "INTERNAL_SERVER_ERROR",
-                message: "Subscription not found"
+                message: "Subscription already exists"
             })
         }
 
-        await stripe.billing.meterEvents.create({
-            event_name: env.STRIPE_AGENT_USAGE_MEETINGS_EVENT_NAME,
-            payload: {
-                value: "1",
-                stripe_customer_id: id
-            },
+        const billingSession = await stripe.billingPortal.sessions.create({
+            return_url: "http://localhost:3000/dashboard",
+            customer: existingCustomer.id,
         })
 
+        if (!billingSession) {
+            throw new TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+                message: "Billing session not found"
+            })
+        }
 
-    }),
+        return {
+            url: billingSession.url
+        }
+
+
+
+    })
+
 });
-
 
 const checkIfCustomerExists = async (email: string) => {
     const customer = await stripe.customers.search({
@@ -156,3 +155,4 @@ const checkIfSubscriptionExists = async (customerID: string) => {
 
     return subscription.data[0]
 }
+
