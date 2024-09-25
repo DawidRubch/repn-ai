@@ -107,15 +107,6 @@ export const stripeRouter = createTRPCRouter({
             })
         }
 
-        const existingSubscription = await checkIfSubscriptionExists(existingCustomer.id)
-
-        if (existingSubscription) {
-            throw new TRPCError({
-                code: "INTERNAL_SERVER_ERROR",
-                message: "Subscription already exists"
-            })
-        }
-
         const billingSession = await stripe.billingPortal.sessions.create({
             return_url: "http://localhost:3000/dashboard",
             customer: existingCustomer.id,
@@ -134,8 +125,55 @@ export const stripeRouter = createTRPCRouter({
 
 
 
-    })
+    }), getUsageForThisPeriod: protectedProcedutre.query(async ({ ctx }) => {
 
+        const user = await currentUser()
+
+        if (!user) {
+            throw new TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+                message: "User not found"
+            })
+        }
+
+        const existingCustomer = await checkIfCustomerExists(user.emailAddresses[0].emailAddress)
+
+        if (!existingCustomer) {
+            throw new TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+                message: "Customer not found"
+            })
+        }
+
+        const subscription = await checkIfSubscriptionExists(existingCustomer.id)
+
+        if (!subscription) {
+            throw new TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+                message: "Subscription not found"
+            })
+        }
+
+        const periodEnd = subscription.current_period_end
+        const periodStart = subscription.current_period_start
+
+        const meetingsUsage = await stripe.billing.meters.listEventSummaries(env.STRIPE_AGENT_USAGE_MEETINGS_METER_ID, {
+            customer: existingCustomer.id,
+            start_time: periodStart,
+            end_time: periodEnd,
+        })
+
+        const minutesUsage = await stripe.billing.meters.listEventSummaries(env.STRIPE_AGENT_USAGE_MINUTES_METER_ID, {
+            customer: existingCustomer.id,
+            start_time: periodStart,
+            end_time: periodEnd,
+        })
+
+        return {
+            meetings: meetingsUsage.data.length > 0 ? meetingsUsage.data[0].aggregated_value : 0,
+            minutes: minutesUsage.data.length > 0 ? minutesUsage.data[0].aggregated_value : 0
+        }
+    })
 });
 
 const checkIfCustomerExists = async (email: string) => {

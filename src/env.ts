@@ -9,6 +9,8 @@ export const env = createEnv({
         STRIPE_AGENT_MEETINGS_PRICE_ID: z.string().min(1),
         STRIPE_AGENT_USAGE_MINUTES_EVENT_NAME: z.string().min(1),
         STRIPE_AGENT_USAGE_MEETINGS_EVENT_NAME: z.string().min(1),
+        STRIPE_AGENT_USAGE_MINUTES_METER_ID: z.string().min(1),
+        STRIPE_AGENT_USAGE_MEETINGS_METER_ID: z.string().min(1),
     },
     client: {
         NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1),
@@ -26,6 +28,8 @@ export const env = createEnv({
         STRIPE_AGENT_MEETINGS_PRICE_ID: process.env.STRIPE_AGENT_MEETINGS_PRICE_ID,
         STRIPE_AGENT_USAGE_MINUTES_EVENT_NAME: process.env.STRIPE_AGENT_USAGE_MINUTES_EVENT_NAME,
         STRIPE_AGENT_USAGE_MEETINGS_EVENT_NAME: process.env.STRIPE_AGENT_USAGE_MEETINGS_EVENT_NAME,
+        STRIPE_AGENT_USAGE_MINUTES_METER_ID: process.env.STRIPE_AGENT_USAGE_MINUTES_METER_ID,
+        STRIPE_AGENT_USAGE_MEETINGS_METER_ID: process.env.STRIPE_AGENT_USAGE_MEETINGS_METER_ID,
     },
     // For Next.js >= 13.4.4, you only need to destructure client variables:
     // experimental__runtimeEnv: {

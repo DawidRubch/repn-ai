@@ -14,12 +14,13 @@ import { trpc } from "../../trpc/client";
 import { useRouter } from "next/navigation";
 
 export default function BillingPage() {
-  const [minutes, setMinutes] = useState(120); // Example value
-  const [meetings, setMeetings] = useState(5); // Example value
   const router = useRouter();
 
-  const { mutateAsync: createCheckoutSession } =
-    trpc.stripe.createSetupIntent.useMutation({
+  const { data: usage, isLoading } =
+    trpc.stripe.getUsageForThisPeriod.useQuery();
+
+  const { mutateAsync: createBillingSession } =
+    trpc.stripe.createBillingSession.useMutation({
       onSuccess: (data) => {
         console.log(data);
       },
@@ -27,17 +28,18 @@ export default function BillingPage() {
         console.error(error);
       },
     });
-  const testReportUsage = trpc.stripe.testReportUsage.useMutation();
 
   const handleOpenStripePortal = async () => {
     // This function would typically make an API call to your backend
     // to create a Stripe Billing Portal session and redirect the user
-    createCheckoutSession().then((data) => {
+    createBillingSession().then((data) => {
       if (data.url) {
         router.push(data.url);
       }
     });
   };
+
+  if (!usage || isLoading) return <div>Loading...</div>;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -55,14 +57,14 @@ export default function BillingPage() {
                   <Clock className="mr-2 h-5 w-5 text-muted-foreground" />
                   <span>Minutes used</span>
                 </div>
-                <span className="font-semibold">{minutes}</span>
+                <span className="font-semibold">{usage.minutes}</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <Calendar className="mr-2 h-5 w-5 text-muted-foreground" />
                   <span>Meetings booked</span>
                 </div>
-                <span className="font-semibold">{meetings}</span>
+                <span className="font-semibold">{usage.meetings}</span>
               </div>
             </div>
           </CardContent>
@@ -79,9 +81,6 @@ export default function BillingPage() {
           </CardContent>
         </Card>
       </div>
-      <Button onClick={() => testReportUsage.mutate()}>
-        Test Report Usage
-      </Button>
     </div>
   );
 }
