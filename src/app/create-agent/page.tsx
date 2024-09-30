@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -8,9 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useState } from "react";
-import { Label } from "../../components/ui/label";
-import { Input } from "../../components/ui/input";
 import {
   Select,
   SelectContent,
@@ -18,17 +16,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Calendar,
-  CalendarCheck,
-  CalendarDays,
-  CalendarRange,
-  ChevronLeft,
-  ChevronRight,
-  X,
-} from "lucide-react";
+import { Calendar, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { useState } from "react";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
 
 export default function CreateAgentPage() {
   const [createAgentStep, setCreateAgentStep] = useState(1);
