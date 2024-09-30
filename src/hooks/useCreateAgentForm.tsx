@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { create } from "zustand";
 
 const identityFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -41,10 +41,33 @@ const AGENT_STEPS: AgentStep[] = [
   "knowledge",
 ] as const;
 
+type CreateAgentStore = {
+  createAgentStep: AgentStep;
+  setCreateAgentStep: (step: AgentStep) => void;
+  nextStep: () => void;
+  prevStep: () => void;
+};
+
+const useCreateAgentStore = create<CreateAgentStore>((set) => ({
+  createAgentStep: AGENT_STEPS[0],
+  setCreateAgentStep: (step) => set({ createAgentStep: step }),
+  nextStep: () =>
+    set((state) => {
+      const currentIndex = AGENT_STEPS.indexOf(state.createAgentStep);
+      const nextIndex = (currentIndex + 1) % AGENT_STEPS.length;
+      return { createAgentStep: AGENT_STEPS[nextIndex] };
+    }),
+  prevStep: () =>
+    set((state) => {
+      const currentIndex = AGENT_STEPS.indexOf(state.createAgentStep);
+      const prevIndex =
+        (currentIndex - 1 + AGENT_STEPS.length) % AGENT_STEPS.length;
+      return { createAgentStep: AGENT_STEPS[prevIndex] };
+    }),
+}));
+
 export const useCreateAgentForm = () => {
-  const [createAgentStep, setCreateAgentStep] = useState<AgentStep>(
-    AGENT_STEPS[0]
-  );
+  const { createAgentStep, nextStep, prevStep } = useCreateAgentStore();
 
   const identityForm = useForm<IdentityForm>({
     resolver: zodResolver(identityFormSchema),
@@ -61,19 +84,6 @@ export const useCreateAgentForm = () => {
   const form = useForm<CreateAgentForm>({
     resolver: zodResolver(createAgentFormSchema),
   });
-
-  const nextStep = () => {
-    const currentIndex = AGENT_STEPS.indexOf(createAgentStep);
-    const nextIndex = (currentIndex + 1) % AGENT_STEPS.length;
-    setCreateAgentStep(AGENT_STEPS[nextIndex]);
-  };
-
-  const prevStep = () => {
-    const currentIndex = AGENT_STEPS.indexOf(createAgentStep);
-    const prevIndex =
-      (currentIndex - 1 + AGENT_STEPS.length) % AGENT_STEPS.length;
-    setCreateAgentStep(AGENT_STEPS[prevIndex]);
-  };
 
   return {
     createAgentStep,
