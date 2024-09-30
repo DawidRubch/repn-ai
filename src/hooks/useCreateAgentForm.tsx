@@ -5,7 +5,7 @@ import { create } from "zustand";
 
 const identityFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  description: z.string().min(1, "Description is required"),
+  voice: z.string().min(1, "Voice is required"),
   avatar: z.string().min(1, "Avatar is required"),
 });
 
@@ -46,6 +46,24 @@ type CreateAgentStore = {
   setCreateAgentStep: (step: AgentStep) => void;
   nextStep: () => void;
   prevStep: () => void;
+  formValues: CreateAgentForm;
+  setFormValues: (values: Partial<CreateAgentForm>) => void;
+};
+
+const DEFAULT_FORM_VALUES: CreateAgentForm = {
+  identity: {
+    name: "",
+    voice: "",
+    avatar: "",
+  },
+  behaviour: {
+    greeting: "",
+    introduction: "",
+  },
+  knowledge: {
+    files: [],
+    websites: [],
+  },
 };
 
 const useCreateAgentStore = create<CreateAgentStore>((set) => ({
@@ -64,10 +82,14 @@ const useCreateAgentStore = create<CreateAgentStore>((set) => ({
         (currentIndex - 1 + AGENT_STEPS.length) % AGENT_STEPS.length;
       return { createAgentStep: AGENT_STEPS[prevIndex] };
     }),
+  formValues: DEFAULT_FORM_VALUES,
+  setFormValues: (values) =>
+    set((state) => ({ formValues: { ...state.formValues, ...values } })),
 }));
 
 export const useCreateAgentForm = () => {
-  const { createAgentStep, nextStep, prevStep } = useCreateAgentStore();
+  const { createAgentStep, nextStep, prevStep, setFormValues, formValues } =
+    useCreateAgentStore();
 
   const identityForm = useForm<IdentityForm>({
     resolver: zodResolver(identityFormSchema),
@@ -93,5 +115,7 @@ export const useCreateAgentForm = () => {
     behaviourForm,
     knowledgeForm,
     form,
+    setFormValues,
+    formValues,
   };
 };
