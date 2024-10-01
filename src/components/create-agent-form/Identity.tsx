@@ -1,5 +1,6 @@
 "use client";
 
+import { UseFormReturn } from "react-hook-form";
 import {
   IdentityForm,
   useCreateAgentForm,
@@ -22,13 +23,7 @@ import {
   SelectValue,
 } from "../ui/select";
 
-export const Identity = () => {
-  const {
-    identityForm: form,
-    setFormValues,
-    formValues,
-  } = useCreateAgentForm();
-
+export const Identity = ({ form }: { form: UseFormReturn<IdentityForm> }) => {
   const onSubmit = (data: IdentityForm) => {
     console.log(data);
   };
@@ -92,7 +87,6 @@ export const Identity = () => {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
       </form>
     </Form>
   );

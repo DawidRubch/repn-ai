@@ -33,12 +33,13 @@ const createAgentFormSchema = z.object({
 
 export type CreateAgentForm = z.infer<typeof createAgentFormSchema>;
 
-type AgentStep = "identity" | "behaviour" | "knowledge";
+type AgentStep = "identity" | "behaviour" | "knowledge" | "actions";
 
-const AGENT_STEPS: AgentStep[] = [
+export const AGENT_STEPS: AgentStep[] = [
   "identity",
   "behaviour",
   "knowledge",
+  "actions",
 ] as const;
 
 type CreateAgentStore = {
@@ -93,19 +94,32 @@ export const useCreateAgentForm = () => {
 
   const identityForm = useForm<IdentityForm>({
     resolver: zodResolver(identityFormSchema),
+    defaultValues: formValues.identity,
   });
 
   const behaviourForm = useForm<BehaviourForm>({
     resolver: zodResolver(behaviourFormSchema),
+    defaultValues: formValues.behaviour,
   });
 
   const knowledgeForm = useForm<KnowledgeForm>({
     resolver: zodResolver(knowledgeFormSchema),
+    defaultValues: formValues.knowledge,
   });
 
-  const form = useForm<CreateAgentForm>({
-    resolver: zodResolver(createAgentFormSchema),
-  });
+  const createAgent = () => {
+    const identity = identityForm.getValues();
+    const behaviour = behaviourForm.getValues();
+    const knowledge = knowledgeForm.getValues();
+
+    const formValues = {
+      identity,
+      behaviour,
+      knowledge,
+    };
+
+    console.log(formValues);
+  };
 
   return {
     createAgentStep,
@@ -114,8 +128,8 @@ export const useCreateAgentForm = () => {
     identityForm,
     behaviourForm,
     knowledgeForm,
-    form,
     setFormValues,
     formValues,
+    createAgent,
   };
 };

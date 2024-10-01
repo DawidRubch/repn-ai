@@ -1,3 +1,4 @@
+import { UseFormReturn } from "react-hook-form";
 import {
   BehaviourForm,
   useCreateAgentForm,
@@ -13,16 +14,9 @@ import {
 } from "../ui/form";
 import { Textarea } from "../ui/textarea";
 
-export const Behaviour = () => {
-  const {
-    setFormValues,
-    formValues,
-    behaviourForm: form,
-  } = useCreateAgentForm();
-
+export const Behaviour = ({ form }: { form: UseFormReturn<BehaviourForm> }) => {
   const onSubmit = (data: BehaviourForm) => {
     console.log(data);
-    setFormValues({ behaviour: data });
   };
 
   return (
@@ -62,7 +56,6 @@ export const Behaviour = () => {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
       </form>
     </Form>
   );
