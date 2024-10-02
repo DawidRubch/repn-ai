@@ -1,6 +1,7 @@
 import { z } from "zod"
 import { createTRPCRouter, protectedProcedutre } from "../init"
 import { env } from "../../env"
+import { agentsTable } from "../../db/schema"
 
 const AgentSchema = z.object({
     displayName: z.string(),
@@ -22,8 +23,20 @@ const AgentSchema = z.object({
 
 export const agentRouter = createTRPCRouter({
     createAgent: protectedProcedutre.input(AgentSchema).mutation(async ({ ctx, input }) => {
+        const agentId = await createNewAgent(input)
 
-
+        await ctx.db.insert(agentsTable).values({
+            id: agentId,
+            userId: ctx.auth.userId,
+            displayName: input.displayName,
+            description: input.description,
+            greeting: input.greeting,
+            prompt: input.prompt,
+            criticalKnowledge: input.criticalKnowledge,
+            visibility: input.visiblity,
+            answerOnlyFromCriticalKnowledge: input.answerOnlyFromCriticalKnowledge,
+            avatarPhotoUrl: input.avatarPhotoUrl,
+        })
     }),
     updateAgent: protectedProcedutre.mutation(async ({ ctx }) => { })
 })
