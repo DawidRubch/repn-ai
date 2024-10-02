@@ -25,10 +25,20 @@ const knowledgeFormSchema = z.object({
 
 export type KnowledgeForm = z.infer<typeof knowledgeFormSchema>;
 
+const actionsFormSchema = z.object({
+  calendar: z.object({
+    oauth: z.boolean(),
+    calendarId: z.string(),
+  }),
+});
+
+export type ActionsForm = z.infer<typeof actionsFormSchema>;
+
 const createAgentFormSchema = z.object({
   identity: identityFormSchema,
   behaviour: behaviourFormSchema,
   knowledge: knowledgeFormSchema,
+  actions: actionsFormSchema,
 });
 
 export type CreateAgentForm = z.infer<typeof createAgentFormSchema>;
@@ -64,6 +74,12 @@ const DEFAULT_FORM_VALUES: CreateAgentForm = {
   knowledge: {
     files: [],
     websites: [],
+  },
+  actions: {
+    calendar: {
+      oauth: false,
+      calendarId: "",
+    },
   },
 };
 
@@ -107,15 +123,21 @@ export const useCreateAgentForm = () => {
     defaultValues: formValues.knowledge,
   });
 
+  const actionsForm = useForm<ActionsForm>({
+    resolver: zodResolver(actionsFormSchema),
+    defaultValues: formValues.actions,
+  });
+
   const createAgent = () => {
     const identity = identityForm.getValues();
     const behaviour = behaviourForm.getValues();
     const knowledge = knowledgeForm.getValues();
-
+    const actions = actionsForm.getValues();
     const formValues = {
       identity,
       behaviour,
       knowledge,
+      actions,
     };
 
     console.log(formValues);
@@ -131,5 +153,6 @@ export const useCreateAgentForm = () => {
     setFormValues,
     formValues,
     createAgent,
+    actionsForm,
   };
 };

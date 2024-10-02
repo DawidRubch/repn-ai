@@ -11,6 +11,11 @@ export const env = createEnv({
         STRIPE_AGENT_USAGE_MEETINGS_EVENT_NAME: z.string().min(1),
         STRIPE_AGENT_USAGE_MINUTES_METER_ID: z.string().min(1),
         STRIPE_AGENT_USAGE_MEETINGS_METER_ID: z.string().min(1),
+        GOOGLE_OAUTH_CLIENT_ID: z.string().min(1),
+        GOOGLE_OAUTH_CLIENT_SECRET: z.string().min(1),
+        GOOGLE_OAUTH_REDIRECT_URI: z.string().min(1),
+        DB_PASSWORD: z.string().min(1),
+        DB_URL: z.string().min(1),
     },
     client: {
         NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1),
@@ -30,6 +35,11 @@ export const env = createEnv({
         STRIPE_AGENT_USAGE_MEETINGS_EVENT_NAME: process.env.STRIPE_AGENT_USAGE_MEETINGS_EVENT_NAME,
         STRIPE_AGENT_USAGE_MINUTES_METER_ID: process.env.STRIPE_AGENT_USAGE_MINUTES_METER_ID,
         STRIPE_AGENT_USAGE_MEETINGS_METER_ID: process.env.STRIPE_AGENT_USAGE_MEETINGS_METER_ID,
+        GOOGLE_OAUTH_CLIENT_ID: process.env.GOOGLE_OAUTH_CLIENT_ID,
+        GOOGLE_OAUTH_CLIENT_SECRET: process.env.GOOGLE_OAUTH_CLIENT_SECRET,
+        GOOGLE_OAUTH_REDIRECT_URI: process.env.GOOGLE_OAUTH_REDIRECT_URI,
+        DB_PASSWORD: process.env.DB_PASSWORD,
+        DB_URL: process.env.DB_URL,
     },
     // For Next.js >= 13.4.4, you only need to destructure client variables:
     // experimental__runtimeEnv: {

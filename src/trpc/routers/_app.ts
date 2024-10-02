@@ -1,9 +1,11 @@
 import { z } from 'zod';
 import { baseProcedure, createTRPCRouter, protectedProcedutre } from '../init';
 import { stripeRouter } from './stripe';
+import { calendarRouter } from './calendar';
 
 export const appRouter = createTRPCRouter({
-    stripe: stripeRouter
+    stripe: stripeRouter,
+    calendar: calendarRouter
 });
 
 

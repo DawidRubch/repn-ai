@@ -22,8 +22,6 @@ export function BillingPageComponent() {
     console.log("Opening Stripe Billing Portal");
   };
 
-  const testReportUsage = trpc.stripe.testReportUsage.useMutation();
-
   const openCheckout = () => {
     window.open("https://buy.stripe.com/test_14k5l6g5m5s13g2eU8", "_blank");
   };
