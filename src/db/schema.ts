@@ -1,4 +1,4 @@
-import { pgTable, serial, text, timestamp, varchar } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 
 export const usersTable = pgTable('users', {
     id: text('id').primaryKey(),
@@ -20,7 +20,6 @@ export const googleCalendarTokensTable = pgTable('google_calendar_tokens', {
 
 export type GoogleCalendarTokens = typeof googleCalendarTokensTable.$inferSelect;
 export type NewGoogleCalendarTokens = typeof googleCalendarTokensTable.$inferInsert;
-
 
 
 

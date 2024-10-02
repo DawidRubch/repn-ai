@@ -6,13 +6,11 @@ import { env } from "../../env";
 import { createTRPCRouter, protectedProcedutre } from "../init";
 const scopes = ['https://www.googleapis.com/auth/calendar'];
 
-
 const oauth2Client = new google.auth.OAuth2(
     env.GOOGLE_OAUTH_CLIENT_ID,
     env.GOOGLE_OAUTH_CLIENT_SECRET,
     env.GOOGLE_OAUTH_REDIRECT_URI
 )
-
 
 export const calendarRouter = createTRPCRouter({
     oauth: protectedProcedutre.mutation(async ({ ctx }) => {
@@ -38,6 +36,13 @@ export const calendarRouter = createTRPCRouter({
                 accessToken: tokens.access_token,
                 refreshToken: tokens.refresh_token,
                 expiresAt: new Date(tokens.expiry_date)
+            }).onConflictDoUpdate({
+                target: googleCalendarTokensTable.userId,
+                set: {
+                    accessToken: tokens.access_token,
+                    refreshToken: tokens.refresh_token,
+                    expiresAt: new Date(tokens.expiry_date)
+                }
             })
 
             return { success: true }
@@ -68,8 +73,8 @@ export const calendarRouter = createTRPCRouter({
             await ctx.db.update(googleCalendarTokensTable).set({
                 accessToken: newTokens.access_token,
                 refreshToken: newTokens.refresh_token,
-                expiresAt: new Date(newTokens.expiry_date)
-            })
+                expiresAt: new Date(newTokens.expiry_date),
+            }).where(eq(googleCalendarTokensTable.userId, ctx.auth.userId))
         }
 
         return tokens.accessToken
