@@ -21,6 +21,8 @@ export const googleCalendarTokensTable = pgTable('google_calendar_tokens', {
 export type GoogleCalendarTokens = typeof googleCalendarTokensTable.$inferSelect;
 export type NewGoogleCalendarTokens = typeof googleCalendarTokensTable.$inferInsert;
 
+export const visibilityEnum = pgEnum('visibility', ['public', 'private']);
+
 
 
 export const agentsTable = pgTable('agents', {
@@ -31,7 +33,7 @@ export const agentsTable = pgTable('agents', {
     greeting: text('greeting').notNull(),
     prompt: text('prompt').notNull(),
     criticalKnowledge: text('critical_knowledge').notNull(),
-    visibility: pgEnum('visibility', ['public', 'private'])('visibility').notNull(),
+    visibility: visibilityEnum('visibility').notNull(),
     answerOnlyFromCriticalKnowledge: boolean('answer_only_from_critical_knowledge').notNull(),
     avatarPhotoUrl: text('avatar_photo_url'),
 })

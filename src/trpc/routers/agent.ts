@@ -37,14 +37,15 @@ export const agentRouter = createTRPCRouter({
             answerOnlyFromCriticalKnowledge: input.answerOnlyFromCriticalKnowledge,
             avatarPhotoUrl: input.avatarPhotoUrl,
         })
+
+        return agentId
     }),
-    updateAgent: protectedProcedutre.mutation(async ({ ctx }) => { })
+    updateAgent: protectedProcedutre.mutation(async ({ ctx }) => {
+
+    })
 })
 
-
-
 type AgentWithID = z.infer<typeof AgentSchema> & { id: string }
-
 
 
 const createNewAgent = async (agent: z.infer<typeof AgentSchema>): Promise<string> => {

@@ -22,7 +22,7 @@ export const calendarRouter = createTRPCRouter({
         return { url }
     }),
 
-    getAccessToken: protectedProcedutre.input(z.object({
+    insertTokens: protectedProcedutre.input(z.object({
         code: z.string()
     })).mutation(async ({ ctx, input }) => {
         const { code } = input;
@@ -51,7 +51,7 @@ export const calendarRouter = createTRPCRouter({
 
         return { success: false }
 
-    }), getValidAccessToken: protectedProcedutre.query(async ({ ctx }) => {
+    }), insertNewTokens: protectedProcedutre.query(async ({ ctx }) => {
         const [tokens] = await ctx.db.select().from(googleCalendarTokensTable).where(eq(googleCalendarTokensTable.userId, ctx.auth.userId))
 
         if (!tokens) {
@@ -77,7 +77,9 @@ export const calendarRouter = createTRPCRouter({
             }).where(eq(googleCalendarTokensTable.userId, ctx.auth.userId))
         }
 
-        return tokens.accessToken
+        return {
+            success: true
+        }
     })
 
 

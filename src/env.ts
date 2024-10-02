@@ -17,6 +17,7 @@ export const env = createEnv({
         DB_PASSWORD: z.string().min(1),
         DB_URL: z.string().min(1),
         PLAY_AI_API_KEY: z.string().min(1),
+        CLERK_WEBHOOK_SECRET: z.string().min(1),
     },
     client: {
         NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1),
@@ -42,6 +43,7 @@ export const env = createEnv({
         DB_PASSWORD: process.env.DB_PASSWORD,
         DB_URL: process.env.DB_URL,
         PLAY_AI_API_KEY: process.env.PLAY_AI_API_KEY,
+        CLERK_WEBHOOK_SECRET: process.env.CLERK_WEBHOOK_SECRET,
     },
     // For Next.js >= 13.4.4, you only need to destructure client variables:
     // experimental__runtimeEnv: {
