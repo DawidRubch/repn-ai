@@ -3,6 +3,7 @@ import { initTRPC, TRPCError } from '@trpc/server';
 import { NextRequest } from 'next/server';
 import { cache } from 'react';
 import superjson from 'superjson';
+import { db } from '../db';
 
 
 export const createTRPCContext = cache(async (req?: NextRequest) => {
@@ -16,6 +17,7 @@ export const createTRPCContext = cache(async (req?: NextRequest) => {
 
     return {
         auth,
+        db: db
     };
 });
 
