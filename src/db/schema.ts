@@ -5,6 +5,9 @@ export const usersTable = pgTable('users', {
     email: text('email').notNull(),
 });
 
+export type Users = typeof usersTable.$inferSelect;
+export type NewUsers = typeof usersTable.$inferInsert;
+
 
 export const googleCalendarTokensTable = pgTable('google_calendar_tokens', {
     id: serial('id').primaryKey(),
@@ -13,5 +16,11 @@ export const googleCalendarTokensTable = pgTable('google_calendar_tokens', {
     refreshToken: text('refresh_token').notNull(),
     expiresAt: timestamp('expires_at').notNull(),
 });
+
+
+export type GoogleCalendarTokens = typeof googleCalendarTokensTable.$inferSelect;
+export type NewGoogleCalendarTokens = typeof googleCalendarTokensTable.$inferInsert;
+
+
 
 
