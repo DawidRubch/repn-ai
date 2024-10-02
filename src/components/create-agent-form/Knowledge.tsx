@@ -15,34 +15,17 @@ import {
 import { Input } from "../ui/input";
 import { X } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
+import { MultiFileUpload } from "../MultiFileUpload";
 
 export const Knowledge = ({ form }: { form: UseFormReturn<KnowledgeForm> }) => {
-  const onSubmit = (data: KnowledgeForm) => {};
-
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
+      <form className="space-y-8">
+        <MultiFileUpload
+          form={form}
           name="files"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Custom Files</FormLabel>
-              <FormControl>
-                <Input
-                  type="file"
-                  multiple
-                  className="bg-zinc-900 border-zinc-700 text-white"
-                  {...field}
-                  onChange={(e) => {
-                    field.onChange(e.target.files);
-                  }}
-                  value={undefined}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Custom Files"
+          description="Upload custom files for the agent to use"
         />
         <FormField
           control={form.control}

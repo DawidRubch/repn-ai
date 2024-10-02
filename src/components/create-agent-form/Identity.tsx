@@ -22,15 +22,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { AvatarUploadField } from "../AvatarUpload";
 
 export const Identity = ({ form }: { form: UseFormReturn<IdentityForm> }) => {
-  const onSubmit = (data: IdentityForm) => {
-    console.log(data);
-  };
-
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form className="space-y-8">
         <FormField
           control={form.control}
           name="name"
@@ -70,23 +67,7 @@ export const Identity = ({ form }: { form: UseFormReturn<IdentityForm> }) => {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="avatar"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Avatar</FormLabel>
-              <FormControl>
-                <Input
-                  type="file"
-                  className="bg-zinc-900 border-zinc-700 text-white"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <AvatarUploadField form={form} name="avatar" />
       </form>
     </Form>
   );

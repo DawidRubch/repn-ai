@@ -6,7 +6,7 @@ import { create } from "zustand";
 const identityFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
   voice: z.string().min(1, "Voice is required"),
-  avatar: z.string().min(1, "Avatar is required"),
+  avatar: z.instanceof(File).nullable(),
 });
 
 export type IdentityForm = z.infer<typeof identityFormSchema>;
@@ -65,7 +65,7 @@ const DEFAULT_FORM_VALUES: CreateAgentForm = {
   identity: {
     name: "",
     voice: "",
-    avatar: "",
+    avatar: null,
   },
   behaviour: {
     greeting: "",
