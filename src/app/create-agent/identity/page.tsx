@@ -9,16 +9,19 @@ import {
 } from "../../../hooks/useCreateAgentForm";
 
 export default function IdentityPage() {
-  const { identityForm, setFormValues } = useCreateAgentForm();
+  const { identityForm, setFormValues, nextStep, prevStep } =
+    useCreateAgentForm();
   const { push } = useRouter();
 
   const onSubmit = (data: IdentityForm) => {
     setFormValues({ identity: data });
+    nextStep();
 
     push("/create-agent/behaviour");
   };
 
   const onPrevStep = () => {
+    prevStep();
     push("/create-agent/knowledge");
   };
 

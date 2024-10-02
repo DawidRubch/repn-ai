@@ -11,16 +11,19 @@ import {
 import { Knowledge } from "../../../components/create-agent-form/Knowledge";
 
 export default function KnowledgePage() {
-  const { knowledgeForm, setFormValues } = useCreateAgentForm();
+  const { knowledgeForm, setFormValues, nextStep, prevStep } =
+    useCreateAgentForm();
   const { push } = useRouter();
 
   const onSubmit = (data: KnowledgeForm) => {
     setFormValues({ knowledge: data });
+    nextStep();
 
     push("/create-agent/actions");
   };
 
   const onPrevStep = () => {
+    prevStep();
     push("/create-agent/behaviour");
   };
 

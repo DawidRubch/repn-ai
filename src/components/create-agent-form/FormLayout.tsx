@@ -20,15 +20,13 @@ export const FormLayout: React.FC<{
   onSubmit: () => void;
   onPrevStep: () => void;
 }> = ({ children, onSubmit, onPrevStep }) => {
-  const { createAgent, nextStep, prevStep, createAgentStep } =
-    useCreateAgentForm();
+  const { createAgent, nextStep, createAgentStep } = useCreateAgentForm();
 
   const handlePrevStep = () => {
     onPrevStep();
   };
 
   const handleNextStep = () => {
-    nextStep();
     onSubmit();
   };
 
@@ -47,7 +45,7 @@ export const FormLayout: React.FC<{
               <div
                 key={step}
                 className={`w-1/4 h-2 rounded-full ${
-                  index <= AGENT_STEPS.indexOf(step)
+                  index <= AGENT_STEPS.indexOf(createAgentStep)
                     ? "bg-blue-500"
                     : "bg-zinc-700"
                 }`}
@@ -62,52 +60,6 @@ export const FormLayout: React.FC<{
           </div>
         </div>
         {children}
-        {/* {createAgentStep ===  && (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Google Calendar Integration</Label>
-              <Button className="w-full bg-zinc-800 text-white hover:bg-zinc-700">
-                <Calendar className="mr-2 h-4 w-4" />
-                Connect Google Calendar
-              </Button>
-            </div>
-            <div className="space-y-2">
-              <Label>Custom Action</Label>
-              <div className="bg-zinc-900 p-4 rounded-lg border border-zinc-800">
-                <h3 className="text-lg font-semibold mb-2">
-                  Create New Action
-                </h3>
-                <div className="space-y-2">
-                  <Input
-                    placeholder="Action name"
-                    className="bg-zinc-800 border-zinc-700 text-white"
-                  />
-                  <Textarea
-                    placeholder="Action description"
-                    className="bg-zinc-800 border-zinc-700 text-white"
-                  />
-                  <div className="flex space-x-2">
-                    <Input
-                      placeholder="Endpoint URL"
-                      className="bg-zinc-800 border-zinc-700 text-white flex-grow"
-                    />
-                    <Select>
-                      <SelectTrigger className="w-24 bg-zinc-800 border-zinc-700 text-white">
-                        <SelectValue placeholder="GET" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-zinc-800 border-zinc-700">
-                        <SelectItem value="get">GET</SelectItem>
-                        <SelectItem value="post">POST</SelectItem>
-                        <SelectItem value="put">PUT</SelectItem>
-                        <SelectItem value="delete">DELETE</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )} */}
       </CardContent>
       <CardFooter className="flex justify-between">
         <Button

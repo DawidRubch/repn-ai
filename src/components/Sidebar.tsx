@@ -1,6 +1,7 @@
 import { CreditCard, PlusCircle, Users, Zap } from "lucide-react";
 import { Button } from "./ui/button";
 import Link from "next/link";
+import { UserButton } from "@clerk/nextjs";
 
 export const Sidebar = () => {
   return (
@@ -35,6 +36,7 @@ export const Sidebar = () => {
           </Button>
         </Link>
       </nav>
+      <UserButton />
     </div>
   );
 };
