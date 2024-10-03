@@ -34,7 +34,18 @@ export const useWebsiteScraping = () => {
     (store) => store.formValues.knowledge.websites
   );
 
+  const { mutateAsync, isPending } = trpc.scrape.scrapeWebsite.useMutation();
+
   const isScraping = websiteURLS.length > 0;
+
+  console.log(websiteURLS);
+
+  useEffect(() => {
+    if (isScraping) {
+      const urls = websiteURLS.map((url) => url.url);
+      mutateAsync({ urls, agentId: "123" });
+    }
+  }, [isScraping]);
 
   return {
     isWebsiteScraping: isScraping,

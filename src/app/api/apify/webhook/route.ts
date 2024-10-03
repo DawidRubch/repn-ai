@@ -5,14 +5,10 @@ export const POST = async (req: Request) => {
     const { agentId, resource } = await req.json() as ApifyWebhookPayload
 
 
-    const data = await getDataFromApify(resource.id);
+    const data = await getDataFromApify(resource.defaultDatasetId);
 
     console.log(data);
 
-
-
-
-
-
+    return new Response(JSON.stringify({ success: true }), { status: 200 });
 
 }

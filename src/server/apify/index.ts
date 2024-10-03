@@ -60,5 +60,11 @@ export const getApifyInput = (urls: string[]) => {
 
 export const getDataFromApify = async (actorRunId: string) => {
     const { items } = await client.dataset(actorRunId).listItems();
-    return items;
+    return items as unknown as ScrapingOutput[]
+}
+
+
+type ScrapingOutput = {
+    url: string,
+    text: string
 }
