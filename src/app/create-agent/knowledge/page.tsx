@@ -10,8 +10,10 @@ import {
 } from "../../../hooks/useCreateAgentForm";
 import { Knowledge } from "../../../components/create-agent-form/Knowledge";
 import { useEffect } from "react";
+import { usePreventReload } from "../../../hooks/usePreventReload";
 
 export default function KnowledgePage() {
+  usePreventReload();
   const { knowledgeForm, setFormValues, nextStep, prevStep } =
     useCreateAgentForm();
   const { push } = useRouter();

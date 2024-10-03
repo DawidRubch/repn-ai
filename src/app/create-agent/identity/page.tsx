@@ -7,8 +7,10 @@ import {
   IdentityForm,
   useCreateAgentForm,
 } from "../../../hooks/useCreateAgentForm";
+import { usePreventReload } from "../../../hooks/usePreventReload";
 
 export default function IdentityPage() {
+  usePreventReload();
   const { identityForm, setFormValues, nextStep, prevStep } =
     useCreateAgentForm();
   const { push } = useRouter();

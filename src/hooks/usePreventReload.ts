@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-export const usePreventAccidentalRefresh = () => {
+export const usePreventReload = () => {
     useEffect(() => {
         const handleBeforeUnload = (event: BeforeUnloadEvent) => {
 

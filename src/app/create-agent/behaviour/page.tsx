@@ -7,8 +7,10 @@ import {
   BehaviourForm,
   useCreateAgentForm,
 } from "../../../hooks/useCreateAgentForm";
+import { usePreventReload } from "../../../hooks/usePreventReload";
 
 export default function BehaviourPage() {
+  usePreventReload();
   const { behaviourForm, setFormValues, nextStep, prevStep } =
     useCreateAgentForm();
   const { push } = useRouter();
