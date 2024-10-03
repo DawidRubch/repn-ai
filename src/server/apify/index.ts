@@ -17,7 +17,7 @@ export const getApifyInput = (urls: string[]) => {
         "ignoreCanonicalUrl": false,
         "maxCrawlDepth": 2,
         "maxCrawlPages": 100,
-        "initialConcurrency": 0,
+        "initialConcurrency": 20,
         "maxConcurrency": 200,
         "initialCookies": [],
         "proxyConfiguration": {
@@ -66,5 +66,15 @@ export const getDataFromApify = async (actorRunId: string) => {
 
 type ScrapingOutput = {
     url: string,
-    text: string
+    text: string,
+    metadata: {
+        canonicalUrl: string,
+        title: string,
+        description: string,
+        author: string,
+        keywords: string[],
+        languageCode: string,
+        contentType: string,
+        statusCode: number,
+    }
 }
