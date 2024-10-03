@@ -25,33 +25,46 @@ export const calendarRouter = createTRPCRouter({
     insertTokens: protectedProcedutre.input(z.object({
         code: z.string()
     })).mutation(async ({ ctx, input }) => {
-        const { code } = input;
-        const { tokens } = await oauth2Client.getToken(code);
-        oauth2Client.setCredentials(tokens);
+        try {
+            const { code } = input;
 
-        if (tokens.access_token && tokens.refresh_token && tokens.expiry_date) {
-            // First, try to update existing record
-            const updateResult = await ctx.db.update(googleCalendarTokensTable)
-                .set({
-                    accessToken: tokens.access_token,
-                    refreshToken: tokens.refresh_token,
-                    expiresAt: new Date(tokens.expiry_date)
-                })
-                .where(eq(googleCalendarTokensTable.userId, ctx.auth.userId));
+            const [dbTokens] = await ctx.db.select().from(googleCalendarTokensTable).where(eq(googleCalendarTokensTable.userId, ctx.auth.userId))
 
-            // If no rows were affected, insert a new record
-            if (updateResult.length === 0) {
-                await ctx.db.insert(googleCalendarTokensTable).values({
-                    userId: ctx.auth.userId,
-                    accessToken: tokens.access_token,
-                    refreshToken: tokens.refresh_token,
-                    expiresAt: new Date(tokens.expiry_date)
-                });
+            if (dbTokens) {
+                return { success: true }
             }
 
-            return { success: true };
+            const { tokens } = await oauth2Client.getToken(code);
+            oauth2Client.setCredentials(tokens);
+
+            if (tokens.access_token && tokens.refresh_token && tokens.expiry_date) {
+                // First, try to update existing record
+                const updateResult = await ctx.db.update(googleCalendarTokensTable)
+                    .set({
+                        accessToken: tokens.access_token,
+                        refreshToken: tokens.refresh_token,
+                        expiresAt: new Date(tokens.expiry_date)
+                    })
+                    .where(eq(googleCalendarTokensTable.userId, ctx.auth.userId));
+
+                // If no rows were affected, insert a new record
+                if (updateResult.length === 0) {
+                    await ctx.db.insert(googleCalendarTokensTable).values({
+                        userId: ctx.auth.userId,
+                        accessToken: tokens.access_token,
+                        refreshToken: tokens.refresh_token,
+                        expiresAt: new Date(tokens.expiry_date)
+                    });
+                }
+
+                return { success: true };
+            }
+            return { success: false }
+
+        } catch (error) {
+            console.error(error);
+            return { success: false }
         }
-        return { success: false }
 
     }), insertNewTokens: protectedProcedutre.query(async ({ ctx }) => {
         const [tokens] = await ctx.db.select().from(googleCalendarTokensTable).where(eq(googleCalendarTokensTable.userId, ctx.auth.userId))

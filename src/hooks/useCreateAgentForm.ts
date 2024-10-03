@@ -33,6 +33,7 @@ const knowledgeFormSchema = z.object({
         ),
     })
   ),
+  fileUrls: z.array(z.string()).optional(),
 });
 
 export type KnowledgeForm = z.infer<typeof knowledgeFormSchema>;

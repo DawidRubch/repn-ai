@@ -23,10 +23,9 @@ export const FormLayout: React.FC<{
   onSubmit: () => void;
   onPrevStep: () => void;
 }> = ({ children, onSubmit, onPrevStep }) => {
-  const { createAgent, createAgentStep, knowledgeForm } = useCreateAgentForm();
+  const { createAgentStep } = useCreateAgentForm();
   const router = useRouter();
   const pathName = usePathname();
-  const { uploadFiles } = useUploadFiles();
 
   useEffect(() => {
     if (!pathName.includes(createAgentStep)) {
@@ -36,20 +35,6 @@ export const FormLayout: React.FC<{
 
   const handlePrevStep = () => {
     onPrevStep();
-  };
-
-  const handleNextStep = () => {
-    onSubmit();
-  };
-
-  const onClickCreateAgent = () => {
-    onSubmit();
-  };
-
-  const onIntegrateGoogleCal = async () => {
-    const files = knowledgeForm.getValues("files");
-    const uploadedFiles = await uploadFiles(files);
-    console.log(uploadedFiles);
   };
 
   return (
@@ -92,11 +77,7 @@ export const FormLayout: React.FC<{
           <ChevronLeft className="mr-2 h-4 w-4" /> Previous
         </Button>
         <Button
-          onClick={
-            createAgentStep === "knowledge"
-              ? onClickCreateAgent
-              : handleNextStep
-          }
+          onClick={onSubmit}
           className="bg-blue-600 text-white hover:bg-blue-700"
         >
           {createAgentStep === "knowledge" ? "Create Agent" : "Next"}{" "}
