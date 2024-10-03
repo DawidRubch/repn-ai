@@ -29,6 +29,7 @@
     "@trpc/client": "^11.0.0-rc.528",
     "@trpc/react-query": "^11.0.0-rc.528",
     "@trpc/server": "^11.0.0-rc.528",
+    "apify-client": "^2.9.6",
     "class-variance-authority": "^0.7.0",
     "client-only": "^0.0.1",
     "clsx": "^2.1.1",

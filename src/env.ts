@@ -23,6 +23,9 @@ export const env = createEnv({
         AWS_REGION: z.string().min(1),
         AWS_S3_BUCKET_NAME_AVATARS: z.string().min(1),
         AWS_S3_BUCKET_NAME_FILES: z.string().min(1),
+        APIFY_TOKEN: z.string().min(1),
+        APIFY_ACT_ID: z.string().min(1),
+        APIFY_WEBHOOK_URL: z.string().min(1),
     },
     client: {
         NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1),
@@ -54,6 +57,9 @@ export const env = createEnv({
         AWS_REGION: process.env.AWS_REGION,
         AWS_S3_BUCKET_NAME_AVATARS: process.env.AWS_S3_BUCKET_NAME_AVATARS,
         AWS_S3_BUCKET_NAME_FILES: process.env.AWS_S3_BUCKET_NAME_FILES,
+        APIFY_TOKEN: process.env.APIFY_TOKEN,
+        APIFY_ACT_ID: process.env.APIFY_ACT_ID,
+        APIFY_WEBHOOK_URL: process.env.APIFY_WEBHOOK_URL,
     },
     // For Next.js >= 13.4.4, you only need to destructure client variables:
     // experimental__runtimeEnv: {
