@@ -18,6 +18,11 @@ export const env = createEnv({
         DB_URL: z.string().min(1),
         PLAY_AI_API_KEY: z.string().min(1),
         CLERK_WEBHOOK_SECRET: z.string().min(1),
+        AWS_ACCESS_KEY_ID: z.string().min(1),
+        AWS_SECRET_ACCESS_KEY: z.string().min(1),
+        AWS_REGION: z.string().min(1),
+        AWS_S3_BUCKET_NAME_AVATARS: z.string().min(1),
+        AWS_S3_BUCKET_NAME_FILES: z.string().min(1),
     },
     client: {
         NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1),
@@ -44,6 +49,11 @@ export const env = createEnv({
         DB_URL: process.env.DB_URL,
         PLAY_AI_API_KEY: process.env.PLAY_AI_API_KEY,
         CLERK_WEBHOOK_SECRET: process.env.CLERK_WEBHOOK_SECRET,
+        AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
+        AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
+        AWS_REGION: process.env.AWS_REGION,
+        AWS_S3_BUCKET_NAME_AVATARS: process.env.AWS_S3_BUCKET_NAME_AVATARS,
+        AWS_S3_BUCKET_NAME_FILES: process.env.AWS_S3_BUCKET_NAME_FILES,
     },
     // For Next.js >= 13.4.4, you only need to destructure client variables:
     // experimental__runtimeEnv: {

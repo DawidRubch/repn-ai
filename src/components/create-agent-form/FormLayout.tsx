@@ -10,17 +10,25 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import {
-  AGENT_STEPS,
-  useCreateAgentForm,
-} from "../../hooks/useCreateAgentForm";
+import { useCreateAgentForm } from "../../hooks/useCreateAgentForm";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { AGENT_STEPS } from "../../hooks/useCreateAgentStore";
 
 export const FormLayout: React.FC<{
   children: React.ReactNode;
   onSubmit: () => void;
   onPrevStep: () => void;
 }> = ({ children, onSubmit, onPrevStep }) => {
-  const { createAgent, nextStep, createAgentStep } = useCreateAgentForm();
+  const { createAgent, createAgentStep } = useCreateAgentForm();
+  const router = useRouter();
+  const pathName = usePathname();
+
+  useEffect(() => {
+    if (!pathName.includes(createAgentStep)) {
+      router.push(`/create-agent/${createAgentStep}`);
+    }
+  }, [createAgentStep]);
 
   const handlePrevStep = () => {
     onPrevStep();
@@ -44,7 +52,7 @@ export const FormLayout: React.FC<{
             {AGENT_STEPS.map((step, index) => (
               <div
                 key={step}
-                className={`w-1/4 h-2 rounded-full ${
+                className={`w-1/3 h-2 rounded-full ${
                   index <= AGENT_STEPS.indexOf(createAgentStep)
                     ? "bg-blue-500"
                     : "bg-zinc-700"
@@ -56,7 +64,6 @@ export const FormLayout: React.FC<{
             <span>Identity</span>
             <span>Behaviour</span>
             <span>Knowledge</span>
-            <span>Actions</span>
           </div>
         </div>
         {children}
@@ -76,7 +83,7 @@ export const FormLayout: React.FC<{
           }
           className="bg-blue-600 text-white hover:bg-blue-700"
         >
-          {createAgentStep === AGENT_STEPS[3] ? "Create Agent" : "Next"}{" "}
+          {createAgentStep === "knowledge" ? "Create Agent" : "Next"}{" "}
           <ChevronRight className="ml-2 h-4 w-4" />
         </Button>
       </CardFooter>

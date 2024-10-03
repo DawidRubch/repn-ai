@@ -30,25 +30,27 @@ export const calendarRouter = createTRPCRouter({
         oauth2Client.setCredentials(tokens);
 
         if (tokens.access_token && tokens.refresh_token && tokens.expiry_date) {
-
-            await ctx.db.insert(googleCalendarTokensTable).values({
-                userId: ctx.auth.userId,
-                accessToken: tokens.access_token,
-                refreshToken: tokens.refresh_token,
-                expiresAt: new Date(tokens.expiry_date)
-            }).onConflictDoUpdate({
-                target: googleCalendarTokensTable.userId,
-                set: {
+            // First, try to update existing record
+            const updateResult = await ctx.db.update(googleCalendarTokensTable)
+                .set({
                     accessToken: tokens.access_token,
                     refreshToken: tokens.refresh_token,
                     expiresAt: new Date(tokens.expiry_date)
-                }
-            })
+                })
+                .where(eq(googleCalendarTokensTable.userId, ctx.auth.userId));
 
-            return { success: true }
+            // If no rows were affected, insert a new record
+            if (updateResult.length === 0) {
+                await ctx.db.insert(googleCalendarTokensTable).values({
+                    userId: ctx.auth.userId,
+                    accessToken: tokens.access_token,
+                    refreshToken: tokens.refresh_token,
+                    expiresAt: new Date(tokens.expiry_date)
+                });
+            }
 
+            return { success: true };
         }
-
         return { success: false }
 
     }), insertNewTokens: protectedProcedutre.query(async ({ ctx }) => {

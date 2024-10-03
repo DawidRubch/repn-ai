@@ -14,6 +14,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { useCreateAgentStore } from "../hooks/useCreateAgentStore";
 
 interface AvatarUploadFieldProps {
   form: UseFormReturn<any>;
@@ -21,7 +22,11 @@ interface AvatarUploadFieldProps {
 }
 
 export function AvatarUploadField({ form, name }: AvatarUploadFieldProps) {
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const setAvatarPreview = useCreateAgentStore(
+    (state) => state.setAvatarPreview
+  );
+  const avatarPreview = useCreateAgentStore((state) => state.avatarPreview);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (
