@@ -9,23 +9,21 @@ import { env } from "../../env";
 
 export const s3Router = createTRPCRouter({
     getPresignedUrlAvatar: protectedProcedutre.input(z.object({
-        file: z.instanceof(File),
+        key: z.string(),
     })).mutation(async ({ ctx, input }) => {
-        const key = `${ctx.auth.userId}/avatar`
-        const url = await generatePresignedUrl(key, env.AWS_S3_BUCKET_NAME_AVATARS)
+        const url = await generatePresignedUrl(input.key, env.AWS_S3_BUCKET_NAME_AVATARS)
 
-        const imageUrl = `https://${env.AWS_S3_BUCKET_NAME_AVATARS}.s3.amazonaws.com/${key}`
+        const imageUrl = `https://${env.AWS_S3_BUCKET_NAME_AVATARS}.s3.amazonaws.com/${input.key}`
 
         return { url, imageUrl }
     }),
 
     getPresignedFilesURL: protectedProcedutre.input(z.object({
-        files: z.array(z.instanceof(File)),
+        keys: z.array(z.string()),
     })).mutation(async ({ ctx, input }) => {
-        const { files } = input;
+        const { keys } = input;
 
-        const uploadedFiles = await Promise.all(files.map(async (file) => {
-            const key = `${ctx.auth.userId}/${file.name}`
+        const uploadedFiles = await Promise.all(keys.map(async (key) => {
             const url = await generatePresignedUrl(key, env.AWS_S3_BUCKET_NAME_FILES)
             const fileUrl = `https://${env.AWS_S3_BUCKET_NAME_FILES}.s3.amazonaws.com/${key}`
             return { url, fileUrl }

@@ -10,6 +10,7 @@ const identityFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
   voice: z.string().min(1, "Voice is required"),
   avatar: z.instanceof(File).nullable(),
+  avatarURL: z.string().optional(),
 });
 
 export type IdentityForm = z.infer<typeof identityFormSchema>;

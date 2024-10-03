@@ -8,15 +8,23 @@ import {
   useCreateAgentForm,
 } from "../../../hooks/useCreateAgentForm";
 import { usePreventReload } from "../../../hooks/usePreventReload";
+import { useUploadFiles } from "../../../hooks/useUploadFiles";
+import { useEffect } from "react";
 
 export default function IdentityPage() {
   usePreventReload();
   const { identityForm, setFormValues, nextStep, prevStep } =
     useCreateAgentForm();
   const { push } = useRouter();
+  const { uploadAvatar } = useUploadFiles();
 
-  const onSubmit = (data: IdentityForm) => {
-    setFormValues({ identity: data });
+  const avatar = identityForm.watch("avatar");
+
+  const onSubmit = async (data: IdentityForm) => {
+    if (data.avatar && !data.avatarURL) {
+      const avatarURL = await uploadAvatar(data.avatar);
+      setFormValues({ identity: { ...data, avatarURL } });
+    }
     nextStep();
 
     push("/create-agent/behaviour");
@@ -26,6 +34,12 @@ export default function IdentityPage() {
     prevStep();
     push("/create-agent/knowledge");
   };
+
+  useEffect(() => {
+    if (avatar) {
+      identityForm.setValue("avatarURL", undefined);
+    }
+  }, [avatar]);
 
   return (
     <FormLayout

@@ -23,7 +23,6 @@ import {
   SelectValue,
 } from "../ui/select";
 import { AvatarUploadField } from "../AvatarUpload";
-import { trpc } from "../../trpc/client";
 
 export const Identity = ({ form }: { form: UseFormReturn<IdentityForm> }) => {
   return (

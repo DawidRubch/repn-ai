@@ -12,17 +12,21 @@ import {
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useCreateAgentForm } from "../../hooks/useCreateAgentForm";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AGENT_STEPS } from "../../hooks/useCreateAgentStore";
+import { CalendarIntegrationModal } from "./CalendarIntegrationModal";
+import { trpc } from "../../trpc/client";
+import { useUploadFiles } from "../../hooks/useUploadFiles";
 
 export const FormLayout: React.FC<{
   children: React.ReactNode;
   onSubmit: () => void;
   onPrevStep: () => void;
 }> = ({ children, onSubmit, onPrevStep }) => {
-  const { createAgent, createAgentStep } = useCreateAgentForm();
+  const { createAgent, createAgentStep, knowledgeForm } = useCreateAgentForm();
   const router = useRouter();
   const pathName = usePathname();
+  const { uploadFiles } = useUploadFiles();
 
   useEffect(() => {
     if (!pathName.includes(createAgentStep)) {
@@ -36,6 +40,16 @@ export const FormLayout: React.FC<{
 
   const handleNextStep = () => {
     onSubmit();
+  };
+
+  const onClickCreateAgent = () => {
+    onSubmit();
+  };
+
+  const onIntegrateGoogleCal = async () => {
+    const files = knowledgeForm.getValues("files");
+    const uploadedFiles = await uploadFiles(files);
+    console.log(uploadedFiles);
   };
 
   return (
@@ -79,7 +93,9 @@ export const FormLayout: React.FC<{
         </Button>
         <Button
           onClick={
-            createAgentStep === AGENT_STEPS[3] ? createAgent : handleNextStep
+            createAgentStep === "knowledge"
+              ? onClickCreateAgent
+              : handleNextStep
           }
           className="bg-blue-600 text-white hover:bg-blue-700"
         >
