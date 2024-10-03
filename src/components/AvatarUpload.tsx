@@ -1,11 +1,7 @@
 "use client";
 
-import React, { useRef, useState } from "react";
-import { UseFormReturn } from "react-hook-form";
-import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Upload } from "lucide-react";
 import {
   FormControl,
   FormDescription,
@@ -14,6 +10,10 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Upload } from "lucide-react";
+import React, { useRef } from "react";
+import { UseFormReturn } from "react-hook-form";
 import { useCreateAgentStore } from "../hooks/useCreateAgentStore";
 
 interface AvatarUploadFieldProps {
