@@ -28,6 +28,7 @@ export const agentRouter = createTRPCRouter({
             visibility: "private",
             answerOnlyFromCriticalKnowledge: input.answerOnlyFromCriticalKnowledge,
             avatarPhotoUrl: input.avatarPhotoUrl,
+
         })
 
         return agentId
