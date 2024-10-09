@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { isValidUrl } from "../utils/validateURL";
 import { useCreateAgentStore } from "./useCreateAgentStore";
+import { useMutation } from "@tanstack/react-query";
 
 const identityFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -41,8 +42,8 @@ export type KnowledgeForm = z.infer<typeof knowledgeFormSchema>;
 const widgetFormSchema = z.object({
   calendlyURL: z.string().nullable(),
   introMessage: z.string().optional(),
-  showIntroMessage: z.boolean(),
-  position: z.enum(["right", "left"]),
+  showIntroMessage: z.boolean().default(true),
+  position: z.enum(["right", "left"]).default("right"),
 });
 
 export type WidgetForm = z.infer<typeof widgetFormSchema>;
@@ -107,3 +108,6 @@ export const useCreateAgentForm = () => {
     widgetForm,
   };
 };
+
+
+

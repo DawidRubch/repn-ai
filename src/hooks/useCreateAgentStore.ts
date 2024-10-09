@@ -40,7 +40,7 @@ const DEFAULT_FORM_VALUES: CreateAgentForm = {
     calendlyURL: null,
     introMessage: "",
     position: "right",
-    showIntroMessage: false,
+    showIntroMessage: true,
   },
 };
 

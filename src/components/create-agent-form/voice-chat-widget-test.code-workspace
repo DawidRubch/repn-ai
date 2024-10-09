@@ -1,0 +1,14 @@
+{
+  "folders": [
+	{
+		"path": "../../../../../JS-Scripts/voice-chat-widget-test"
+	},
+	{
+		"path": "../../../../../NodeJs/dawidn-aivoice-api"
+	},
+	{
+		"path": "../../.."
+	}
+],
+  "settings": {}
+}

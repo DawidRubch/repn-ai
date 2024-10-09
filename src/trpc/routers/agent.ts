@@ -9,16 +9,8 @@ const AgentSchema = z.object({
     greeting: z.string(),
     prompt: z.string(),
     criticalKnowledge: z.string(),
-    visiblity: z.enum(["public", "private"]),
     answerOnlyFromCriticalKnowledge: z.boolean(),
     avatarPhotoUrl: z.string().optional(),
-    criticalKnowledgeFiles: z.array(z.object({
-        id: z.string(),
-        name: z.string(),
-        url: z.string(),
-        size: z.number(),
-        type: z.string(),
-    }))
 })
 
 export const agentRouter = createTRPCRouter({
@@ -33,7 +25,7 @@ export const agentRouter = createTRPCRouter({
             greeting: input.greeting,
             prompt: input.prompt,
             criticalKnowledge: input.criticalKnowledge,
-            visibility: input.visiblity,
+            visibility: "private",
             answerOnlyFromCriticalKnowledge: input.answerOnlyFromCriticalKnowledge,
             avatarPhotoUrl: input.avatarPhotoUrl,
         })

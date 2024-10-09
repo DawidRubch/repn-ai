@@ -7,13 +7,12 @@ import {
   FormControl,
   FormMessage,
   FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
+  Form,
 } from "../ui/form";
 import { WidgetForm } from "../../hooks/useCreateAgentForm";
 import { Checkbox } from "../ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import { Input } from "../ui/input";
 
 export function Widget({ form }: { form: UseFormReturn<WidgetForm> }) {
   return (
@@ -26,6 +25,7 @@ export function Widget({ form }: { form: UseFormReturn<WidgetForm> }) {
             <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
               <FormControl>
                 <Checkbox
+                  className="text-white "
                   checked={field.value}
                   onCheckedChange={field.onChange}
                 />
@@ -71,13 +71,19 @@ export function Widget({ form }: { form: UseFormReturn<WidgetForm> }) {
                 >
                   <FormItem className="flex items-center space-x-3 space-y-0">
                     <FormControl>
-                      <RadioGroupItem value="left" />
+                      <RadioGroupItem
+                        className="text-white border-white"
+                        value="left"
+                      />
                     </FormControl>
                     <FormLabel className="font-normal">Left</FormLabel>
                   </FormItem>
                   <FormItem className="flex items-center space-x-3 space-y-0">
                     <FormControl>
-                      <RadioGroupItem value="right" />
+                      <RadioGroupItem
+                        className="text-white border-white"
+                        value="right"
+                      />
                     </FormControl>
                     <FormLabel className="font-normal">Right</FormLabel>
                   </FormItem>
@@ -95,8 +101,9 @@ export function Widget({ form }: { form: UseFormReturn<WidgetForm> }) {
             <FormItem>
               <FormLabel>Calendly URL</FormLabel>
               <FormControl>
-                <div className="flex flex-col space-y-2">
+                <div className="flex items-center space-x-2">
                   <Checkbox
+                    className="text-white border-white"
                     checked={field.value !== null}
                     onCheckedChange={(checked) => {
                       if (checked) {
@@ -109,7 +116,7 @@ export function Widget({ form }: { form: UseFormReturn<WidgetForm> }) {
                   />
                   <label
                     htmlFor="show-calendar"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 min-w-40"
                   >
                     Show calendar
                   </label>
