@@ -63,6 +63,7 @@ export const FormLayout: React.FC<{
             <span>Identity</span>
             <span>Behaviour</span>
             <span>Knowledge</span>
+            <span>Widget</span>
           </div>
         </div>
         {children}
@@ -80,7 +81,7 @@ export const FormLayout: React.FC<{
           onClick={onSubmit}
           className="bg-blue-600 text-white hover:bg-blue-700"
         >
-          {createAgentStep === "knowledge" ? "Create Agent" : "Next"}{" "}
+          {createAgentStep === "widget" ? "Create Agent" : "Next"}{" "}
           <ChevronRight className="ml-2 h-4 w-4" />
         </Button>
       </CardFooter>

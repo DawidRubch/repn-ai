@@ -51,6 +51,7 @@ export function AvatarUploadField({ form, name }: AvatarUploadFieldProps) {
     field: { onChange: (file: File) => void }
   ) => {
     const file = event.target.files?.[0];
+
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -59,6 +60,8 @@ export function AvatarUploadField({ form, name }: AvatarUploadFieldProps) {
       };
       reader.readAsDataURL(file);
     }
+
+    event.target.value = "";
   };
 
   const createImage = (url: string): Promise<HTMLImageElement> =>
@@ -108,7 +111,22 @@ export function AvatarUploadField({ form, name }: AvatarUploadFieldProps) {
           croppedAreaPixels
         );
         setAvatarPreview(croppedImage);
-        form.setValue(name, croppedImage);
+
+        // Create a File object from the base64 string
+        const byteString = atob(croppedImage.split(",")[1]);
+        const mimeString = croppedImage
+          .split(",")[0]
+          .split(":")[1]
+          .split(";")[0];
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+        for (let i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
+        }
+        const blob = new Blob([ab], { type: mimeString });
+        const file = new File([blob], "avatar.jpg", { type: "image/jpeg" });
+
+        form.setValue(name, file);
         setIsCropperOpen(false);
         setZoom(1);
       } catch (e) {
@@ -149,7 +167,9 @@ export function AvatarUploadField({ form, name }: AvatarUploadFieldProps) {
                   accept="image/*"
                   className="hidden"
                   ref={fileInputRef}
-                  onChange={(e) => handleFileChange(e, field)}
+                  onChange={(e) => {
+                    handleFileChange(e, field);
+                  }}
                 />
               </div>
             </FormControl>

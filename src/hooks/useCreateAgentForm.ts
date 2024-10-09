@@ -1,8 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
 import { isValidUrl } from "../utils/validateURL";
 import { useCreateAgentStore } from "./useCreateAgentStore";
 
@@ -34,23 +32,29 @@ const knowledgeFormSchema = z.object({
     })
   ),
   fileUrls: z.array(z.string()).optional(),
+  onlyAnwserFromKnowledge: z.boolean().default(false),
 });
 
 export type KnowledgeForm = z.infer<typeof knowledgeFormSchema>;
 
-const actionsFormSchema = z.object({
-  calendar: z.object({
+
+const widgetFormSchema = z.object({
+  calendly: z.object({
     oauth: z.boolean(),
     calendarId: z.string(),
-  }),
+  }).nullable(),
+  introMessage: z.string().min(1, "Intro message is required"),
+  showIntroMessage: z.boolean(),
+  position: z.enum(["right", "left"]),
 });
 
-export type ActionsForm = z.infer<typeof actionsFormSchema>;
+export type WidgetForm = z.infer<typeof widgetFormSchema>;
 
 const createAgentFormSchema = z.object({
   identity: identityFormSchema,
   behaviour: behaviourFormSchema,
   knowledge: knowledgeFormSchema,
+  widget: widgetFormSchema,
 });
 
 export type CreateAgentForm = z.infer<typeof createAgentFormSchema>;
@@ -74,15 +78,23 @@ export const useCreateAgentForm = () => {
     defaultValues: formValues.knowledge,
   });
 
+  const widgetForm = useForm<WidgetForm>({
+    resolver: zodResolver(widgetFormSchema),
+    defaultValues: formValues.widget,
+  });
+
   const createAgent = () => {
     const identity = identityForm.getValues();
     const behaviour = behaviourForm.getValues();
     const knowledge = knowledgeForm.getValues();
+    const widget = widgetForm.getValues();
     const formValues = {
       identity,
       behaviour,
       knowledge,
+      widget,
     };
+
   };
 
   return {

@@ -1,11 +1,8 @@
 "use client";
 
 import { UseFormReturn } from "react-hook-form";
-import {
-  IdentityForm,
-  useCreateAgentForm,
-} from "../../hooks/useCreateAgentForm";
-import { Button } from "../ui/button";
+import { IdentityForm } from "../../hooks/useCreateAgentForm";
+import { AvatarUploadField } from "../AvatarUpload";
 import {
   Form,
   FormControl,
@@ -15,14 +12,6 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
-import { AvatarUploadField } from "../AvatarUpload";
 import VoiceSelector from "../VoiceSelector";
 
 export const Identity = ({ form }: { form: UseFormReturn<IdentityForm> }) => {

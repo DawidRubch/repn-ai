@@ -2,12 +2,13 @@ import { create } from "zustand";
 import { CreateAgentForm } from "./useCreateAgentForm";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-export type AgentStep = "identity" | "behaviour" | "knowledge";
+export type AgentStep = "identity" | "behaviour" | "knowledge" | "widget";
 
 export const AGENT_STEPS: AgentStep[] = [
   "identity",
   "behaviour",
   "knowledge",
+  "widget"
 ] as const;
 
 type CreateAgentStore = {
@@ -33,6 +34,13 @@ const DEFAULT_FORM_VALUES: CreateAgentForm = {
   knowledge: {
     files: [],
     websites: [],
+    onlyAnwserFromKnowledge: false,
+  },
+  widget: {
+    calendly: null,
+    introMessage: "",
+    position: "right",
+    showIntroMessage: false,
   },
 };
 

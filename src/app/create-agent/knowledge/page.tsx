@@ -1,22 +1,19 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { CalendarIntegrationModal } from "../../../components/create-agent-form/CalendarIntegrationModal";
 import { FormLayout } from "../../../components/create-agent-form/FormLayout";
-import { Identity } from "../../../components/create-agent-form/Identity";
+import { Knowledge } from "../../../components/create-agent-form/Knowledge";
 import {
-  IdentityForm,
   KnowledgeForm,
   useCreateAgentForm,
 } from "../../../hooks/useCreateAgentForm";
-import { Knowledge } from "../../../components/create-agent-form/Knowledge";
-import { useEffect, useState } from "react";
 import { usePreventReload } from "../../../hooks/usePreventReload";
 import { useUploadFiles } from "../../../hooks/useUploadFiles";
-import { CalendarIntegrationModal } from "../../../components/create-agent-form/CalendarIntegrationModal";
 import { trpc } from "../../../trpc/client";
 
 export default function KnowledgePage() {
-  usePreventReload();
   const { knowledgeForm, setFormValues, nextStep, prevStep } =
     useCreateAgentForm();
   const { push } = useRouter();
@@ -25,9 +22,13 @@ export default function KnowledgePage() {
   const { mutateAsync: getOauthUrl } = trpc.calendar.oauth.useMutation();
   const router = useRouter();
 
+  console.log(knowledgeForm.formState.errors);
+
   const onSubmit = (data: KnowledgeForm) => {
     setFormValues({ knowledge: data });
-    setIsModalOpen(true);
+    nextStep();
+
+    push("/create-agent/widget");
   };
 
   const onPrevStep = () => {

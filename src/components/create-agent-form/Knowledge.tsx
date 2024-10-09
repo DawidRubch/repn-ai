@@ -7,6 +7,7 @@ import { Button } from "../ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -17,6 +18,7 @@ import { X } from "lucide-react";
 import { UseFormReturn, useFieldArray } from "react-hook-form";
 import { MultiFileUpload } from "../MultiFileUpload";
 import clsx from "clsx";
+import { Checkbox } from "../ui/checkbox";
 
 export const Knowledge = ({ form }: { form: UseFormReturn<KnowledgeForm> }) => {
   const { fields, append, remove } = useFieldArray<KnowledgeForm>({
@@ -90,6 +92,30 @@ export const Knowledge = ({ form }: { form: UseFormReturn<KnowledgeForm> }) => {
                   </Button>
                 </div>
               </FormControl>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="onlyAnwserFromKnowledge"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 border-zinc-700">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                  className="bg-zinc-900 border-zinc-700 text-white"
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel className="text-white">
+                  Only answer from knowledge
+                </FormLabel>
+                <FormDescription className="text-zinc-400">
+                  When enabled, the agent will only answer questions based on
+                  the provided knowledge.
+                </FormDescription>
+              </div>
             </FormItem>
           )}
         />
