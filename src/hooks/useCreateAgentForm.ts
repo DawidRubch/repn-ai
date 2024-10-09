@@ -4,6 +4,7 @@ import { z } from "zod";
 import { isValidUrl } from "../utils/validateURL";
 import { useCreateAgentStore } from "./useCreateAgentStore";
 import { useMutation } from "@tanstack/react-query";
+import { trpc } from "../trpc/client";
 
 const identityFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -61,6 +62,8 @@ export const useCreateAgentForm = () => {
   const { createAgentStep, nextStep, prevStep, setFormValues, formValues } =
     useCreateAgentStore();
 
+  const { mutateAsync: createAgentMutation } = trpc.agent.createAgent.useMutation()
+
   const identityForm = useForm<IdentityForm>({
     resolver: zodResolver(identityFormSchema),
     defaultValues: formValues.identity,
@@ -81,17 +84,28 @@ export const useCreateAgentForm = () => {
     defaultValues: formValues.widget,
   });
 
-  const createAgent = () => {
+  const createAgent = async () => {
     const identity = identityForm.getValues();
     const behaviour = behaviourForm.getValues();
     const knowledge = knowledgeForm.getValues();
     const widget = widgetForm.getValues();
-    const formValues = {
-      identity,
-      behaviour,
-      knowledge,
-      widget,
-    };
+
+
+    const agent = await createAgentMutation({
+      voice: identity.voice,
+      displayName: identity.name,
+      description: identity.name,
+      greeting: behaviour.greeting,
+      prompt: behaviour.introduction,
+      criticalKnowledge: knowledge.fileUrls?.join("\n") || "",
+      answerOnlyFromCriticalKnowledge: knowledge.onlyAnwserFromKnowledge,
+      avatarPhotoUrl: identity.avatarURL,
+      position: widget.position,
+      introMessage: widget.introMessage,
+      calendlyUrl: widget.calendlyURL || null,
+    })
+
+    return agent
 
   };
 

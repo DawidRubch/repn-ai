@@ -13,12 +13,23 @@ const AgentSchema = z.object({
     avatarPhotoUrl: z.string().optional(),
     position: z.enum(["left", "right", "center"]),
     introMessage: z.string().optional(),
-    calendlyUrl: z.string().optional(),
+    calendlyUrl: z.string().nullable(),
+    voice: z.string(),
 })
 
 export const agentRouter = createTRPCRouter({
     createAgent: protectedProcedutre.input(AgentSchema).mutation(async ({ ctx, input }) => {
-        const agentId = await createNewAgent(input)
+        const agentId = await createNewAgent({
+            voice: input.voice,
+            voiceSpeed: 1.0,
+            displayName: input.displayName,
+            description: input.description,
+            greeting: input.greeting,
+            prompt: input.prompt,
+            criticalKnowledge: input.criticalKnowledge,
+            answerOnlyFromCriticalKnowledge: input.answerOnlyFromCriticalKnowledge,
+            visibility: "private",
+        })
 
         await ctx.db.insert(agentsTable).values({
             id: agentId,
@@ -38,15 +49,25 @@ export const agentRouter = createTRPCRouter({
 
         return agentId
     }),
-    updateAgent: protectedProcedutre.mutation(async ({ ctx }) => {
-
-    })
 })
 
 type AgentWithID = z.infer<typeof AgentSchema> & { id: string }
 
 
-const createNewAgent = async (agent: z.infer<typeof AgentSchema>): Promise<string> => {
+
+type CreateNewAgentInput = {
+    voice: string,
+    voiceSpeed: number,
+    displayName: string,
+    description: string,
+    greeting: string,
+    prompt: string,
+    criticalKnowledge: string,
+    answerOnlyFromCriticalKnowledge: boolean,
+    visibility: string,
+}
+
+const createNewAgent = async (agent: CreateNewAgentInput): Promise<string> => {
     const response = await fetch('https://api.play.ai/api/v1/agents', {
         method: 'POST',
         headers: {
