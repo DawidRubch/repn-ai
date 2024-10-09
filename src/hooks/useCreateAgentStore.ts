@@ -37,7 +37,7 @@ const DEFAULT_FORM_VALUES: CreateAgentForm = {
     onlyAnwserFromKnowledge: false,
   },
   widget: {
-    calendly: null,
+    calendlyURL: null,
     introMessage: "",
     position: "right",
     showIntroMessage: false,

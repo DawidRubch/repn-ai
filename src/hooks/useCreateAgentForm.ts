@@ -39,11 +39,8 @@ export type KnowledgeForm = z.infer<typeof knowledgeFormSchema>;
 
 
 const widgetFormSchema = z.object({
-  calendly: z.object({
-    oauth: z.boolean(),
-    calendarId: z.string(),
-  }).nullable(),
-  introMessage: z.string().min(1, "Intro message is required"),
+  calendlyURL: z.string().nullable(),
+  introMessage: z.string().optional(),
   showIntroMessage: z.boolean(),
   position: z.enum(["right", "left"]),
 });
@@ -107,5 +104,6 @@ export const useCreateAgentForm = () => {
     setFormValues,
     formValues,
     createAgent,
+    widgetForm,
   };
 };
