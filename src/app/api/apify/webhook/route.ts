@@ -7,8 +7,6 @@ export const POST = async (req: Request) => {
 
     const data = await getDataFromApify(resource.defaultDatasetId);
 
-    console.log(data);
-
     return new Response(JSON.stringify({ success: true }), { status: 200 });
 
 }
