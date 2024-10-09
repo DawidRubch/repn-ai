@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Upload } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { useCreateAgentStore } from "../hooks/useCreateAgentStore";
-import Cropper from "react-easy-crop";
+import Cropper, { Area } from "react-easy-crop";
 import {
   Dialog,
   DialogContent,
@@ -38,16 +38,13 @@ export function AvatarUploadField({ form, name }: AvatarUploadFieldProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [isCropperOpen, setIsCropperOpen] = useState(false);
   const [imageToCrop, setImageToCrop] = useState<string | null>(null);
 
-  const onCropComplete = useCallback(
-    (croppedArea: any, croppedAreaPixels: any) => {
-      setCroppedAreaPixels(croppedAreaPixels);
-    },
-    []
-  );
+  const onCropComplete = (croppedArea: Area, croppedAreaPixels: Area) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  };
 
   const handleFileChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -113,6 +110,7 @@ export function AvatarUploadField({ form, name }: AvatarUploadFieldProps) {
         setAvatarPreview(croppedImage);
         form.setValue(name, croppedImage);
         setIsCropperOpen(false);
+        setZoom(1);
       } catch (e) {
         console.error(e);
       }
@@ -185,7 +183,7 @@ export function AvatarUploadField({ form, name }: AvatarUploadFieldProps) {
               max={3}
               step={0.1}
               onValueChange={(value: number[]) => setZoom(value[0])}
-              className="w-64"
+              className="w-64 "
             />
           </div>
           <div className="flex justify-end space-x-2 mt-4">
