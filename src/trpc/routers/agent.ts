@@ -11,6 +11,9 @@ const AgentSchema = z.object({
     criticalKnowledge: z.string(),
     answerOnlyFromCriticalKnowledge: z.boolean(),
     avatarPhotoUrl: z.string().optional(),
+    position: z.enum(["left", "right", "center"]),
+    introMessage: z.string().optional(),
+    calendlyUrl: z.string().optional(),
 })
 
 export const agentRouter = createTRPCRouter({
@@ -28,7 +31,9 @@ export const agentRouter = createTRPCRouter({
             visibility: "private",
             answerOnlyFromCriticalKnowledge: input.answerOnlyFromCriticalKnowledge,
             avatarPhotoUrl: input.avatarPhotoUrl,
-
+            calendlyUrl: input.calendlyUrl,
+            position: input.position,
+            introMessage: input.introMessage,
         })
 
         return agentId

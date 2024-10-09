@@ -22,7 +22,7 @@ export type GoogleCalendarTokens = typeof googleCalendarTokensTable.$inferSelect
 export type NewGoogleCalendarTokens = typeof googleCalendarTokensTable.$inferInsert;
 
 export const visibilityEnum = pgEnum('visibility', ['public', 'private']);
-const positionEnum = pgEnum('position', ["left", "right", "center"]);
+export const positionEnum = pgEnum('position', ["left", "right", "center"]);
 
 
 
