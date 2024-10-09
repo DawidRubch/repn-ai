@@ -62,7 +62,7 @@ export const useCreateAgentForm = () => {
   const { createAgentStep, nextStep, prevStep, setFormValues, formValues } =
     useCreateAgentStore();
 
-  const { mutateAsync: createAgentMutation } = trpc.agent.createAgent.useMutation()
+  const { mutateAsync: createAgentMutation, isPending: isCreatingAgent } = trpc.agent.createAgent.useMutation()
 
   const identityForm = useForm<IdentityForm>({
     resolver: zodResolver(identityFormSchema),
@@ -120,6 +120,7 @@ export const useCreateAgentForm = () => {
     formValues,
     createAgent,
     widgetForm,
+    isCreatingAgent
   };
 };
 

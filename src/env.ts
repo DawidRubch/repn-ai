@@ -26,6 +26,7 @@ export const env = createEnv({
         APIFY_TOKEN: z.string().min(1),
         APIFY_ACT_ID: z.string().min(1),
         APIFY_WEBHOOK_URL: z.string().min(1),
+        PLAY_AI_USER_ID: z.string().min(1),
     },
     client: {
         NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1),
@@ -60,6 +61,7 @@ export const env = createEnv({
         APIFY_TOKEN: process.env.APIFY_TOKEN,
         APIFY_ACT_ID: process.env.APIFY_ACT_ID,
         APIFY_WEBHOOK_URL: process.env.APIFY_WEBHOOK_URL,
+        PLAY_AI_USER_ID: process.env.PLAY_AI_USER_ID,
     },
     // For Next.js >= 13.4.4, you only need to destructure client variables:
     // experimental__runtimeEnv: {

@@ -9,13 +9,14 @@ import {
 import { Widget } from "../../../components/create-agent-form/Widget";
 
 export default function WidgetPage() {
-  const { widgetForm, setFormValues, nextStep, prevStep } =
+  const { widgetForm, setFormValues, nextStep, prevStep, createAgent } =
     useCreateAgentForm();
   const { push } = useRouter();
 
   const onSubmit = (data: WidgetForm) => {
     setFormValues({ widget: data });
-    nextStep();
+
+    createAgent();
   };
 
   const onPrevStep = () => {

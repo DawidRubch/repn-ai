@@ -2,6 +2,7 @@ import { z } from "zod"
 import { createTRPCRouter, protectedProcedutre } from "../init"
 import { env } from "../../env"
 import { agentsTable } from "../../db/schema"
+import { TRPCError } from "@trpc/server"
 
 const AgentSchema = z.object({
     displayName: z.string(),
@@ -19,35 +20,43 @@ const AgentSchema = z.object({
 
 export const agentRouter = createTRPCRouter({
     createAgent: protectedProcedutre.input(AgentSchema).mutation(async ({ ctx, input }) => {
-        const agentId = await createNewAgent({
-            voice: input.voice,
-            voiceSpeed: 1.0,
-            displayName: input.displayName,
-            description: input.description,
-            greeting: input.greeting,
-            prompt: input.prompt,
-            criticalKnowledge: input.criticalKnowledge,
-            answerOnlyFromCriticalKnowledge: input.answerOnlyFromCriticalKnowledge,
-            visibility: "private",
-        })
+        try {
+            const agentId = await createNewAgent({
+                voice: input.voice,
+                voiceSpeed: 1.0,
+                displayName: input.displayName,
+                description: input.description,
+                greeting: input.greeting,
+                prompt: input.prompt,
+                criticalKnowledge: input.criticalKnowledge,
+                answerOnlyFromCriticalKnowledge: input.answerOnlyFromCriticalKnowledge,
+                visibility: "private",
+            })
 
-        await ctx.db.insert(agentsTable).values({
-            id: agentId,
-            userId: ctx.auth.userId,
-            displayName: input.displayName,
-            description: input.description,
-            greeting: input.greeting,
-            prompt: input.prompt,
-            criticalKnowledge: input.criticalKnowledge,
-            visibility: "private",
-            answerOnlyFromCriticalKnowledge: input.answerOnlyFromCriticalKnowledge,
-            avatarPhotoUrl: input.avatarPhotoUrl,
-            calendlyUrl: input.calendlyUrl,
-            position: input.position,
-            introMessage: input.introMessage,
-        })
+            await ctx.db.insert(agentsTable).values({
+                id: agentId,
+                userId: ctx.auth.userId,
+                displayName: input.displayName,
+                description: input.description,
+                greeting: input.greeting,
+                prompt: input.prompt,
+                criticalKnowledge: input.criticalKnowledge,
+                visibility: "private",
+                answerOnlyFromCriticalKnowledge: input.answerOnlyFromCriticalKnowledge,
+                avatarPhotoUrl: input.avatarPhotoUrl,
+                calendlyUrl: input.calendlyUrl,
+                position: input.position,
+                introMessage: input.introMessage,
+            })
 
-        return agentId
+            return agentId
+        } catch (error) {
+            console.error(error)
+            throw new TRPCError({
+                code: 'INTERNAL_SERVER_ERROR',
+                message: 'Failed to create agent'
+            })
+        }
     }),
 })
 
@@ -72,7 +81,8 @@ const createNewAgent = async (agent: CreateNewAgentInput): Promise<string> => {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${env.PLAY_AI_API_KEY}`
+            'AUTHORIZATION': `${env.PLAY_AI_API_KEY}`,
+            'X-USER-ID': `${env.PLAY_AI_USER_ID}`,
         },
         body: JSON.stringify(agent)
     })

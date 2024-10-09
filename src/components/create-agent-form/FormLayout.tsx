@@ -9,21 +9,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useCreateAgentForm } from "../../hooks/useCreateAgentForm";
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useCreateAgentForm } from "../../hooks/useCreateAgentForm";
 import { AGENT_STEPS } from "../../hooks/useCreateAgentStore";
-import { CalendarIntegrationModal } from "./CalendarIntegrationModal";
-import { trpc } from "../../trpc/client";
-import { useUploadFiles } from "../../hooks/useUploadFiles";
 
 export const FormLayout: React.FC<{
   children: React.ReactNode;
   onSubmit: () => void;
   onPrevStep: () => void;
 }> = ({ children, onSubmit, onPrevStep }) => {
-  const { createAgentStep } = useCreateAgentForm();
+  const { createAgentStep, isCreatingAgent } = useCreateAgentForm();
   const router = useRouter();
   const pathName = usePathname();
 
@@ -80,7 +77,9 @@ export const FormLayout: React.FC<{
         <Button
           onClick={onSubmit}
           className="bg-blue-600 text-white hover:bg-blue-700"
+          disabled={isCreatingAgent}
         >
+          {isCreatingAgent ? <Loader2 className="w-4 h-4 mr-2" /> : null}
           {createAgentStep === "widget" ? "Create Agent" : "Next"}{" "}
           <ChevronRight className="ml-2 h-4 w-4" />
         </Button>
