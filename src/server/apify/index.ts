@@ -63,6 +63,12 @@ export const getDataFromApify = async (actorRunId: string) => {
 }
 
 
+export const getApifyRunStatus = async (actorRunId: string) => {
+    const run = await client.run(actorRunId).get();
+    return run?.status
+}
+
+
 type ScrapingOutput = {
     url: string,
     text: string,

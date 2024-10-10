@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { env } from "../../env";
-import { client, getApifyInput } from "../../server/apify";
+import { client, getApifyInput, getApifyRunStatus } from "../../server/apify";
 import { createTRPCRouter, protectedProcedutre } from "../init";
 export const scrapeRouter = createTRPCRouter({
     scrapeWebsite: protectedProcedutre.input(z.object({
@@ -21,8 +21,15 @@ export const scrapeRouter = createTRPCRouter({
             memory: 4096
         });
 
-        return run
+        return run.id
     }),
+    statusPolling: protectedProcedutre.input(z.object({
+        runId: z.string(),
+    })).query(async ({ ctx, input }) => {
+        const { runId } = input;
+
+        return await getApifyRunStatus(runId)
+    })
 })
 
 
