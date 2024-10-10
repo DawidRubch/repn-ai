@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Upload } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
-import { useCreateAgentStore } from "../hooks/useAgentStore";
+import { useAgentFormStore } from "../hooks/useAgentStore";
 import Cropper, { Area } from "react-easy-crop";
 import {
   Dialog,
@@ -30,10 +30,8 @@ interface AvatarUploadFieldProps {
 }
 
 export function AvatarUploadField({ form, name }: AvatarUploadFieldProps) {
-  const setAvatarPreview = useCreateAgentStore(
-    (state) => state.setAvatarPreview
-  );
-  const avatarPreview = useCreateAgentStore((state) => state.avatarPreview);
+  const setAvatarPreview = useAgentFormStore((state) => state.setAvatarPreview);
+  const avatarPreview = useAgentFormStore((state) => state.avatarPreview);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
