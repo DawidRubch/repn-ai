@@ -114,6 +114,7 @@ export const agentRouter = createTRPCRouter({
             answerOnlyFromCriticalKnowledge: agentsTable.answerOnlyFromCriticalKnowledge,
             calendlyUrl: agentsTable.calendlyUrl,
             introMessage: agentsTable.introMessage,
+            websites: agentsTable.websites,
         }).from(agentsTable).where(eq(agentsTable.userId, userID)).limit(1)
 
         if (!agent) {
@@ -121,7 +122,24 @@ export const agentRouter = createTRPCRouter({
         }
 
         return agent
-    })
+    }),
+    getWidget: protectedProcedutre.query(async ({ ctx }) => {
+        const userID = ctx.auth.userId
+
+        const [agent] = await db.select({
+            calendlyUrl: agentsTable.calendlyUrl,
+            introMessage: agentsTable.introMessage,
+            position: agentsTable.position,
+
+        }).from(agentsTable).where(eq(agentsTable.userId, userID)).limit(1)
+
+        if (!agent) {
+            return null
+        }
+
+        return agent
+
+    }),
 })
 
 type AgentWithID = z.infer<typeof AgentSchema> & { id: string }

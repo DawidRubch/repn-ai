@@ -62,9 +62,14 @@ export const UpdateAgentFormLayout: React.FC<{
   }, [agentFormStep]);
 
   return (
-    <CreateAgentFormLayout onSubmit={onSubmit} onPrevStep={onPrevStep}>
+    <FormLayoutComponent
+      onSubmit={onSubmit}
+      onPrevStep={onPrevStep}
+      currentStep={agentFormStep}
+      isSettingUpAgent={isSettingUpAgent}
+    >
       {children}
-    </CreateAgentFormLayout>
+    </FormLayoutComponent>
   );
 };
 

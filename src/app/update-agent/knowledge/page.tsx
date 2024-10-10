@@ -2,7 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { CreateAgentFormLayout } from "../../../components/create-agent-form/FormLayout";
+import {
+  CreateAgentFormLayout,
+  UpdateAgentFormLayout,
+} from "../../../components/create-agent-form/FormLayout";
 import { Knowledge } from "../../../components/create-agent-form/Knowledge";
 import { KnowledgeForm, useAgentForm } from "../../../hooks/useAgentForm";
 import { trpc } from "../../../trpc/client";
@@ -17,12 +20,12 @@ export default function KnowledgePage() {
     setFormValues({ knowledge: data });
     nextStep();
 
-    push("/create-agent/widget");
+    push("/update-agent/widget");
   };
 
   const onPrevStep = () => {
     prevStep();
-    push("/create-agent/behaviour");
+    push("/update-agent/behaviour");
   };
 
   useEffect(() => {
@@ -45,11 +48,11 @@ export default function KnowledgePage() {
   if (isLoading) return <FullPageLoader />;
 
   return (
-    <CreateAgentFormLayout
+    <UpdateAgentFormLayout
       onSubmit={knowledgeForm.handleSubmit(onSubmit)}
       onPrevStep={onPrevStep}
     >
       <Knowledge form={knowledgeForm} />
-    </CreateAgentFormLayout>
+    </UpdateAgentFormLayout>
   );
 }
