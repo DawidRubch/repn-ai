@@ -2,17 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import { Behaviour } from "../../../components/create-agent-form/Behaviour";
-import { FormLayout } from "../../../components/create-agent-form/FormLayout";
-import {
-  BehaviourForm,
-  useCreateAgentForm,
-} from "../../../hooks/useCreateAgentForm";
+import { CreateAgentFormLayout } from "../../../components/create-agent-form/FormLayout";
+import { BehaviourForm, useAgentForm } from "../../../hooks/useAgentForm";
 import { usePreventReload } from "../../../hooks/usePreventReload";
 
 export default function BehaviourPage() {
   usePreventReload();
-  const { behaviourForm, setFormValues, nextStep, prevStep } =
-    useCreateAgentForm();
+  const { behaviourForm, setFormValues, nextStep, prevStep } = useAgentForm();
   const { push } = useRouter();
 
   const onSubmit = (data: BehaviourForm) => {
@@ -27,11 +23,11 @@ export default function BehaviourPage() {
   };
 
   return (
-    <FormLayout
+    <CreateAgentFormLayout
       onSubmit={behaviourForm.handleSubmit(onSubmit)}
       onPrevStep={onPrevStep}
     >
       <Behaviour form={behaviourForm} />
-    </FormLayout>
+    </CreateAgentFormLayout>
   );
 }

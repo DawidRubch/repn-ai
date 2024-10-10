@@ -1,20 +1,16 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { FormLayout } from "../../../components/create-agent-form/FormLayout";
+import { CreateAgentFormLayout } from "../../../components/create-agent-form/FormLayout";
 import { Identity } from "../../../components/create-agent-form/Identity";
-import {
-  IdentityForm,
-  useCreateAgentForm,
-} from "../../../hooks/useCreateAgentForm";
+import { IdentityForm, useAgentForm } from "../../../hooks/useAgentForm";
 import { usePreventReload } from "../../../hooks/usePreventReload";
 import { useUploadFiles } from "../../../hooks/useUploadFiles";
 import { useEffect } from "react";
 
 export default function IdentityPage() {
   usePreventReload();
-  const { identityForm, setFormValues, nextStep, prevStep } =
-    useCreateAgentForm();
+  const { identityForm, setFormValues, nextStep, prevStep } = useAgentForm();
   const { push } = useRouter();
   const { uploadAvatar } = useUploadFiles();
 
@@ -44,11 +40,11 @@ export default function IdentityPage() {
   }, [avatar]);
 
   return (
-    <FormLayout
+    <CreateAgentFormLayout
       onSubmit={identityForm.handleSubmit(onSubmit)}
       onPrevStep={onPrevStep}
     >
       <Identity form={identityForm} />
-    </FormLayout>
+    </CreateAgentFormLayout>
   );
 }

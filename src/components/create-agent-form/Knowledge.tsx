@@ -2,7 +2,7 @@ import { useState } from "react";
 import clsx from "clsx";
 import { X } from "lucide-react";
 import { UseFormReturn, useFieldArray } from "react-hook-form";
-import { KnowledgeForm } from "../../hooks/useCreateAgentForm";
+import { KnowledgeForm } from "../../hooks/useAgentForm";
 import { MultiFileUpload } from "../MultiFileUpload";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";

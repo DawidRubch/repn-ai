@@ -12,28 +12,69 @@ import {
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useCreateAgentForm } from "../../hooks/useCreateAgentForm";
-import { AGENT_STEPS } from "../../hooks/useCreateAgentStore";
+import { useAgentForm } from "../../hooks/useAgentForm";
+import { AGENT_STEPS, AgentStep } from "../../hooks/useCreateAgentStore";
 
-export const FormLayout: React.FC<{
+export const CreateAgentFormLayout: React.FC<{
   children: React.ReactNode;
   onSubmit: () => void;
   onPrevStep: () => void;
 }> = ({ children, onSubmit, onPrevStep }) => {
-  const { createAgentStep, isSettingUpAgent } = useCreateAgentForm();
+  const { agentFormStep, isSettingUpAgent } = useAgentForm();
   const router = useRouter();
   const pathName = usePathname();
 
   useEffect(() => {
-    if (!pathName.includes(createAgentStep)) {
-      router.push(`/create-agent/${createAgentStep}`);
+    if (!pathName.includes(agentFormStep)) {
+      router.push(`/create-agent/${agentFormStep}`);
     }
-  }, [createAgentStep]);
+  }, [agentFormStep]);
 
   const handlePrevStep = () => {
     onPrevStep();
   };
 
+  return (
+    <FormLayoutComponent
+      currentStep={agentFormStep}
+      isSettingUpAgent={isSettingUpAgent}
+      onSubmit={onSubmit}
+      onPrevStep={handlePrevStep}
+    >
+      {children}
+    </FormLayoutComponent>
+  );
+};
+
+export const UpdateAgentFormLayout: React.FC<{
+  children: React.ReactNode;
+  onSubmit: () => void;
+  onPrevStep: () => void;
+}> = ({ children, onSubmit, onPrevStep }) => {
+  const { agentFormStep, isSettingUpAgent } = useAgentForm();
+  const pathName = usePathname();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!pathName.includes(agentFormStep)) {
+      router.push(`/update-agent/${agentFormStep}`);
+    }
+  }, [agentFormStep]);
+
+  return (
+    <CreateAgentFormLayout onSubmit={onSubmit} onPrevStep={onPrevStep}>
+      {children}
+    </CreateAgentFormLayout>
+  );
+};
+
+const FormLayoutComponent: React.FC<{
+  currentStep: AgentStep;
+  children: React.ReactNode;
+  isSettingUpAgent: boolean;
+  onSubmit: () => void;
+  onPrevStep: () => void;
+}> = ({ currentStep, children, isSettingUpAgent, onSubmit, onPrevStep }) => {
   return (
     <Card className="w-full mx-auto bg-black text-white border-zinc-800">
       <CardHeader>
@@ -49,7 +90,7 @@ export const FormLayout: React.FC<{
               <div
                 key={step}
                 className={`w-1/3 h-2 rounded-full ${
-                  index <= AGENT_STEPS.indexOf(createAgentStep)
+                  index <= AGENT_STEPS.indexOf(currentStep)
                     ? "bg-blue-500"
                     : "bg-zinc-700"
                 }`}
@@ -68,8 +109,8 @@ export const FormLayout: React.FC<{
       <CardFooter className="flex justify-between">
         <Button
           variant="outline"
-          onClick={handlePrevStep}
-          disabled={createAgentStep === AGENT_STEPS[0]}
+          onClick={onPrevStep}
+          disabled={currentStep === AGENT_STEPS[0]}
           className="border-zinc-700 text-zinc-400 hover:text-white hover:bg-zinc-800"
         >
           <ChevronLeft className="mr-2 h-4 w-4" /> Previous
@@ -80,7 +121,7 @@ export const FormLayout: React.FC<{
           disabled={isSettingUpAgent}
         >
           {isSettingUpAgent ? <Loader2 className="w-4 h-4 mr-2" /> : null}
-          {createAgentStep === "widget" ? "Create Agent" : "Next"}{" "}
+          {currentStep === "widget" ? "Create Agent" : "Next"}{" "}
           <ChevronRight className="ml-2 h-4 w-4" />
         </Button>
       </CardFooter>

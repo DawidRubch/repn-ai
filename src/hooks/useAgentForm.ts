@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { trpc } from "../trpc/client";
 import { isValidUrl } from "../utils/validateURL";
-import { useCreateAgentStore } from "./useCreateAgentStore";
+import { useAgentFormStore } from "./useCreateAgentStore";
 import { useState } from "react";
 
 const identityFormSchema = z.object({
@@ -55,11 +55,11 @@ const createAgentFormSchema = z.object({
   widget: widgetFormSchema,
 });
 
-export type CreateAgentForm = z.infer<typeof createAgentFormSchema>;
+export type AgentForm = z.infer<typeof createAgentFormSchema>;
 
-export const useCreateAgentForm = () => {
-  const { createAgentStep, nextStep, prevStep, setFormValues, formValues, setAgentId, setApifyRunId } =
-    useCreateAgentStore();
+export const useAgentForm = () => {
+  const { agentFormStep, nextStep, prevStep, setFormValues, formValues, setAgentId, setApifyRunId } =
+    useAgentFormStore();
   const [isCreatingAgent, setIsCreatingAgent] = useState(false)
 
   const { mutateAsync: createAgentMutation, isPending: isAgentCreating } = trpc.agent.createAgent.useMutation()
@@ -125,7 +125,7 @@ export const useCreateAgentForm = () => {
   };
 
   return {
-    createAgentStep,
+    agentFormStep,
     nextStep,
     prevStep,
     identityForm,

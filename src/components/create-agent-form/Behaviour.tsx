@@ -1,8 +1,5 @@
 import { UseFormReturn } from "react-hook-form";
-import {
-  BehaviourForm,
-  useCreateAgentForm,
-} from "../../hooks/useCreateAgentForm";
+import { BehaviourForm, useAgentForm } from "../../hooks/useAgentForm";
 import { Button } from "../ui/button";
 import {
   Form,

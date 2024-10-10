@@ -1,7 +1,7 @@
 "use client";
 
 import { UseFormReturn } from "react-hook-form";
-import { IdentityForm } from "../../hooks/useCreateAgentForm";
+import { IdentityForm } from "../../hooks/useAgentForm";
 import { AvatarUploadField } from "../AvatarUpload";
 import {
   Form,

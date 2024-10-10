@@ -1,16 +1,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { FormLayout } from "../../../components/create-agent-form/FormLayout";
-import {
-  useCreateAgentForm,
-  WidgetForm,
-} from "../../../hooks/useCreateAgentForm";
+import { CreateAgentFormLayout } from "../../../components/create-agent-form/FormLayout";
+import { useAgentForm, WidgetForm } from "../../../hooks/useAgentForm";
 import { Widget } from "../../../components/create-agent-form/Widget";
 
 export default function WidgetPage() {
   const { widgetForm, setFormValues, nextStep, prevStep, createAgent } =
-    useCreateAgentForm();
+    useAgentForm();
   const { push } = useRouter();
 
   const onSubmit = async (data: WidgetForm) => {
@@ -27,11 +24,11 @@ export default function WidgetPage() {
   };
 
   return (
-    <FormLayout
+    <CreateAgentFormLayout
       onSubmit={widgetForm.handleSubmit(onSubmit)}
       onPrevStep={onPrevStep}
     >
       <Widget form={widgetForm} />
-    </FormLayout>
+    </CreateAgentFormLayout>
   );
 }

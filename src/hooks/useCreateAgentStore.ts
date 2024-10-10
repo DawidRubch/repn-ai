@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { CreateAgentForm } from "./useCreateAgentForm";
+import { AgentForm } from "./useAgentForm";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 export type AgentStep = "identity" | "behaviour" | "knowledge" | "widget";
@@ -11,13 +11,13 @@ export const AGENT_STEPS: AgentStep[] = [
   "widget"
 ] as const;
 
-type CreateAgentStore = {
-  createAgentStep: AgentStep;
-  setCreateAgentStep: (step: AgentStep) => void;
+type AgentFormStore = {
+  agentFormStep: AgentStep;
+  setAgentFormStep: (step: AgentStep) => void;
   nextStep: () => void;
   prevStep: () => void;
-  formValues: CreateAgentForm;
-  setFormValues: (values: Partial<CreateAgentForm>) => void;
+  formValues: AgentForm;
+  setFormValues: (values: Partial<AgentForm>) => void;
   setAvatarPreview: (avatar: string | null) => void;
   avatarPreview: string | null;
   agentId: string | null;
@@ -26,7 +26,7 @@ type CreateAgentStore = {
   setApifyRunId: (id: string) => void;
 };
 
-const DEFAULT_FORM_VALUES: CreateAgentForm = {
+const DEFAULT_FORM_VALUES: AgentForm = {
   identity: {
     name: "",
     voice: "",
@@ -50,23 +50,23 @@ const DEFAULT_FORM_VALUES: CreateAgentForm = {
   },
 };
 
-export const useCreateAgentStore = create<CreateAgentStore>()(
+export const useAgentFormStore = create<AgentFormStore>()(
   persist(
     (set) => ({
-      createAgentStep: AGENT_STEPS[0],
-      setCreateAgentStep: (step) => set({ createAgentStep: step }),
+      agentFormStep: AGENT_STEPS[0],
+      setAgentFormStep: (step) => set({ agentFormStep: step }),
       nextStep: () =>
         set((state) => {
-          const currentIndex = AGENT_STEPS.indexOf(state.createAgentStep);
+          const currentIndex = AGENT_STEPS.indexOf(state.agentFormStep);
           const nextIndex = (currentIndex + 1) % AGENT_STEPS.length;
-          return { createAgentStep: AGENT_STEPS[nextIndex] };
+          return { agentFormStep: AGENT_STEPS[nextIndex] };
         }),
       prevStep: () =>
         set((state) => {
-          const currentIndex = AGENT_STEPS.indexOf(state.createAgentStep);
+          const currentIndex = AGENT_STEPS.indexOf(state.agentFormStep);
           const prevIndex =
             (currentIndex - 1 + AGENT_STEPS.length) % AGENT_STEPS.length;
-          return { createAgentStep: AGENT_STEPS[prevIndex] };
+          return { agentFormStep: AGENT_STEPS[prevIndex] };
         }),
       formValues: DEFAULT_FORM_VALUES,
       setFormValues: (values) =>
@@ -79,7 +79,7 @@ export const useCreateAgentStore = create<CreateAgentStore>()(
       setApifyRunId: (id) => set({ apifyRunId: id }),
     }),
     {
-      name: "create-agent-storage",
+      name: "agent-form-storage",
       storage: createJSONStorage(() => sessionStorage),
     }
   )

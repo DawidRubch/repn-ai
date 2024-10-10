@@ -9,7 +9,7 @@ import {
   FormField,
   Form,
 } from "../ui/form";
-import { WidgetForm } from "../../hooks/useCreateAgentForm";
+import { WidgetForm } from "../../hooks/useAgentForm";
 import { Checkbox } from "../ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Input } from "../ui/input";

@@ -2,16 +2,12 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { FormLayout } from "../../../components/create-agent-form/FormLayout";
+import { CreateAgentFormLayout } from "../../../components/create-agent-form/FormLayout";
 import { Knowledge } from "../../../components/create-agent-form/Knowledge";
-import {
-  KnowledgeForm,
-  useCreateAgentForm,
-} from "../../../hooks/useCreateAgentForm";
+import { KnowledgeForm, useAgentForm } from "../../../hooks/useAgentForm";
 
 export default function KnowledgePage() {
-  const { knowledgeForm, setFormValues, nextStep, prevStep } =
-    useCreateAgentForm();
+  const { knowledgeForm, setFormValues, nextStep, prevStep } = useAgentForm();
   const { push } = useRouter();
 
   const onSubmit = (data: KnowledgeForm) => {
@@ -34,11 +30,11 @@ export default function KnowledgePage() {
   }, [knowledgeForm, setFormValues]);
 
   return (
-    <FormLayout
+    <CreateAgentFormLayout
       onSubmit={knowledgeForm.handleSubmit(onSubmit)}
       onPrevStep={onPrevStep}
     >
       <Knowledge form={knowledgeForm} />
-    </FormLayout>
+    </CreateAgentFormLayout>
   );
 }

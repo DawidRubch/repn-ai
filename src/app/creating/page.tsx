@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useCreateAgentStore } from "../../hooks/useCreateAgentStore";
+import { useAgentFormStore } from "../../hooks/useCreateAgentStore";
 import { trpc } from "../../trpc/client";
 import { Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,13 +15,13 @@ import {
 } from "@/components/ui/card";
 
 export default function CreatingPage() {
-  const formValues = useCreateAgentStore((store) => store.formValues);
+  const formValues = useAgentFormStore((store) => store.formValues);
   const { isWebsiteScraping } = useWebsiteScraping();
   return <CreatingComponent isWebsiteScraping={isWebsiteScraping} />;
 }
 
 export const useWebsiteScraping = () => {
-  const runId = useCreateAgentStore((store) => store.apifyRunId);
+  const runId = useAgentFormStore((store) => store.apifyRunId);
 
   const { data: runStatus } = trpc.scrape.statusPolling.useQuery(
     {
