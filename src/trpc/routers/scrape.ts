@@ -21,8 +21,6 @@ export const scrapeRouter = createTRPCRouter({
             memory: 4096
         });
 
-        console.log(run)
-
         return run
     }),
 })
