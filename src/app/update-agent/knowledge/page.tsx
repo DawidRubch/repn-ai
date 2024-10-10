@@ -2,14 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import {
-  CreateAgentFormLayout,
-  UpdateAgentFormLayout,
-} from "../../../components/create-agent-form/FormLayout";
+import { UpdateAgentFormLayout } from "../../../components/create-agent-form/FormLayout";
 import { Knowledge } from "../../../components/create-agent-form/Knowledge";
+import { FullPageLoader } from "../../../components/FullPageLoader";
 import { KnowledgeForm, useAgentForm } from "../../../hooks/useAgentForm";
 import { trpc } from "../../../trpc/client";
-import { FullPageLoader } from "../../../components/FullPageLoader";
 
 export default function KnowledgePage() {
   const { knowledgeForm, setFormValues, nextStep, prevStep } = useAgentForm();

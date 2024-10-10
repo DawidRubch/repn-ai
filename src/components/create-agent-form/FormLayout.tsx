@@ -126,7 +126,7 @@ const FormLayoutComponent: React.FC<{
           disabled={isSettingUpAgent}
         >
           {isSettingUpAgent ? <Loader2 className="w-4 h-4 mr-2" /> : null}
-          {currentStep === "widget" ? "Create Agent" : "Next"}{" "}
+          {currentStep === "widget" ? `Finish` : "Next"}{" "}
           <ChevronRight className="ml-2 h-4 w-4" />
         </Button>
       </CardFooter>
