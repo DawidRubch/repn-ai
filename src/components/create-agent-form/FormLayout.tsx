@@ -34,8 +34,6 @@ export const FormLayout: React.FC<{
     onPrevStep();
   };
 
-  console.log(isSettingUpAgent);
-
   return (
     <Card className="w-full mx-auto bg-black text-white border-zinc-800">
       <CardHeader>
