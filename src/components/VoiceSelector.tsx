@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Control, useFormContext } from "react-hook-form";
 import { Pause, Play } from "lucide-react";
 import { IdentityForm } from "../hooks/useAgentForm";
+import { useEffect } from "react";
 
 const VOICESLIST = [
   {
@@ -71,7 +72,7 @@ export default function VoiceSelector() {
   const [isPlaying, setIsPlaying] = React.useState(false);
   const [currentVoice, setCurrentVoice] = React.useState<string | null>(null);
 
-  const { control } = useFormContext<IdentityForm>();
+  const { control, formState, watch } = useFormContext<IdentityForm>();
 
   const handlePlay = (url: string, voiceLabel: string) => {
     if (currentAudio) {
@@ -98,6 +99,8 @@ export default function VoiceSelector() {
     }
   };
 
+  const voice = watch("voice");
+
   return (
     <FormField
       control={control}
@@ -106,7 +109,14 @@ export default function VoiceSelector() {
         return (
           <FormItem className="space-y-1">
             <FormLabel>Voice</FormLabel>
-            <Select onValueChange={field.onChange} value={field.value}>
+            <Select
+              onValueChange={(val) => {
+                console.log("Value changed", val);
+                if (val === "") return;
+                field.onChange(val);
+              }}
+              value={voice}
+            >
               <FormControl>
                 <SelectTrigger className="bg-zinc-900 border-zinc-700 text-white">
                   <SelectValue placeholder="Select a voice" />

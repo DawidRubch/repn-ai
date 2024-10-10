@@ -18,7 +18,7 @@ export default function IdentityPage() {
 
   const avatar = identityForm.watch("avatar");
 
-  const { data, isLoading } = trpc.agent.getIdentity.useQuery(undefined);
+  const { data, isLoading } = trpc.agent.getIdentity.useQuery();
 
   const onSubmit = async (data: IdentityForm) => {
     if (data.avatar && !data.avatarURL) {
@@ -45,7 +45,7 @@ export default function IdentityPage() {
 
   useEffect(() => {
     if (data) {
-      console.log({ data });
+      console.log("Trigger data update");
       identityForm.reset({
         name: data.displayName,
         avatarURL: data.avatarPhotoUrl ?? undefined,
@@ -64,6 +64,12 @@ export default function IdentityPage() {
       });
     }
   }, [data]);
+
+  const voice = identityForm.watch("voice");
+
+  useEffect(() => {
+    console.log({ voice });
+  }, [voice]);
 
   if (!data || isLoading) {
     return <FullPageLoader />;
