@@ -12,8 +12,6 @@ export type NewUsers = typeof usersTable.$inferInsert;
 export const visibilityEnum = pgEnum('visibility', ['public', 'private']);
 export const positionEnum = pgEnum('position', ["left", "right", "center"]);
 
-
-
 export const agentsTable = pgTable('agents', {
     id: text('id').primaryKey(),
     userId: text('user_id').references(() => usersTable.id).notNull(),
