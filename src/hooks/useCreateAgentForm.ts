@@ -1,10 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { trpc } from "../trpc/client";
 import { isValidUrl } from "../utils/validateURL";
 import { useCreateAgentStore } from "./useCreateAgentStore";
-import { useMutation } from "@tanstack/react-query";
-import { trpc } from "../trpc/client";
 
 const identityFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -22,7 +21,6 @@ const behaviourFormSchema = z.object({
 
 export type BehaviourForm = z.infer<typeof behaviourFormSchema>;
 const knowledgeFormSchema = z.object({
-  files: z.array(z.instanceof(File)),
   websites: z.array(
     z.object({
       url: z
@@ -33,7 +31,7 @@ const knowledgeFormSchema = z.object({
         ),
     })
   ),
-  fileUrls: z.array(z.string()).optional(),
+  criticalKnowledge: z.string().optional(),
   onlyAnwserFromKnowledge: z.boolean().default(false),
 });
 
@@ -96,7 +94,7 @@ export const useCreateAgentForm = () => {
       description: identity.name,
       greeting: behaviour.greeting,
       prompt: behaviour.introduction,
-      criticalKnowledge: knowledge.fileUrls?.join("\n") || "",
+      criticalKnowledge: knowledge.criticalKnowledge || "",
       answerOnlyFromCriticalKnowledge: knowledge.onlyAnwserFromKnowledge,
       avatarPhotoUrl: identity.avatarURL,
       position: widget.position,

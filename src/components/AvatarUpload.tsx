@@ -203,7 +203,7 @@ export function AvatarUploadField({ form, name }: AvatarUploadFieldProps) {
               max={3}
               step={0.1}
               onValueChange={(value: number[]) => setZoom(value[0])}
-              className="w-64 "
+              className="w-64 border-white bg-white"
             />
           </div>
           <div className="flex justify-end space-x-2 mt-4">

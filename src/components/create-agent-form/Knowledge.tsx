@@ -1,9 +1,11 @@
-import {
-  KnowledgeForm,
-  useCreateAgentForm,
-} from "../../hooks/useCreateAgentForm";
 import { useState } from "react";
+import clsx from "clsx";
+import { X } from "lucide-react";
+import { UseFormReturn, useFieldArray } from "react-hook-form";
+import { KnowledgeForm } from "../../hooks/useCreateAgentForm";
+import { MultiFileUpload } from "../MultiFileUpload";
 import { Button } from "../ui/button";
+import { Checkbox } from "../ui/checkbox";
 import {
   Form,
   FormControl,
@@ -11,16 +13,13 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
-import { X } from "lucide-react";
-import { UseFormReturn, useFieldArray } from "react-hook-form";
-import { MultiFileUpload } from "../MultiFileUpload";
-import clsx from "clsx";
-import { Checkbox } from "../ui/checkbox";
+import { Textarea } from "../ui/textarea";
 
-export const Knowledge = ({ form }: { form: UseFormReturn<KnowledgeForm> }) => {
+const MAX_CHARACTERS = 30000;
+
+export function Knowledge({ form }: { form: UseFormReturn<KnowledgeForm> }) {
   const { fields, append, remove } = useFieldArray<KnowledgeForm>({
     control: form.control,
     name: "websites",
@@ -30,15 +29,35 @@ export const Knowledge = ({ form }: { form: UseFormReturn<KnowledgeForm> }) => {
     formState: { errors },
   } = form;
 
+  const [characterCount, setCharacterCount] = useState(0);
+
   return (
     <Form {...form}>
       <form className="space-y-8">
-        <MultiFileUpload
-          form={form}
-          name="files"
-          label="Custom Files"
-          description="Upload custom files for the agent to use"
+        <FormField
+          control={form.control}
+          name="criticalKnowledge"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Critical Knowledge</FormLabel>
+              <FormControl>
+                <Textarea
+                  rows={10}
+                  {...field}
+                  maxLength={MAX_CHARACTERS}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    setCharacterCount(e.target.value.length);
+                  }}
+                />
+              </FormControl>
+              <FormDescription className="text-right">
+                {characterCount}/{MAX_CHARACTERS} characters
+              </FormDescription>
+            </FormItem>
+          )}
         />
+
         <FormField
           control={form.control}
           name="websites"
@@ -48,11 +67,8 @@ export const Knowledge = ({ form }: { form: UseFormReturn<KnowledgeForm> }) => {
               <FormControl>
                 <div className="space-y-2">
                   {fields.map((field, index) => (
-                    <>
-                      <div
-                        key={field.id}
-                        className="flex items-center space-x-2"
-                      >
+                    <div key={field.id}>
+                      <div className="flex items-center space-x-2">
                         <Input
                           {...form.register(`websites.${index}.url`)}
                           placeholder="Enter website URL"
@@ -80,7 +96,7 @@ export const Knowledge = ({ form }: { form: UseFormReturn<KnowledgeForm> }) => {
                           {errors.websites[index].url?.message}
                         </p>
                       )}
-                    </>
+                    </div>
                   ))}
                   <Button
                     type="button"
@@ -122,4 +138,4 @@ export const Knowledge = ({ form }: { form: UseFormReturn<KnowledgeForm> }) => {
       </form>
     </Form>
   );
-};
+}

@@ -17,12 +17,6 @@ export default function KnowledgePage() {
   const { knowledgeForm, setFormValues, nextStep, prevStep } =
     useCreateAgentForm();
   const { push } = useRouter();
-  const { uploadFiles } = useUploadFiles();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const { mutateAsync: getOauthUrl } = trpc.calendar.oauth.useMutation();
-  const router = useRouter();
-
-  console.log(knowledgeForm.formState.errors);
 
   const onSubmit = (data: KnowledgeForm) => {
     setFormValues({ knowledge: data });
@@ -43,30 +37,12 @@ export default function KnowledgePage() {
     return () => subscription.unsubscribe();
   }, [knowledgeForm, setFormValues]);
 
-  const onIntegrateGoogleCal = async () => {
-    const files = knowledgeForm.getValues("files");
-    const fileUrls = await uploadFiles(files);
-
-    setFormValues({ knowledge: { ...knowledgeForm.getValues(), fileUrls } });
-
-    getOauthUrl().then((data) => {
-      router.push(data.url);
-    });
-  };
-
   return (
     <FormLayout
       onSubmit={knowledgeForm.handleSubmit(onSubmit)}
       onPrevStep={onPrevStep}
     >
       <Knowledge form={knowledgeForm} />
-      <CalendarIntegrationModal
-        isModalOpen={isModalOpen}
-        setIsModalOpen={setIsModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSkip={() => setIsModalOpen(false)}
-        onIntegrate={onIntegrateGoogleCal}
-      />
     </FormLayout>
   );
 }
