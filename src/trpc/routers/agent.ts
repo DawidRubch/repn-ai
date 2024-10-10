@@ -140,6 +140,8 @@ export const agentRouter = createTRPCRouter({
         return agent
 
     }),
+    updateAgent: protectedProcedutre.input(AgentSchema).mutation(async ({ ctx, input }) => { })
+
 })
 
 type AgentWithID = z.infer<typeof AgentSchema> & { id: string }
@@ -179,4 +181,34 @@ const createNewAgent = async (agent: CreateNewAgentInput): Promise<string> => {
     const data = await response.json() as AgentWithID
 
     return data.id
+}
+
+
+type UpdateAgentInput = {
+    id: string,
+    voice: string,
+    displayName: string,
+    description: string,
+    greeting: string,
+    prompt: string,
+}
+
+
+const updateAgent = async (agent: UpdateAgentInput): Promise<void> => {
+    const response = await fetch(`https://api.play.ai/api/v1/agents/${agent.id}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            'AUTHORIZATION': `${env.PLAY_AI_API_KEY}`,
+            'X-USER-ID': `${env.PLAY_AI_USER_ID}`,
+        },
+        body: JSON.stringify(agent)
+    })
+
+    if (!response.ok) {
+        throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: await response.json()
+        })
+    }
 }
