@@ -39,7 +39,6 @@ export const agentRouter = createTRPCRouter({
                 id: agentId,
                 userId: ctx.auth.userId,
                 displayName: input.displayName,
-                description: input.description,
                 greeting: input.greeting,
                 prompt: input.prompt,
                 criticalKnowledge: input.criticalKnowledge,
@@ -49,6 +48,7 @@ export const agentRouter = createTRPCRouter({
                 calendlyUrl: input.calendlyUrl,
                 position: input.position,
                 introMessage: input.introMessage,
+                voice: input.voice,
             }).returning()
 
             return agentId
@@ -75,6 +75,20 @@ export const agentRouter = createTRPCRouter({
             id: agent.id,
             name: agent.displayName
         }
+    }),
+    getIdentity: protectedProcedutre.query(async ({ ctx }) => {
+        const userID = ctx.auth.userId
+
+        const [agent] = await db.select().from(agentsTable).where(eq(agentsTable.userId, userID)).limit(1)
+
+        if (!agent) {
+            return null
+        }
+
+        return {
+
+        }
+
     })
 })
 

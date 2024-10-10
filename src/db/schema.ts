@@ -16,7 +16,6 @@ export const agentsTable = pgTable('agents', {
     id: text('id').primaryKey(),
     userId: text('user_id').references(() => usersTable.id).notNull(),
     displayName: text('display_name').notNull(),
-    description: text('description').notNull(),
     greeting: text('greeting').notNull(),
     prompt: text('prompt').notNull(),
     criticalKnowledge: text('critical_knowledge').notNull(),
@@ -26,6 +25,7 @@ export const agentsTable = pgTable('agents', {
     position: positionEnum('position').notNull().default("right"),
     introMessage: text('intro_message'),
     calendlyUrl: text('calendly_url'),
+    voice: text('voice').notNull(),
 })
 
 export type Agents = typeof agentsTable.$inferSelect;
