@@ -13,7 +13,7 @@ import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useAgentForm } from "../../hooks/useAgentForm";
-import { AGENT_STEPS, AgentStep } from "../../hooks/useCreateAgentStore";
+import { AGENT_STEPS, AgentStep } from "../../hooks/useAgentStore";
 
 export const CreateAgentFormLayout: React.FC<{
   children: React.ReactNode;

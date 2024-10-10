@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { trpc } from "../trpc/client";
 import { isValidUrl } from "../utils/validateURL";
-import { useAgentFormStore } from "./useCreateAgentStore";
+import { useAgentFormStore } from "./useAgentStore";
 import { useState } from "react";
 
 const identityFormSchema = z.object({

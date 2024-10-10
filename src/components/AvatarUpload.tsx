@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Upload } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
-import { useCreateAgentStore } from "../hooks/useCreateAgentStore";
+import { useCreateAgentStore } from "../hooks/useAgentStore";
 import Cropper, { Area } from "react-easy-crop";
 import {
   Dialog,
