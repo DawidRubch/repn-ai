@@ -24,6 +24,8 @@ export default function IdentityPage() {
     if (data.avatar && !data.avatarURL) {
       const avatarURL = await uploadAvatar(data.avatar);
       setFormValues({ identity: { ...data, avatarURL } });
+    } else {
+      setFormValues({ identity: data });
     }
     nextStep();
 

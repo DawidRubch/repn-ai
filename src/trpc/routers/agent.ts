@@ -88,7 +88,10 @@ const createNewAgent = async (agent: CreateNewAgentInput): Promise<string> => {
     })
 
     if (!response.ok) {
-        throw new Error('Failed to create agent')
+        throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: await response.json()
+        })
     }
 
     const data = await response.json() as AgentWithID

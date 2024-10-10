@@ -90,7 +90,6 @@ export const useCreateAgentForm = () => {
     const knowledge = knowledgeForm.getValues();
     const widget = widgetForm.getValues();
 
-
     const agent = await createAgentMutation({
       voice: identity.voice,
       displayName: identity.name,
