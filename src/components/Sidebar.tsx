@@ -1,4 +1,10 @@
-import { CreditCard, PlusCircle, Users, Zap } from "lucide-react";
+import {
+  CreditCard,
+  MessageSquare,
+  PlusCircle,
+  Users,
+  Zap,
+} from "lucide-react";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
@@ -23,12 +29,13 @@ export const Sidebar = () => {
           </Button>
         </Link>
 
-        <Link href="/actions" passHref>
-          <Button variant="ghost" className="w-full justify-start bg-zinc-800">
-            <Zap className="mr-2 h-4 w-4" />
-            Actions
+        <Link href="/conversations" passHref>
+          <Button variant="ghost" className="w-full justify-start">
+            <MessageSquare className="mr-2 h-4 w-4" />
+            Conversations
           </Button>
         </Link>
+
         <Link href="/billing" passHref>
           <Button variant="ghost" className="w-full justify-start">
             <CreditCard className="mr-2 h-4 w-4" />
