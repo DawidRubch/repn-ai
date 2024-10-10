@@ -6,7 +6,6 @@ import { trpc } from "../trpc/client";
 
 export function DashboardComponent() {
   const { push } = useRouter();
-  const { data } = trpc.agent.getAgent.useQuery();
 
   return (
     <div className="flex-1 flex">

@@ -71,7 +71,10 @@ export const agentRouter = createTRPCRouter({
             return null
         }
 
-        return agent.id
+        return {
+            id: agent.id,
+            name: agent.displayName
+        }
     })
 })
 
