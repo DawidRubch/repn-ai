@@ -8,6 +8,7 @@ import {
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
+import { trpc } from "../trpc/server";
 
 export const Sidebar = () => {
   return (

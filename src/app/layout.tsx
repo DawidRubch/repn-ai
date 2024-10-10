@@ -4,6 +4,7 @@ import "./globals.css";
 import { Sidebar } from "../components/Sidebar";
 import { TRPCProvider } from "../trpc/client";
 import { ClerkProvider } from "@clerk/nextjs";
+import { AgentGlobalPrefetch } from "../context/AgentGlobalPrefetch";
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -42,9 +43,11 @@ export default function RootLayout({
 
 const PageLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <main className="flex h-screen bg-black text-white">
-      <Sidebar />
-      {children}
-    </main>
+    <AgentGlobalPrefetch>
+      <main className="flex h-screen bg-black text-white">
+        <Sidebar />
+        {children}
+      </main>
+    </AgentGlobalPrefetch>
   );
 };

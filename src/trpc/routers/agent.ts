@@ -3,6 +3,8 @@ import { createTRPCRouter, protectedProcedutre } from "../init"
 import { env } from "../../env"
 import { agentsTable } from "../../db/schema"
 import { TRPCError } from "@trpc/server"
+import { eq } from "drizzle-orm"
+import { db } from "../../db"
 
 const AgentSchema = z.object({
     displayName: z.string(),
@@ -59,7 +61,18 @@ export const agentRouter = createTRPCRouter({
         }
     }),
 
+    getAgent: protectedProcedutre.query(async ({ ctx }) => {
 
+        const userID = ctx.auth.userId
+
+        const [agent] = await db.select().from(agentsTable).where(eq(agentsTable.userId, userID)).limit(1)
+
+        if (!agent) {
+            return null
+        }
+
+        return agent.id
+    })
 })
 
 type AgentWithID = z.infer<typeof AgentSchema> & { id: string }
