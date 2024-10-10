@@ -23,9 +23,10 @@ export const agentsTable = pgTable('agents', {
     answerOnlyFromCriticalKnowledge: boolean('answer_only_from_critical_knowledge').notNull(),
     avatarPhotoUrl: text('avatar_photo_url'),
     position: positionEnum('position').notNull().default("right"),
-    introMessage: text('intro_message'),
+    introMessage: text('intro_message '),
     calendlyUrl: text('calendly_url'),
     voice: text('voice').notNull(),
+    websites: text('websites').array()
 })
 
 export type Agents = typeof agentsTable.$inferSelect;
