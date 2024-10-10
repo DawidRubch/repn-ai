@@ -86,7 +86,9 @@ export const agentRouter = createTRPCRouter({
         }
 
         return {
-
+            voice: agent.voice,
+            displayName: agent.displayName,
+            avatarPhotoUrl: agent.avatarPhotoUrl,
         }
 
     })
