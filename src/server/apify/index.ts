@@ -9,7 +9,7 @@ export const client = new ApifyClient({
 export const getApifyInput = (urls: string[]) => {
     return {
         "startUrls": urls.map(url => ({ "url": url })),
-        "useSitemaps": true,
+        "useSitemaps": false,
         "crawlerType": "playwright:adaptive",
         "includeUrlGlobs": [],
         "excludeUrlGlobs": [],
@@ -17,8 +17,7 @@ export const getApifyInput = (urls: string[]) => {
         "ignoreCanonicalUrl": false,
         "maxCrawlDepth": 2,
         "maxCrawlPages": 100,
-        "initialConcurrency": 20,
-        "maxConcurrency": 200,
+        "initialConcurrency": 0,
         "initialCookies": [],
         "proxyConfiguration": {
             "useApifyProxy": true

@@ -18,14 +18,18 @@ type CreateAgentStore = {
   prevStep: () => void;
   formValues: CreateAgentForm;
   setFormValues: (values: Partial<CreateAgentForm>) => void;
-  setAvatarPreview: (avatar: string) => void;
+  setAvatarPreview: (avatar: string | null) => void;
   avatarPreview: string | null;
+  agentId: string | null;
+  setAgentId: (id: string) => void;
 };
+
 const DEFAULT_FORM_VALUES: CreateAgentForm = {
   identity: {
     name: "",
     voice: "",
     avatar: null,
+    avatarURL: undefined,
   },
   behaviour: {
     greeting: "",
@@ -67,6 +71,8 @@ export const useCreateAgentStore = create<CreateAgentStore>()(
         set((state) => ({ formValues: { ...state.formValues, ...values } })),
       setAvatarPreview: (avatar) => set({ avatarPreview: avatar }),
       avatarPreview: null,
+      agentId: null,
+      setAgentId: (id) => set({ agentId: id }),
     }),
     {
       name: "create-agent-storage",

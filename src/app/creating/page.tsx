@@ -24,15 +24,16 @@ export const useWebsiteScraping = () => {
   const websiteURLS = useCreateAgentStore(
     (store) => store.formValues.knowledge.websites
   );
+  const agentId = useCreateAgentStore((store) => store.agentId);
 
   const { mutateAsync, isPending } = trpc.scrape.scrapeWebsite.useMutation();
 
   const isScraping = websiteURLS.length > 0;
 
   useEffect(() => {
-    if (isScraping) {
+    if (isScraping && agentId) {
       const urls = websiteURLS.map((url) => url.url);
-      mutateAsync({ urls, agentId: "123" });
+      mutateAsync({ urls, agentId });
     }
   }, [isScraping]);
 

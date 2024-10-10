@@ -15,11 +15,15 @@ export const scrapeRouter = createTRPCRouter({
             webhooks: [{
                 eventTypes: ["ACTOR.RUN.SUCCEEDED"],
                 requestUrl: env.APIFY_WEBHOOK_URL,
-                payloadTemplate: `{"agentId": "${agentId}","resource":{{resource}}}`
-            }]
+                payloadTemplate: `{"agentId": "${agentId}","userId":"${ctx.auth.userId}", "resource":{{resource}}}`
+            }],
+            waitSecs: 3,
+            memory: 4096
         });
 
-        return run;
+        console.log(run)
+
+        return run
     }),
 })
 

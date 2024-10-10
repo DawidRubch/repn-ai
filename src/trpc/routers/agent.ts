@@ -47,7 +47,7 @@ export const agentRouter = createTRPCRouter({
                 calendlyUrl: input.calendlyUrl,
                 position: input.position,
                 introMessage: input.introMessage,
-            })
+            }).returning()
 
             return agentId
         } catch (error) {

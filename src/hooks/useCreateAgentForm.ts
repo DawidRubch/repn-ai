@@ -58,7 +58,7 @@ const createAgentFormSchema = z.object({
 export type CreateAgentForm = z.infer<typeof createAgentFormSchema>;
 
 export const useCreateAgentForm = () => {
-  const { createAgentStep, nextStep, prevStep, setFormValues, formValues } =
+  const { createAgentStep, nextStep, prevStep, setFormValues, formValues, setAgentId } =
     useCreateAgentStore();
   const [isCreatingAgent, setIsCreatingAgent] = useState(false)
 
@@ -85,7 +85,6 @@ export const useCreateAgentForm = () => {
   });
 
   const createAgent = async () => {
-    console.log(identityForm.formState.errors)
     setIsCreatingAgent(true)
     try {
       const identity = identityForm.getValues();
@@ -93,7 +92,7 @@ export const useCreateAgentForm = () => {
       const knowledge = knowledgeForm.getValues();
       const widget = widgetForm.getValues();
 
-      const agent = await createAgentMutation({
+      const agentID = await createAgentMutation({
         voice: identity.voice,
         displayName: identity.name,
         description: identity.name,
@@ -108,7 +107,10 @@ export const useCreateAgentForm = () => {
       })
 
       setIsCreatingAgent(false)
-      return agent;
+
+      setAgentId(agentID)
+
+      return agentID;
     } catch (error) {
       console.error(error);
       setIsCreatingAgent(false);
