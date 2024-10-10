@@ -3,7 +3,7 @@ import { createTRPCRouter, protectedProcedutre } from "../init"
 import { env } from "../../env"
 import { agentsTable } from "../../db/schema"
 import { TRPCError } from "@trpc/server"
-import { eq } from "drizzle-orm"
+import { and, eq } from "drizzle-orm"
 import { db } from "../../db"
 
 const AgentSchema = z.object({
@@ -18,7 +18,14 @@ const AgentSchema = z.object({
     introMessage: z.string().optional(),
     calendlyUrl: z.string().nullable(),
     voice: z.string(),
+    websites: z.array(z.string()).optional(),
 })
+
+const AgentSchemaWithID = AgentSchema.extend({
+    id: z.string(),
+})
+
+
 
 export const agentRouter = createTRPCRouter({
     createAgent: protectedProcedutre.input(AgentSchema).mutation(async ({ ctx, input }) => {
@@ -140,9 +147,38 @@ export const agentRouter = createTRPCRouter({
         return agent
 
     }),
-    updateAgent: protectedProcedutre.input(AgentSchema).mutation(async ({ ctx, input }) => { })
+    updateAgent: protectedProcedutre.input(AgentSchemaWithID).mutation(async ({ ctx, input }) => {
+        const userID = ctx.auth.userId
+
+        await updateAgent({
+            id: input.id,
+            voice: input.voice,
+            displayName: input.displayName,
+            description: input.description,
+            greeting: input.greeting,
+            prompt: input.prompt,
+        })
+
+        await db.update(agentsTable).set({
+            voice: input.voice,
+            displayName: input.displayName,
+            greeting: input.greeting,
+            prompt: input.prompt,
+            answerOnlyFromCriticalKnowledge: input.answerOnlyFromCriticalKnowledge,
+            criticalKnowledge: input.criticalKnowledge,
+            introMessage: input.introMessage,
+            position: input.position,
+            calendlyUrl: input.calendlyUrl,
+            avatarPhotoUrl: input.avatarPhotoUrl,
+            websites: input.websites,
+        }).where(and(eq(agentsTable.userId, userID), eq(agentsTable.id, input.id)))
+
+        return input.id
+    })
 
 })
+
+
 
 type AgentWithID = z.infer<typeof AgentSchema> & { id: string }
 
