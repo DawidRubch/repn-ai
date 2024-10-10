@@ -1,3 +1,4 @@
+"use client";
 import {
   CreditCard,
   MessageSquare,
@@ -8,9 +9,10 @@ import {
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
-import { trpc } from "../trpc/server";
+import { trpc } from "../trpc/client";
 
 export const Sidebar = () => {
+  const { data } = trpc.agent.getAgent.useQuery();
   return (
     <div className="w-64 bg-zinc-900 p-4 flex flex-col">
       <div className="mb-8">
@@ -23,12 +25,7 @@ export const Sidebar = () => {
         </svg>
       </div>
       <nav className="space-y-2 flex-1">
-        <Link href="/create-agent" passHref>
-          <Button variant="ghost" className="w-full justify-start">
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Create Agent
-          </Button>
-        </Link>
+        <AgentComponent />
 
         <Link href="/conversations" passHref>
           <Button variant="ghost" className="w-full justify-start">
@@ -46,5 +43,31 @@ export const Sidebar = () => {
       </nav>
       <UserButton />
     </div>
+  );
+};
+
+const AgentComponent = () => {
+  const { data, isLoading } = trpc.agent.getAgent.useQuery();
+
+  if (isLoading || data === undefined) return <>Loading...</>;
+
+  if (data === null) {
+    return (
+      <Link href="/create-agent" passHref>
+        <Button variant="ghost" className="w-full justify-start">
+          <PlusCircle className="mr-2 h-4 w-4" />
+          Create Agent
+        </Button>
+      </Link>
+    );
+  }
+
+  return (
+    <Link href="/update-agent" passHref>
+      <Button variant="ghost" className="w-full justify-start">
+        <PlusCircle className="mr-2 h-4 w-4" />
+        Update Agent
+      </Button>
+    </Link>
   );
 };

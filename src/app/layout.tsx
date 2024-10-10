@@ -3,8 +3,8 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Sidebar } from "../components/Sidebar";
 import { TRPCProvider } from "../trpc/client";
-import { ClerkProvider } from "@clerk/nextjs";
-import { AgentGlobalPrefetch } from "../context/AgentGlobalPrefetch";
+import { ClerkProvider, SignedIn, SignedOut } from "@clerk/nextjs";
+import { AuthenticatedLayout } from "../layouts/AuthenticatedLayout";
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -33,7 +33,12 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} antialiased `}
         >
           <TRPCProvider>
-            <PageLayout>{children}</PageLayout>
+            <SignedIn>
+              <AuthenticatedLayout>{children}</AuthenticatedLayout>
+            </SignedIn>
+            <SignedOut>
+              <UnAuthenticatedLayout>{children}</UnAuthenticatedLayout>
+            </SignedOut>
           </TRPCProvider>
         </body>
       </html>
@@ -41,13 +46,8 @@ export default function RootLayout({
   );
 }
 
-const PageLayout = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <AgentGlobalPrefetch>
-      <main className="flex h-screen bg-black text-white">
-        <Sidebar />
-        {children}
-      </main>
-    </AgentGlobalPrefetch>
-  );
+const UnAuthenticatedLayout: React.FC<{
+  children: React.ReactNode;
+}> = ({ children }) => {
+  return <main className="flex h-screen bg-black text-white">{children}</main>;
 };

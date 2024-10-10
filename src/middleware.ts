@@ -9,6 +9,8 @@ export default clerkMiddleware((auth, request) => {
     if (!isPublicRoute(request)) {
         auth().protect()
     }
+
+
 });
 
 export const config = {
