@@ -16,8 +16,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Control } from "react-hook-form";
+import { Control, useFormContext } from "react-hook-form";
 import { Pause, Play } from "lucide-react";
+import { IdentityForm } from "../hooks/useAgentForm";
 
 const VOICESLIST = [
   {
@@ -63,15 +64,14 @@ const VOICESLIST = [
       "https://peregrine-samples.s3.amazonaws.com/parrot-samples/jennifer.wav",
   },
 ];
-interface VoiceSelectorProps {
-  control: Control<any>;
-  name: string;
-}
-export default function VoiceSelector({ control, name }: VoiceSelectorProps) {
+
+export default function VoiceSelector() {
   const [currentAudio, setCurrentAudio] =
     React.useState<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = React.useState(false);
   const [currentVoice, setCurrentVoice] = React.useState<string | null>(null);
+
+  const { control } = useFormContext<IdentityForm>();
 
   const handlePlay = (url: string, voiceLabel: string) => {
     if (currentAudio) {
@@ -98,63 +98,65 @@ export default function VoiceSelector({ control, name }: VoiceSelectorProps) {
     }
   };
 
-  console.log("currentVoice", currentVoice);
-
   return (
     <FormField
       control={control}
-      name={name}
-      render={({ field }) => (
-        <FormItem className="space-y-1">
-          <FormLabel>Voice</FormLabel>
-          <Select onValueChange={field.onChange} value={field.value}>
-            <FormControl>
-              <SelectTrigger className="bg-zinc-900 border-zinc-700 text-white">
-                <SelectValue placeholder="Select a voice" />
-              </SelectTrigger>
-            </FormControl>
-            <SelectContent className="bg-white border-zinc-700">
-              {VOICESLIST.map((voice) => (
-                <div className="flex items-center justify-between  cursor-pointer relative">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="ml-2 text-xs"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      if (isPlaying && currentVoice === voice.label) {
-                        handleStop();
-                      } else {
-                        handlePlay(voice.audioPreviewURL, voice.label);
-                      }
-                    }}
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                  >
-                    {isPlaying && currentVoice === voice.label ? (
-                      <Pause />
-                    ) : (
-                      <Play />
-                    )}
-                  </Button>
-                  <SelectItem
+      name={"voice"}
+      render={({ field }) => {
+        return (
+          <FormItem className="space-y-1">
+            <FormLabel>Voice</FormLabel>
+            <Select onValueChange={field.onChange} value={field.value}>
+              <FormControl>
+                <SelectTrigger className="bg-zinc-900 border-zinc-700 text-white">
+                  <SelectValue placeholder="Select a voice" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent className="bg-white border-zinc-700">
+                {VOICESLIST.map((voice) => (
+                  <div
                     key={voice.value}
-                    value={voice.value}
                     className="flex items-center justify-between cursor-pointer relative"
                   >
-                    <span>{voice.label}</span>
-                  </SelectItem>
-                </div>
-              ))}
-            </SelectContent>
-          </Select>
-          <FormMessage />
-        </FormItem>
-      )}
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="ml-2 text-xs"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (isPlaying && currentVoice === voice.label) {
+                          handleStop();
+                        } else {
+                          handlePlay(voice.audioPreviewURL, voice.label);
+                        }
+                      }}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                    >
+                      {isPlaying && currentVoice === voice.label ? (
+                        <Pause />
+                      ) : (
+                        <Play />
+                      )}
+                    </Button>
+                    <SelectItem
+                      value={voice.value}
+                      className="flex items-center justify-between cursor-pointer relative"
+                    >
+                      <span>{voice.label}</span>
+                    </SelectItem>
+                  </div>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        );
+      }}
     />
   );
 }

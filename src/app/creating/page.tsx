@@ -59,12 +59,13 @@ const CreatingComponent: React.FC<{
   isWebsiteScraping: boolean;
 }> = ({ isWebsiteScraping }) => {
   const [loadingState, setLoadingState] = useState<LoadingState>("website");
+  const store = useAgentFormStore();
 
   useEffect(() => {
     if (isWebsiteScraping) {
       setLoadingState("website");
     } else {
-      setLoadingState("success");
+      store.resetStore();
     }
   }, [isWebsiteScraping]);
 

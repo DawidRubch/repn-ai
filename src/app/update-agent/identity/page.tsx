@@ -1,17 +1,18 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { CreateAgentFormLayout } from "../../../components/create-agent-form/FormLayout";
-import { Identity } from "../../../components/create-agent-form/Identity";
-import { IdentityForm, useAgentForm } from "../../../hooks/useAgentForm";
-import { usePreventReload } from "../../../hooks/usePreventReload";
-import { useUploadFiles } from "../../../hooks/useUploadFiles";
 import { useEffect } from "react";
-import { trpc } from "../../../trpc/client";
+import { UpdateAgentFormLayout } from "../../../components/create-agent-form/FormLayout";
+import { Identity } from "../../../components/create-agent-form/Identity";
 import { FullPageLoader } from "../../../components/FullPageLoader";
+import { IdentityForm, useAgentForm } from "../../../hooks/useAgentForm";
+import { useAgentFormStore } from "../../../hooks/useAgentStore";
+import { useUploadFiles } from "../../../hooks/useUploadFiles";
+import { trpc } from "../../../trpc/client";
 
 export default function IdentityPage() {
   const { identityForm, setFormValues, nextStep, prevStep } = useAgentForm();
+  const setAvatarPreview = useAgentFormStore((state) => state.setAvatarPreview);
   const { push } = useRouter();
   const { uploadAvatar } = useUploadFiles();
 
@@ -28,12 +29,12 @@ export default function IdentityPage() {
     }
     nextStep();
 
-    push("/create-agent/behaviour");
+    push("/update-agent/behaviour");
   };
 
   const onPrevStep = () => {
     prevStep();
-    push("/create-agent/knowledge");
+    push("/update-agent/knowledge");
   };
 
   useEffect(() => {
@@ -44,9 +45,23 @@ export default function IdentityPage() {
 
   useEffect(() => {
     if (data) {
-      identityForm.setValue("name", data.displayName);
-      identityForm.setValue("avatarURL", data.avatarPhotoUrl ?? undefined);
-      identityForm.setValue("voice", data.voice);
+      console.log({ data });
+      identityForm.reset({
+        name: data.displayName,
+        avatarURL: data.avatarPhotoUrl ?? undefined,
+        voice: data.voice,
+        avatar: null,
+      });
+
+      setAvatarPreview(data.avatarPhotoUrl);
+      setFormValues({
+        identity: {
+          name: data.displayName,
+          avatarURL: data.avatarPhotoUrl ?? undefined,
+          voice: data.voice,
+          avatar: null,
+        },
+      });
     }
   }, [data]);
 
@@ -55,11 +70,11 @@ export default function IdentityPage() {
   }
 
   return (
-    <CreateAgentFormLayout
+    <UpdateAgentFormLayout
       onSubmit={identityForm.handleSubmit(onSubmit)}
       onPrevStep={onPrevStep}
     >
       <Identity form={identityForm} />
-    </CreateAgentFormLayout>
+    </UpdateAgentFormLayout>
   );
 }

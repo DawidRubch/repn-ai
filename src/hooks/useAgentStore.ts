@@ -24,6 +24,7 @@ type AgentFormStore = {
   setAgentId: (id: string) => void;
   apifyRunId: string | null;
   setApifyRunId: (id: string) => void;
+  resetStore: () => void;
 };
 
 const DEFAULT_FORM_VALUES: AgentForm = {
@@ -77,6 +78,13 @@ export const useAgentFormStore = create<AgentFormStore>()(
       setAgentId: (id) => set({ agentId: id }),
       apifyRunId: null,
       setApifyRunId: (id) => set({ apifyRunId: id }),
+      resetStore: () => set({
+        agentFormStep: AGENT_STEPS[0],
+        formValues: DEFAULT_FORM_VALUES,
+        avatarPreview: null,
+        agentId: null,
+        apifyRunId: null,
+      }),
     }),
     {
       name: "agent-form-storage",

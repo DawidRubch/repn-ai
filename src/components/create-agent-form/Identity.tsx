@@ -1,6 +1,6 @@
 "use client";
 
-import { UseFormReturn } from "react-hook-form";
+import { FormProvider, UseFormReturn } from "react-hook-form";
 import { IdentityForm } from "../../hooks/useAgentForm";
 import { AvatarUploadField } from "../AvatarUpload";
 import {
@@ -16,7 +16,7 @@ import VoiceSelector from "../VoiceSelector";
 
 export const Identity = ({ form }: { form: UseFormReturn<IdentityForm> }) => {
   return (
-    <Form {...form}>
+    <FormProvider {...form}>
       <form className="space-y-8">
         <FormField
           control={form.control}
@@ -35,9 +35,9 @@ export const Identity = ({ form }: { form: UseFormReturn<IdentityForm> }) => {
             </FormItem>
           )}
         />
-        <VoiceSelector control={form.control} name="voice" />
+        <VoiceSelector />
         <AvatarUploadField form={form} name="avatar" />
       </form>
-    </Form>
+    </FormProvider>
   );
 };
