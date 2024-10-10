@@ -21,24 +21,35 @@ export default function CreatingPage() {
 }
 
 export const useWebsiteScraping = () => {
-  const websiteURLS = useCreateAgentStore(
-    (store) => store.formValues.knowledge.websites
-  );
-  const agentId = useCreateAgentStore((store) => store.agentId);
+  const runId = useCreateAgentStore((store) => store.apifyRunId);
 
-  const { mutateAsync, isPending } = trpc.scrape.scrapeWebsite.useMutation();
+  const { data: runStatus } = trpc.scrape.statusPolling.useQuery(
+    {
+      runId: runId || "",
+    },
+    {
+      enabled: !!runId,
+      refetchInterval: (data) => {
+        if (!data.state.data) {
+          return 1000;
+        }
 
-  const isScraping = websiteURLS.length > 0;
-
-  useEffect(() => {
-    if (isScraping && agentId) {
-      const urls = websiteURLS.map((url) => url.url);
-      mutateAsync({ urls, agentId });
+        // Refetch every second if status is not 'completed' or 'failed'
+        return data.state.data === "RUNNING" ? 1000 : false;
+      },
+      refetchIntervalInBackground: true,
+      staleTime: Infinity, // Consider the data fresh indefinitely
     }
-  }, [isScraping]);
+  );
+
+  if (!runId) {
+    return {
+      isWebsiteScraping: false,
+    };
+  }
 
   return {
-    isWebsiteScraping: isScraping,
+    isWebsiteScraping: runStatus === "RUNNING" || runStatus === undefined,
   };
 };
 

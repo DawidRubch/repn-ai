@@ -58,11 +58,12 @@ const createAgentFormSchema = z.object({
 export type CreateAgentForm = z.infer<typeof createAgentFormSchema>;
 
 export const useCreateAgentForm = () => {
-  const { createAgentStep, nextStep, prevStep, setFormValues, formValues, setAgentId } =
+  const { createAgentStep, nextStep, prevStep, setFormValues, formValues, setAgentId, setApifyRunId } =
     useCreateAgentStore();
   const [isCreatingAgent, setIsCreatingAgent] = useState(false)
 
-  const { mutateAsync: createAgentMutation } = trpc.agent.createAgent.useMutation()
+  const { mutateAsync: createAgentMutation, isPending: isAgentCreating } = trpc.agent.createAgent.useMutation()
+  const { mutateAsync: scrapeWebsite, isPending: isScrapingWebsite, } = trpc.scrape.scrapeWebsite.useMutation()
 
   const identityForm = useForm<IdentityForm>({
     resolver: zodResolver(identityFormSchema),
@@ -106,6 +107,12 @@ export const useCreateAgentForm = () => {
         calendlyUrl: widget.calendlyURL || null,
       })
 
+      if (knowledge.websites.length > 0) {
+        const urls = knowledge.websites.map((website) => website.url);
+        const apifyRunId = await scrapeWebsite({ urls, agentId: agentID });
+        setApifyRunId(apifyRunId);
+      }
+
       setIsCreatingAgent(false)
 
       setAgentId(agentID)
@@ -128,7 +135,7 @@ export const useCreateAgentForm = () => {
     formValues,
     createAgent,
     widgetForm,
-    isCreatingAgent
+    isSettingUpAgent: isCreatingAgent || isAgentCreating || isScrapingWebsite,
   };
 };
 

@@ -1,5 +1,6 @@
 import { ApifyClient } from "apify-client";
 import { env } from "../../env";
+import { run } from "node:test";
 
 export const client = new ApifyClient({
     token: env.APIFY_TOKEN,
@@ -64,7 +65,8 @@ export const getDataFromApify = async (actorRunId: string) => {
 
 
 export const getApifyRunStatus = async (actorRunId: string) => {
-    const run = await client.run(actorRunId).get();
+    const run = await client.run(actorRunId).get()
+
     return run?.status
 }
 

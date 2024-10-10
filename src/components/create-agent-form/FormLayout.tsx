@@ -20,7 +20,7 @@ export const FormLayout: React.FC<{
   onSubmit: () => void;
   onPrevStep: () => void;
 }> = ({ children, onSubmit, onPrevStep }) => {
-  const { createAgentStep, isCreatingAgent } = useCreateAgentForm();
+  const { createAgentStep, isSettingUpAgent } = useCreateAgentForm();
   const router = useRouter();
   const pathName = usePathname();
 
@@ -33,6 +33,8 @@ export const FormLayout: React.FC<{
   const handlePrevStep = () => {
     onPrevStep();
   };
+
+  console.log(isSettingUpAgent);
 
   return (
     <Card className="w-full mx-auto bg-black text-white border-zinc-800">
@@ -77,9 +79,9 @@ export const FormLayout: React.FC<{
         <Button
           onClick={onSubmit}
           className="bg-blue-600 text-white hover:bg-blue-700"
-          disabled={isCreatingAgent}
+          disabled={isSettingUpAgent}
         >
-          {isCreatingAgent ? <Loader2 className="w-4 h-4 mr-2" /> : null}
+          {isSettingUpAgent ? <Loader2 className="w-4 h-4 mr-2" /> : null}
           {createAgentStep === "widget" ? "Create Agent" : "Next"}{" "}
           <ChevronRight className="ml-2 h-4 w-4" />
         </Button>

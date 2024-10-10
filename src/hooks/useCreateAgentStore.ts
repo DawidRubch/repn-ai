@@ -22,6 +22,8 @@ type CreateAgentStore = {
   avatarPreview: string | null;
   agentId: string | null;
   setAgentId: (id: string) => void;
+  apifyRunId: string | null;
+  setApifyRunId: (id: string) => void;
 };
 
 const DEFAULT_FORM_VALUES: CreateAgentForm = {
@@ -73,6 +75,8 @@ export const useCreateAgentStore = create<CreateAgentStore>()(
       avatarPreview: null,
       agentId: null,
       setAgentId: (id) => set({ agentId: id }),
+      apifyRunId: null,
+      setApifyRunId: (id) => set({ apifyRunId: id }),
     }),
     {
       name: "create-agent-storage",
