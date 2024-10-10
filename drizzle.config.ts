@@ -1,6 +1,7 @@
 
 import { defineConfig } from 'drizzle-kit'
 import { config } from 'dotenv';
+import { env } from './src/env';
 
 config({ path: '.env.local' });
 
@@ -13,6 +14,6 @@ export default defineConfig({
         prefix: 'supabase'
     },
     dbCredentials: {
-        url: process.env.DB_URL as string
+        url: env.DB_DRIZZLE_URL as string
     }
 })
