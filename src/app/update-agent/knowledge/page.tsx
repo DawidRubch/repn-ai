@@ -6,6 +6,7 @@ import { CreateAgentFormLayout } from "../../../components/create-agent-form/For
 import { Knowledge } from "../../../components/create-agent-form/Knowledge";
 import { KnowledgeForm, useAgentForm } from "../../../hooks/useAgentForm";
 import { trpc } from "../../../trpc/client";
+import { FullPageLoader } from "../../../components/FullPageLoader";
 
 export default function KnowledgePage() {
   const { knowledgeForm, setFormValues, nextStep, prevStep } = useAgentForm();
@@ -40,6 +41,8 @@ export default function KnowledgePage() {
       });
     }
   }, [data]);
+
+  if (isLoading) return <FullPageLoader />;
 
   return (
     <CreateAgentFormLayout
