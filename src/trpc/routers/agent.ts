@@ -79,18 +79,32 @@ export const agentRouter = createTRPCRouter({
     getIdentity: protectedProcedutre.query(async ({ ctx }) => {
         const userID = ctx.auth.userId
 
-        const [agent] = await db.select().from(agentsTable).where(eq(agentsTable.userId, userID)).limit(1)
+        const [agent] = await db.select({
+            voice: agentsTable.voice,
+            displayName: agentsTable.displayName,
+            avatarPhotoUrl: agentsTable.avatarPhotoUrl,
+        }).from(agentsTable).where(eq(agentsTable.userId, userID)).limit(1)
 
         if (!agent) {
             return null
         }
 
-        return {
-            voice: agent.voice,
-            displayName: agent.displayName,
-            avatarPhotoUrl: agent.avatarPhotoUrl,
+        return agent
+
+    }),
+    getBehaviour: protectedProcedutre.query(async ({ ctx }) => {
+        const userID = ctx.auth.userId
+
+        const [agent] = await db.select({
+            greeting: agentsTable.greeting,
+            instructions: agentsTable.prompt,
+        }).from(agentsTable).where(eq(agentsTable.userId, userID)).limit(1)
+
+        if (!agent) {
+            return null
         }
 
+        return agent
     })
 })
 

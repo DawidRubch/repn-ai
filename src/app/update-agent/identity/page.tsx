@@ -45,7 +45,6 @@ export default function IdentityPage() {
 
   useEffect(() => {
     if (data) {
-      console.log("Trigger data update");
       identityForm.reset({
         name: data.displayName,
         avatarURL: data.avatarPhotoUrl ?? undefined,

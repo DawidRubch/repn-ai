@@ -111,7 +111,6 @@ export default function VoiceSelector() {
             <FormLabel>Voice</FormLabel>
             <Select
               onValueChange={(val) => {
-                console.log("Value changed", val);
                 if (val === "") return;
                 field.onChange(val);
               }}
