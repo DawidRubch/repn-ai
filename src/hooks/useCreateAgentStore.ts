@@ -32,9 +32,9 @@ const DEFAULT_FORM_VALUES: CreateAgentForm = {
     introduction: "",
   },
   knowledge: {
-    files: [],
     websites: [],
     onlyAnwserFromKnowledge: false,
+    criticalKnowledge: "",
   },
   widget: {
     calendlyURL: null,

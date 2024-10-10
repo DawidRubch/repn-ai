@@ -1,17 +1,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { CalendarIntegrationModal } from "../../../components/create-agent-form/CalendarIntegrationModal";
+import { useEffect } from "react";
 import { FormLayout } from "../../../components/create-agent-form/FormLayout";
 import { Knowledge } from "../../../components/create-agent-form/Knowledge";
 import {
   KnowledgeForm,
   useCreateAgentForm,
 } from "../../../hooks/useCreateAgentForm";
-import { usePreventReload } from "../../../hooks/usePreventReload";
-import { useUploadFiles } from "../../../hooks/useUploadFiles";
-import { trpc } from "../../../trpc/client";
 
 export default function KnowledgePage() {
   const { knowledgeForm, setFormValues, nextStep, prevStep } =

@@ -4,6 +4,7 @@ import { z } from "zod";
 import { trpc } from "../trpc/client";
 import { isValidUrl } from "../utils/validateURL";
 import { useCreateAgentStore } from "./useCreateAgentStore";
+import { useState } from "react";
 
 const identityFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -59,8 +60,9 @@ export type CreateAgentForm = z.infer<typeof createAgentFormSchema>;
 export const useCreateAgentForm = () => {
   const { createAgentStep, nextStep, prevStep, setFormValues, formValues } =
     useCreateAgentStore();
+  const [isCreatingAgent, setIsCreatingAgent] = useState(false)
 
-  const { mutateAsync: createAgentMutation, isPending: isCreatingAgent } = trpc.agent.createAgent.useMutation()
+  const { mutateAsync: createAgentMutation } = trpc.agent.createAgent.useMutation()
 
   const identityForm = useForm<IdentityForm>({
     resolver: zodResolver(identityFormSchema),
@@ -83,27 +85,34 @@ export const useCreateAgentForm = () => {
   });
 
   const createAgent = async () => {
-    const identity = identityForm.getValues();
-    const behaviour = behaviourForm.getValues();
-    const knowledge = knowledgeForm.getValues();
-    const widget = widgetForm.getValues();
+    console.log(identityForm.formState.errors)
+    setIsCreatingAgent(true)
+    try {
+      const identity = identityForm.getValues();
+      const behaviour = behaviourForm.getValues();
+      const knowledge = knowledgeForm.getValues();
+      const widget = widgetForm.getValues();
 
-    const agent = await createAgentMutation({
-      voice: identity.voice,
-      displayName: identity.name,
-      description: identity.name,
-      greeting: behaviour.greeting,
-      prompt: behaviour.introduction,
-      criticalKnowledge: knowledge.criticalKnowledge || "",
-      answerOnlyFromCriticalKnowledge: knowledge.onlyAnwserFromKnowledge,
-      avatarPhotoUrl: identity.avatarURL,
-      position: widget.position,
-      introMessage: widget.introMessage,
-      calendlyUrl: widget.calendlyURL || null,
-    })
+      const agent = await createAgentMutation({
+        voice: identity.voice,
+        displayName: identity.name,
+        description: identity.name,
+        greeting: behaviour.greeting,
+        prompt: behaviour.introduction,
+        criticalKnowledge: knowledge.criticalKnowledge || "",
+        answerOnlyFromCriticalKnowledge: knowledge.onlyAnwserFromKnowledge,
+        avatarPhotoUrl: identity.avatarURL,
+        position: widget.position,
+        introMessage: widget.introMessage,
+        calendlyUrl: widget.calendlyURL || null,
+      })
 
-    return agent
-
+      setIsCreatingAgent(false)
+      return agent;
+    } catch (error) {
+      console.error(error);
+      setIsCreatingAgent(false);
+    }
   };
 
   return {

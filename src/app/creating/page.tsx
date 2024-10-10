@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useCreateAgentStore } from "../../hooks/useCreateAgentStore";
-import { useSearchParams } from "next/navigation";
 import { trpc } from "../../trpc/client";
 import { Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,16 +16,8 @@ import {
 
 export default function CreatingPage() {
   const formValues = useCreateAgentStore((store) => store.formValues);
-  const { isSuccess, isError, isPending } = useInsertTokens();
   const { isWebsiteScraping } = useWebsiteScraping();
-  return (
-    <CreatingComponent
-      isSuccess={isSuccess}
-      isError={isError}
-      isPending={isPending}
-      isWebsiteScraping={isWebsiteScraping}
-    />
-  );
+  return <CreatingComponent isWebsiteScraping={isWebsiteScraping} />;
 }
 
 export const useWebsiteScraping = () => {
@@ -37,8 +28,6 @@ export const useWebsiteScraping = () => {
   const { mutateAsync, isPending } = trpc.scrape.scrapeWebsite.useMutation();
 
   const isScraping = websiteURLS.length > 0;
-
-  console.log(websiteURLS);
 
   useEffect(() => {
     if (isScraping) {
@@ -52,74 +41,20 @@ export const useWebsiteScraping = () => {
   };
 };
 
-const useInsertTokens = () => {
-  const queryParams = useSearchParams();
-  const code = queryParams.get("code");
-  const error = queryParams.get("error");
-  const { mutateAsync, isPending } = trpc.calendar.insertTokens.useMutation();
-  const [isGoogleIntegrationSuccesfull, setIsGoogleIntegrationSuccesfull] =
-    useState(false);
-  const [isError, setIsError] = useState(false);
-
-  useEffect(() => {
-    if (code) {
-      mutateAsync({ code: code }).then((data) => {
-        setIsGoogleIntegrationSuccesfull(data.success);
-
-        if (!data.success) {
-          setIsError(true);
-        }
-      });
-    }
-  }, [code]);
-
-  useEffect(() => {
-    if (error) {
-      console.log(error);
-      setIsError(true);
-    }
-  }, [error]);
-
-  return { isSuccess: isGoogleIntegrationSuccesfull, isError, isPending };
-};
-
-type LoadingState = "calendar" | "website" | "success" | "error";
+type LoadingState = "website" | "success" | "error";
 
 const CreatingComponent: React.FC<{
-  isSuccess: boolean;
-  isError: boolean;
-  isPending: boolean;
   isWebsiteScraping: boolean;
-}> = ({ isSuccess, isError, isPending, isWebsiteScraping }) => {
-  const [loadingState, setLoadingState] = useState<LoadingState>("calendar");
+}> = ({ isWebsiteScraping }) => {
+  const [loadingState, setLoadingState] = useState<LoadingState>("website");
 
   useEffect(() => {
-    if (isPending) {
-      setLoadingState("calendar");
-    }
-
     if (isWebsiteScraping) {
       setLoadingState("website");
-    }
-
-    if (isSuccess) {
+    } else {
       setLoadingState("success");
     }
-
-    if (isError) {
-      setLoadingState("error");
-    }
-  }, [isPending, isSuccess, isError, isWebsiteScraping]);
-
-  const handleIntegrate = () => {
-    // Handle integration logic here
-    setLoadingState("calendar");
-  };
-
-  const handleSkip = () => {
-    // Handle skip logic here
-    setLoadingState("website");
-  };
+  }, [isWebsiteScraping]);
 
   return (
     <div className="flex items-center justify-center min-h-screen w-full bg-gray-100">
@@ -130,14 +65,6 @@ const CreatingComponent: React.FC<{
             <CardDescription>Setting up your AI agent</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col items-center justify-center space-y-4">
-            {loadingState === "calendar" && (
-              <>
-                <Loader2 className="h-8 w-8 animate-spin" />
-                <p className="text-center">
-                  Setting up the Google calendar integration
-                </p>
-              </>
-            )}
             {loadingState === "website" && (
               <>
                 <Loader2 className="h-8 w-8 animate-spin" />
@@ -174,21 +101,14 @@ const CreatingComponent: React.FC<{
               <>
                 <AlertCircle className="h-8 w-8 text-red-500" />
                 <p className="text-center">
-                  Something went wrong with Google integration.
+                  Something went wrong with the setup.
                 </p>
               </>
             )}
           </CardContent>
           <CardFooter className="flex justify-center">
             {loadingState === "success" && <Button>Go to Dashboard</Button>}
-            {loadingState === "error" && (
-              <div className="flex space-x-2">
-                <Button onClick={handleIntegrate}>Integrate</Button>
-                <Button variant="outline" onClick={handleSkip}>
-                  Skip
-                </Button>
-              </div>
-            )}
+            {loadingState === "error" && <Button>Try Again</Button>}
           </CardFooter>
         </Card>
       </div>

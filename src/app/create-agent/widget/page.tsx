@@ -13,10 +13,12 @@ export default function WidgetPage() {
     useCreateAgentForm();
   const { push } = useRouter();
 
-  const onSubmit = (data: WidgetForm) => {
+  const onSubmit = async (data: WidgetForm) => {
     setFormValues({ widget: data });
 
-    createAgent();
+    createAgent().then((id) => {
+      console.log(id);
+    });
   };
 
   const onPrevStep = () => {
