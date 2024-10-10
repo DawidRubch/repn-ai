@@ -105,6 +105,22 @@ export const agentRouter = createTRPCRouter({
         }
 
         return agent
+    }),
+    getKnowledge: protectedProcedutre.query(async ({ ctx }) => {
+        const userID = ctx.auth.userId
+
+        const [agent] = await db.select({
+            criticalKnowledge: agentsTable.criticalKnowledge,
+            answerOnlyFromCriticalKnowledge: agentsTable.answerOnlyFromCriticalKnowledge,
+            calendlyUrl: agentsTable.calendlyUrl,
+            introMessage: agentsTable.introMessage,
+        }).from(agentsTable).where(eq(agentsTable.userId, userID)).limit(1)
+
+        if (!agent) {
+            return null
+        }
+
+        return agent
     })
 })
 
