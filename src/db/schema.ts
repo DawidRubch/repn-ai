@@ -40,7 +40,7 @@ export const customersTable = pgTable('customers', {
     stripeCustomerId: text('stripe_customer_id').notNull(),
     email: text('email').notNull(),
     createdAt: timestamp('created_at').defaultNow(),
-    billingThreshold: integer('billing_threshold').default(0),
+    billingLimit: integer('billing_limit').default(0),
 });
 
 export type Customers = typeof customersTable.$inferSelect;

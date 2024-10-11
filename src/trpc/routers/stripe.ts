@@ -196,7 +196,7 @@ export const stripeRouter = createTRPCRouter({
 
 
 
-
+        //TODO: create custom billing treshold, we can't use the one from stripe as it's for generating invoices.
     }), setBillingThreshold: protectedProcedutre.input(z.object({
         billingThreshold: z.number()
     })).mutation(async ({ ctx, input }) => {
