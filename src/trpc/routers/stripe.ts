@@ -4,6 +4,7 @@ import { env } from "../../env";
 import { stripe } from "../../server/stripe";
 import { createTRPCRouter, protectedProcedutre } from "../init";
 import { createOrRetrieveCustomer, createOrRetrieveSubscription } from '../../server/stripe/utils';
+import { z } from 'zod';
 
 
 export const stripeRouter = createTRPCRouter({
@@ -176,7 +177,7 @@ export const stripeRouter = createTRPCRouter({
 
 
 
-        const billingThreshold = subscription.billing_thresholds?.amount_gte
+        const billingThreshold = subscription.billing_thresholds?.amount_gte || 0
 
         const periodStart = subscription.current_period_start
         const periodEnd = subscription.current_period_end
@@ -196,7 +197,48 @@ export const stripeRouter = createTRPCRouter({
 
 
 
-    }), setBillingThreshold: protectedProcedutre.mutation(async ({ ctx }) => {
+    }), setBillingThreshold: protectedProcedutre.input(z.object({
+        billingThreshold: z.number()
+    })).mutation(async ({ ctx, input }) => {
+
+
+        const userEmail = ctx.user.emailAddresses[0].emailAddress
+
+
+        const existingCustomer = await checkIfCustomerExists(userEmail)
+
+        if (!existingCustomer) {
+            throw new TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+                message: "Customer not found"
+            })
+        }
+
+        const subscription = await checkIfSubscriptionExists(existingCustomer.id)
+
+        if (!subscription) {
+            throw new TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+                message: "Subscription not found"
+            })
+        }
+
+        if (input.billingThreshold === 0) {
+            await stripe.subscriptions.update(subscription.id, {
+                billing_thresholds: ''
+            })
+        } else {
+            await stripe.subscriptions.update(subscription.id, {
+                billing_thresholds: {
+                    amount_gte: input.billingThreshold
+                }
+            })
+        }
+
+        return {
+            success: true
+        }
+
 
     })
 });
