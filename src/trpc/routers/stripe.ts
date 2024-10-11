@@ -3,6 +3,7 @@ import { TRPCError } from "@trpc/server";
 import { env } from "../../env";
 import { stripe } from "../../server/stripe";
 import { createTRPCRouter, protectedProcedutre } from "../init";
+import { createOrRetrieveCustomer, createOrRetrieveSubscription } from '../../server/stripe/utils';
 
 
 export const stripeRouter = createTRPCRouter({
@@ -12,38 +13,17 @@ export const stripeRouter = createTRPCRouter({
         const userEmail = ctx.user.emailAddresses[0].emailAddress
 
 
-        let customerID: string
+        const customerID = await createOrRetrieveCustomer(userEmail, ctx.user.id)
 
-        const existingCustomer = await checkIfCustomerExists(userEmail)
+        const subscription = await createOrRetrieveSubscription(customerID)
 
-        if (existingCustomer) {
-            customerID = existingCustomer.id
-        } else {
-            const customer = await stripe.customers.create({
-                email: userEmail
-            });
 
-            customerID = customer.id
-        }
-
-        const existingSubscription = await checkIfSubscriptionExists(customerID)
-
-        if (existingSubscription) {
+        if ("error" in subscription) {
             throw new TRPCError({
                 code: "BAD_REQUEST",
-                message: "Subscription already exists"
+                message: subscription.error
             })
         }
-
-        const subscription = await stripe.subscriptions.create({
-            customer: customerID,
-            items: [
-                {
-                    price: env.STRIPE_AGENT_MINUTES_PRICE_ID,
-                },
-            ],
-            expand: ['pending_setup_intent'],
-        });
 
         const setupIntent = subscription.pending_setup_intent
 
