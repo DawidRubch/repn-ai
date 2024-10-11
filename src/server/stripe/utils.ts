@@ -1,8 +1,11 @@
 
+import { db } from "../../db";
+import { customersTable } from "../../db/schema";
+import { env } from "../../env";
 import { stripe } from "../../server/stripe";
 
 
-export const createOrRetrieveCustomer = async (email: string) => {
+export const createOrRetrieveCustomer = async (email: string, userId: string) => {
 
     let customerID: string
 
@@ -12,10 +15,44 @@ export const createOrRetrieveCustomer = async (email: string) => {
         customerID = existingCustomer.id
     } else {
         const customer = await stripe.customers.create({ email })
+
+
+        await db.insert(customersTable).values({
+            id: customer.id,
+            email,
+            stripeCustomerId: customer.id,
+            userId
+        })
+
         customerID = customer.id
     }
 
     return customerID
+}
+
+
+export const createOrRetrieveSubscription = async (customerID: string) => {
+    const existingSubscription = await checkIfSubscriptionIsActive(customerID)
+
+    if (existingSubscription) {
+        return {
+            error: "Subscription already exists"
+        }
+    }
+
+    const subscription = await stripe.subscriptions.create({
+        customer: customerID,
+        items: [
+            {
+                price: env.STRIPE_AGENT_MINUTES_PRICE_ID,
+            },
+        ],
+        expand: ['pending_setup_intent'],
+    });
+
+    return subscription
+
+
 }
 
 
@@ -40,7 +77,7 @@ const checkIfCustomerExists = async (email: string) => {
 
     return customer.data[0]
 }
-const checkIfSubscriptionExists = async (customerID: string) => {
+const checkIfSubscriptionIsActive = async (customerID: string) => {
     const subscription = await stripe.subscriptions.list({
         customer: customerID,
         status: "active"
