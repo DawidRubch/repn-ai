@@ -196,12 +196,29 @@ export const stripeRouter = createTRPCRouter({
         }).from(customersTable).where(eq(customersTable.id, existingCustomer.id))
 
 
-        const budgetUsed = (unit_amount / 100) * (minutesUsage.data.length > 0 ? minutesUsage.data[0].aggregated_value : 0) / 60
+        // Convert unit_amount from cents to dollars
+        const unitAmountInDollars = unit_amount / 100;
+
+        const totalMinutesUsed = minutesUsage.data.length > 0 ? minutesUsage.data[0].aggregated_value : 0;
+
+
+        // Calculate budget used in dollars
+        const budgetUsed = Number((unitAmountInDollars * totalMinutesUsed).toFixed(2));
+
+
+        // Ensure billingLimit is a number, defaulting to 0 if null
+        const billingLimitInDollars = billingLimit === null ? 0 : billingLimit;
+
+        // Calculate percentage used, avoiding division by zero
+        const percentageUsed = billingLimitInDollars > 0
+            ? Number(((budgetUsed / billingLimitInDollars) * 100).toFixed(2))
+            : 0;
+
         return {
             budgetUsed,
-            billingLimit: billingLimit === null ? 0 : billingLimit,
-            percentageUsed: (budgetUsed / (billingLimit === null ? 1 : billingLimit)) * 100
-        }
+            billingLimit: billingLimitInDollars,
+            percentageUsed
+        };
 
 
 
