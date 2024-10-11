@@ -1,8 +1,7 @@
 "use client";
-import { Loader2 } from "lucide-react";
+import { FullPageLoader } from "../components/FullPageLoader";
 import { Sidebar } from "../components/Sidebar";
 import { trpc } from "../trpc/client";
-import { FullPageLoader } from "../components/FullPageLoader";
 import { ProtectAgentProvider } from "./ProtectAgentProvider";
 
 export const AuthenticatedLayout = ({

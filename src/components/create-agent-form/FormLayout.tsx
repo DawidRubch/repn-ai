@@ -49,6 +49,7 @@ export const UpdateAgentFormLayout: React.FC<{
       onPrevStep={onPrevStep}
       currentStep={agentFormStep}
       isSettingUpAgent={isSettingUpAgent}
+      isOnUpdate
     >
       {children}
     </FormLayoutComponent>
@@ -61,13 +62,23 @@ const FormLayoutComponent: React.FC<{
   isSettingUpAgent: boolean;
   onSubmit: () => void;
   onPrevStep: () => void;
-}> = ({ currentStep, children, isSettingUpAgent, onSubmit, onPrevStep }) => {
+  isOnUpdate?: boolean;
+}> = ({
+  currentStep,
+  children,
+  isSettingUpAgent,
+  onSubmit,
+  onPrevStep,
+  isOnUpdate,
+}) => {
   return (
     <Card className="w-full mx-auto bg-black text-white border-zinc-800">
       <CardHeader>
-        <CardTitle>Create Agent</CardTitle>
+        <CardTitle>{isOnUpdate ? "Update Agent" : "Create Agent"}</CardTitle>
         <CardDescription className="text-zinc-400">
-          Set up your new AI agent in just a few steps.
+          {isOnUpdate
+            ? "Update your agent in just a few steps."
+            : "Set up your new AI agent in just a few steps."}
         </CardDescription>
       </CardHeader>
       <CardContent>

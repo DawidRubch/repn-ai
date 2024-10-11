@@ -14,12 +14,12 @@ export default function BehaviourPage() {
   const onSubmit = (data: BehaviourForm) => {
     setFormValues({ behaviour: data });
     nextStep();
-    push("/create-agent/knowledge");
+    push("/update-agent/knowledge");
   };
 
   const onPrevStep = () => {
     prevStep();
-    push("/create-agent/identity");
+    push("/update-agent/identity");
   };
 
   return (
