@@ -4,21 +4,15 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { UpdateAgentFormLayout } from "../../../components/create-agent-form/FormLayout";
 import { Identity } from "../../../components/create-agent-form/Identity";
-import { FullPageLoader } from "../../../components/FullPageLoader";
 import { IdentityForm, useAgentForm } from "../../../hooks/useAgentForm";
-import { useAgentFormStore } from "../../../hooks/useAgentStore";
 import { useUploadFiles } from "../../../hooks/useUploadFiles";
-import { trpc } from "../../../trpc/client";
 
 export default function IdentityPage() {
   const { identityForm, setFormValues, nextStep, prevStep } = useAgentForm();
-  const setAvatarPreview = useAgentFormStore((state) => state.setAvatarPreview);
   const { push } = useRouter();
   const { uploadAvatar } = useUploadFiles();
 
   const avatar = identityForm.watch("avatar");
-
-  const { data, isLoading } = trpc.agent.getIdentity.useQuery();
 
   const onSubmit = async (data: IdentityForm) => {
     if (data.avatar && !data.avatarURL) {
@@ -42,37 +36,6 @@ export default function IdentityPage() {
       identityForm.setValue("avatarURL", undefined);
     }
   }, [avatar]);
-
-  useEffect(() => {
-    if (data) {
-      identityForm.reset({
-        name: data.displayName,
-        avatarURL: data.avatarPhotoUrl ?? undefined,
-        voice: data.voice,
-        avatar: null,
-      });
-
-      setAvatarPreview(data.avatarPhotoUrl);
-      setFormValues({
-        identity: {
-          name: data.displayName,
-          avatarURL: data.avatarPhotoUrl ?? undefined,
-          voice: data.voice,
-          avatar: null,
-        },
-      });
-    }
-  }, [data]);
-
-  const voice = identityForm.watch("voice");
-
-  useEffect(() => {
-    console.log({ voice });
-  }, [voice]);
-
-  if (!data || isLoading) {
-    return <FullPageLoader />;
-  }
 
   return (
     <UpdateAgentFormLayout

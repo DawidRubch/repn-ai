@@ -116,8 +116,6 @@ export const agentRouter = createTRPCRouter({
         const [agent] = await db.select({
             criticalKnowledge: agentsTable.criticalKnowledge,
             answerOnlyFromCriticalKnowledge: agentsTable.answerOnlyFromCriticalKnowledge,
-            calendlyUrl: agentsTable.calendlyUrl,
-            introMessage: agentsTable.introMessage,
         }).from(agentsTable).where(eq(agentsTable.userId, userID)).limit(1)
 
         if (!agent) {
@@ -143,32 +141,54 @@ export const agentRouter = createTRPCRouter({
         return agent
 
     }),
-    updateAgent: protectedProcedutre.input(AgentSchemaWithID).mutation(async ({ ctx, input }) => {
+
+
+    getAgentData: protectedProcedutre.mutation(async ({ ctx }) => {
         const userID = ctx.auth.userId
 
-        await updateAgent({
-            id: input.id,
-            voice: input.voice,
-            displayName: input.displayName,
-            description: input.description,
-            greeting: input.greeting,
-            prompt: input.prompt,
-        })
+        const [agent] = await db.select().from(agentsTable).where(eq(agentsTable.userId, userID)).limit(1)
 
-        await db.update(agentsTable).set({
-            voice: input.voice,
-            displayName: input.displayName,
-            greeting: input.greeting,
-            prompt: input.prompt,
-            answerOnlyFromCriticalKnowledge: input.answerOnlyFromCriticalKnowledge,
-            criticalKnowledge: input.criticalKnowledge,
-            introMessage: input.introMessage,
-            position: input.position,
-            calendlyUrl: input.calendlyUrl,
-            avatarPhotoUrl: input.avatarPhotoUrl,
-        }).where(and(eq(agentsTable.userId, userID), eq(agentsTable.id, input.id)))
+        if (!agent) {
+            return null
+        }
 
-        return input.id
+        return agent
+    }),
+    updateAgent: protectedProcedutre.input(AgentSchemaWithID).mutation(async ({ ctx, input }) => {
+        try {
+            const userID = ctx.auth.userId
+
+            await updateAgent({
+                id: input.id,
+                voice: input.voice,
+                displayName: input.displayName,
+                greeting: input.greeting,
+                prompt: input.prompt,
+                criticalKnowledge: input.criticalKnowledge,
+                answerOnlyFromCriticalKnowledge: input.answerOnlyFromCriticalKnowledge,
+            })
+
+            await db.update(agentsTable).set({
+                voice: input.voice,
+                displayName: input.displayName,
+                greeting: input.greeting,
+                prompt: input.prompt,
+                answerOnlyFromCriticalKnowledge: input.answerOnlyFromCriticalKnowledge,
+                criticalKnowledge: input.criticalKnowledge,
+                introMessage: input.introMessage,
+                position: input.position,
+                calendlyUrl: input.calendlyUrl,
+                avatarPhotoUrl: input.avatarPhotoUrl,
+            }).where(and(eq(agentsTable.userId, userID), eq(agentsTable.id, input.id)))
+
+            return input.id
+        } catch (error) {
+
+            throw new TRPCError({
+                code: 'INTERNAL_SERVER_ERROR',
+                message: 'Failed to update agent'
+            })
+        }
     })
 
 })
@@ -219,9 +239,10 @@ type UpdateAgentInput = {
     id: string,
     voice: string,
     displayName: string,
-    description: string,
     greeting: string,
     prompt: string,
+    criticalKnowledge: string,
+    answerOnlyFromCriticalKnowledge: boolean,
 }
 
 
@@ -233,13 +254,24 @@ const updateAgent = async (agent: UpdateAgentInput): Promise<void> => {
             'AUTHORIZATION': `${env.PLAY_AI_API_KEY}`,
             'X-USER-ID': `${env.PLAY_AI_USER_ID}`,
         },
-        body: JSON.stringify(agent)
+        body: JSON.stringify({
+            voice: agent.voice,
+            displayName: agent.displayName,
+            greeting: agent.greeting,
+            prompt: agent.prompt,
+            criticalKnowledge: agent.criticalKnowledge,
+            answerOnlyFromCriticalKnowledge: agent.answerOnlyFromCriticalKnowledge,
+        })
     })
 
     if (!response.ok) {
+
+        const res = await response.json()
+
+        console.log(res)
         throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
-            message: await response.json()
+            message: res
         })
     }
 }

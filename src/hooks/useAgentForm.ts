@@ -31,7 +31,7 @@ const knowledgeFormSchema = z.object({
           "Invalid URL. Make sure to include http:// or https://"
         ),
     })
-  ),
+  ).optional(),
   criticalKnowledge: z.string().optional(),
   onlyAnwserFromKnowledge: z.boolean().default(false),
 });
@@ -109,7 +109,7 @@ export const useAgentForm = () => {
         calendlyUrl: widget.calendlyURL || null,
       })
 
-      if (knowledge.websites.length > 0) {
+      if (knowledge.websites && knowledge.websites.length > 0) {
         const urls = knowledge.websites.map((website) => website.url);
         const apifyRunId = await scrapeWebsite({ urls, agentId: agentID });
         setApifyRunId(apifyRunId);
@@ -134,7 +134,6 @@ export const useAgentForm = () => {
     const widget = widgetForm.getValues();
 
     if (!currentAgent?.id) return;
-
 
     await updateAgentMutation({
       id: currentAgent?.id,

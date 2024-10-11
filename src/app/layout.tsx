@@ -5,6 +5,7 @@ import { Sidebar } from "../components/Sidebar";
 import { TRPCProvider } from "../trpc/client";
 import { ClerkProvider, SignedIn, SignedOut } from "@clerk/nextjs";
 import { AuthenticatedLayout } from "../layouts/AuthenticatedLayout";
+import { Toaster } from "../components/ui/toaster";
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -40,6 +41,7 @@ export default function RootLayout({
               <UnAuthenticatedLayout>{children}</UnAuthenticatedLayout>
             </SignedOut>
           </TRPCProvider>
+          <Toaster />
         </body>
       </html>
     </ClerkProvider>

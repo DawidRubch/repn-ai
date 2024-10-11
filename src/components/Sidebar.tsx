@@ -1,6 +1,7 @@
 "use client";
 import {
   CreditCard,
+  Loader2,
   MessageSquare,
   PlusCircle,
   Users,
@@ -10,6 +11,8 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
 import { trpc } from "../trpc/client";
+import { useRouter } from "next/navigation";
+import { useAgentFormStore } from "../hooks/useAgentStore";
 
 export const Sidebar = () => {
   return (
@@ -47,6 +50,45 @@ export const Sidebar = () => {
 
 const AgentComponent = () => {
   const { data, isLoading } = trpc.agent.getAgent.useQuery();
+  const { push } = useRouter();
+  const { mutateAsync: getAgentData, isPending } =
+    trpc.agent.getAgentData.useMutation();
+  const store = useAgentFormStore();
+  const handleUpdateAgent = async () => {
+    const agent = await getAgentData();
+
+    store.setFormValues({
+      identity: {
+        name: agent?.displayName ?? "",
+        avatarURL: agent?.avatarPhotoUrl ?? undefined,
+        voice: agent?.voice ?? "",
+        avatar: null,
+      },
+      behaviour: {
+        greeting: agent?.greeting ?? "",
+        introduction: agent?.prompt ?? "",
+      },
+      knowledge: {
+        criticalKnowledge: agent?.criticalKnowledge ?? "",
+        onlyAnwserFromKnowledge:
+          agent?.answerOnlyFromCriticalKnowledge ?? false,
+      },
+      widget: {
+        calendlyURL: agent?.calendlyUrl ?? "",
+        position: agent?.position as "left" | "right",
+        showIntroMessage: Boolean(
+          agent?.introMessage && agent?.introMessage.length > 0
+        ),
+        introMessage: agent?.introMessage ?? "",
+      },
+    });
+
+    if (agent?.avatarPhotoUrl) {
+      store.setAvatarPreview(agent.avatarPhotoUrl);
+    }
+
+    push(`/update-agent`);
+  };
 
   if (isLoading || data === undefined) return <>Loading...</>;
 
@@ -62,12 +104,19 @@ const AgentComponent = () => {
   }
 
   return (
-    <Link href="/update-agent" passHref>
-      <Button variant="ghost" className="w-full justify-start">
+    <Button
+      onClick={handleUpdateAgent}
+      variant="ghost"
+      className="w-full justify-start"
+      disabled={isPending}
+    >
+      {isPending ? (
+        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+      ) : (
         <PlusCircle className="mr-2 h-4 w-4" />
-        Update {shortenTheName(data.name)}
-      </Button>
-    </Link>
+      )}
+      {isPending ? "Updating..." : `Update ${shortenTheName(data.name)}`}
+    </Button>
   );
 };
 
