@@ -1,0 +1,1 @@
+ALTER TABLE "customers" ADD COLUMN "billing_threshold" integer DEFAULT 0;
