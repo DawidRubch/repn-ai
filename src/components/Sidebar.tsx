@@ -4,6 +4,8 @@ import {
   Loader2,
   MessageSquare,
   PlusCircle,
+  User,
+  UserPen,
   Users,
   Zap,
 } from "lucide-react";
@@ -98,7 +100,7 @@ const AgentComponent = () => {
     return (
       <Link href="/create-agent" passHref>
         <Button variant="ghost" className="w-full justify-start">
-          <PlusCircle className="mr-2 h-4 w-4" />
+          <User className="mr-2 h-4 w-4" />
           Create Agent
         </Button>
       </Link>
@@ -115,9 +117,9 @@ const AgentComponent = () => {
       {isPending ? (
         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
       ) : (
-        <PlusCircle className="mr-2 h-4 w-4" />
+        <UserPen className="mr-2 h-4 w-4" />
       )}
-      {isPending ? "Updating..." : `Update ${shortenTheName(data.name)}`}
+      {isPending ? "Redirecting..." : `Update ${shortenTheName(data.name)}`}
     </Button>
   );
 };

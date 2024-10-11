@@ -1,9 +1,8 @@
+import { currentUser } from '@clerk/nextjs/server';
 import { TRPCError } from "@trpc/server";
+import { env } from "../../env";
 import { stripe } from "../../server/stripe";
 import { createTRPCRouter, protectedProcedutre } from "../init";
-import { currentUser } from '@clerk/nextjs/server'
-import { env } from "../../env";
-import { TRPCClientError } from "@trpc/client";
 
 
 export const stripeRouter = createTRPCRouter({
@@ -48,9 +47,6 @@ export const stripeRouter = createTRPCRouter({
                 {
                     price: env.STRIPE_AGENT_MINUTES_PRICE_ID,
                 },
-                {
-                    price: env.STRIPE_AGENT_MEETINGS_PRICE_ID,
-                }
             ],
             expand: ['pending_setup_intent'],
         });
