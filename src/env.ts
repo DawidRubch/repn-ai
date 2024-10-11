@@ -28,6 +28,7 @@ export const env = createEnv({
         APIFY_ACT_ID: z.string().min(1),
         APIFY_WEBHOOK_URL: z.string().min(1),
         PLAY_AI_USER_ID: z.string().min(1),
+        STRIPE_WEBHOOK_SECRET: z.string().min(1),
     },
     client: {
         NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1),
@@ -55,6 +56,7 @@ export const env = createEnv({
         DB_DRIZZLE_URL: process.env.DB_DRIZZLE_URL,
         PLAY_AI_API_KEY: process.env.PLAY_AI_API_KEY,
         CLERK_WEBHOOK_SECRET: process.env.CLERK_WEBHOOK_SECRET,
+        STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
         AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
         AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
         AWS_REGION: process.env.AWS_REGION,
