@@ -9,24 +9,18 @@ export const stripeRouter = createTRPCRouter({
 
     createSetupIntent: protectedProcedutre.mutation(async ({ ctx }) => {
 
-        const user = await currentUser()
+        const userEmail = ctx.user.emailAddresses[0].emailAddress
 
-        if (!user) {
-            throw new TRPCError({
-                code: "INTERNAL_SERVER_ERROR",
-                message: "User not found"
-            })
-        }
 
         let customerID: string
 
-        const existingCustomer = await checkIfCustomerExists(user.emailAddresses[0].emailAddress)
+        const existingCustomer = await checkIfCustomerExists(userEmail)
 
         if (existingCustomer) {
             customerID = existingCustomer.id
         } else {
             const customer = await stripe.customers.create({
-                email: user.emailAddresses[0].emailAddress
+                email: userEmail
             });
 
             customerID = customer.id
@@ -85,16 +79,11 @@ export const stripeRouter = createTRPCRouter({
 
     createBillingSession: protectedProcedutre.mutation(async ({ ctx }) => {
 
-        const user = await currentUser()
 
-        if (!user) {
-            throw new TRPCError({
-                code: "INTERNAL_SERVER_ERROR",
-                message: "User not found"
-            })
-        }
+        const userEmail = ctx.user.emailAddresses[0].emailAddress
 
-        const existingCustomer = await checkIfCustomerExists(user.emailAddresses[0].emailAddress)
+
+        const existingCustomer = await checkIfCustomerExists(userEmail)
 
         if (!existingCustomer) {
             throw new TRPCError({
@@ -123,16 +112,11 @@ export const stripeRouter = createTRPCRouter({
 
     }), getUsageForThisPeriod: protectedProcedutre.query(async ({ ctx }) => {
 
-        const user = await currentUser()
 
-        if (!user) {
-            throw new TRPCError({
-                code: "INTERNAL_SERVER_ERROR",
-                message: "User not found"
-            })
-        }
+        const userEmail = ctx.user.emailAddresses[0].emailAddress
 
-        const existingCustomer = await checkIfCustomerExists(user.emailAddresses[0].emailAddress)
+
+        const existingCustomer = await checkIfCustomerExists(userEmail)
 
         if (!existingCustomer) {
             throw new TRPCError({

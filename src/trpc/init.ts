@@ -1,4 +1,4 @@
-import { getAuth } from '@clerk/nextjs/server';
+import { currentUser, getAuth } from '@clerk/nextjs/server';
 import { initTRPC, TRPCError } from '@trpc/server';
 import { NextRequest } from 'next/server';
 import { cache } from 'react';
@@ -43,14 +43,23 @@ export const createCallerFactory = t.createCallerFactory
 export const mergeRouters = t.mergeRouters
 
 
-const isAuthed = t.middleware((opts) => {
+const isAuthed = t.middleware(async (opts) => {
     if (!opts.ctx.auth?.userId) {
         throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Unauthorized' });
     }
+
+    const user = await currentUser()
+
+    if (!user) {
+        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Unauthorized' });
+    }
+
+
     return opts.next({
         ctx: {
             ...opts.ctx,
             auth: opts.ctx.auth,
+            user
         },
     });
 });
