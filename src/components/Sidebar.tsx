@@ -87,6 +87,8 @@ const AgentComponent = () => {
       store.setAvatarPreview(agent.avatarPhotoUrl);
     }
 
+    store.setAgentFormStep("identity");
+
     push(`/update-agent`);
   };
 
