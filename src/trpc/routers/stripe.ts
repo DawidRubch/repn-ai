@@ -153,6 +153,25 @@ export const stripeRouter = createTRPCRouter({
             meetings: meetingsUsage.data.length > 0 ? meetingsUsage.data[0].aggregated_value : 0,
             minutes: minutesUsage.data.length > 0 ? minutesUsage.data[0].aggregated_value : 0
         }
+    }),
+    activeSubscription: protectedProcedutre.query(async ({ ctx }) => {
+
+        const userEmail = ctx.user.emailAddresses[0].emailAddress
+
+
+        const existingCustomer = await checkIfCustomerExists(userEmail)
+
+        if (!existingCustomer) {
+            return false
+        }
+
+        const subscription = await checkIfSubscriptionExists(existingCustomer.id)
+
+        if (!subscription) {
+            return false
+        }
+
+        return subscription.status === "active"
     })
 });
 
