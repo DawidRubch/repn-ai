@@ -48,7 +48,7 @@ export default function KnowledgePage() {
       onSubmit={knowledgeForm.handleSubmit(onSubmit)}
       onPrevStep={onPrevStep}
     >
-      <Knowledge form={knowledgeForm} />
+      <Knowledge form={knowledgeForm} isOnUpdate />
     </UpdateAgentFormLayout>
   );
 }

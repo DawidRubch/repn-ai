@@ -1,23 +1,22 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { UpdateAgentFormLayout } from "../../../components/create-agent-form/FormLayout";
 import { Widget } from "../../../components/create-agent-form/Widget";
+import { FullPageLoader } from "../../../components/FullPageLoader";
 import { useAgentForm, WidgetForm } from "../../../hooks/useAgentForm";
 import { trpc } from "../../../trpc/client";
-import { FullPageLoader } from "../../../components/FullPageLoader";
-import { useEffect } from "react";
 
 export default function WidgetPage() {
-  const { widgetForm, setFormValues, nextStep, prevStep, createAgent } =
-    useAgentForm();
+  const { widgetForm, setFormValues, prevStep, updateAgent } = useAgentForm();
   const { push } = useRouter();
   const { data, isLoading } = trpc.agent.getWidget.useQuery();
 
   const onSubmit = async (data: WidgetForm) => {
     setFormValues({ widget: data });
 
-    createAgent().then((id) => {
+    updateAgent().then(() => {
       push(`/updating`);
     });
   };

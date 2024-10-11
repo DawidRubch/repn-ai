@@ -11,17 +11,14 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { X } from "lucide-react";
 import clsx from "clsx";
-
-type FormType = {
-  websites: { url: string }[];
-};
+import { KnowledgeForm } from "../hooks/useAgentForm";
 
 export const WebsiteSelector = ({
   form,
 }: {
-  form: UseFormReturn<FormType>;
+  form: UseFormReturn<KnowledgeForm>;
 }) => {
-  const { fields, append, remove } = useFieldArray<FormType>({
+  const { fields, append, remove } = useFieldArray<KnowledgeForm>({
     control: form.control,
     name: "websites",
   });

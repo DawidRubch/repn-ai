@@ -11,10 +11,16 @@ import {
   FormLabel,
 } from "../ui/form";
 import { Textarea } from "../ui/textarea";
+import { WebsiteSelector } from "../WebsiteSelector";
 
 const MAX_CHARACTERS = 30000;
 
-export function Knowledge({ form }: { form: UseFormReturn<KnowledgeForm> }) {
+type Props = {
+  form: UseFormReturn<KnowledgeForm>;
+  isOnUpdate?: boolean;
+};
+
+export function Knowledge({ form, isOnUpdate }: Props) {
   const [characterCount, setCharacterCount] = useState(0);
 
   return (
@@ -43,6 +49,7 @@ export function Knowledge({ form }: { form: UseFormReturn<KnowledgeForm> }) {
             </FormItem>
           )}
         />
+        {!isOnUpdate && <WebsiteSelector form={form} />}
         <FormField
           control={form.control}
           name="onlyAnwserFromKnowledge"

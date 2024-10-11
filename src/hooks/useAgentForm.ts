@@ -164,8 +164,9 @@ export const useAgentForm = () => {
     setFormValues,
     formValues,
     createAgent,
+    updateAgent,
     widgetForm,
-    isSettingUpAgent: isCreatingAgent || isAgentCreating || isScrapingWebsite,
+    isSettingUpAgent: isCreatingAgent || isAgentCreating || isScrapingWebsite || isUpdatingAgent,
   };
 };
 
