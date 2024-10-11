@@ -42,6 +42,8 @@ export const useWebsiteScraping = () => {
     }
   );
 
+  console.log(runId);
+
   if (!runId) {
     return {
       isWebsiteScraping: false,
@@ -65,6 +67,7 @@ const CreatingComponent: React.FC<{
     if (isWebsiteScraping) {
       setLoadingState("website");
     } else {
+      setLoadingState("success");
       store.resetStore();
     }
   }, [isWebsiteScraping]);
