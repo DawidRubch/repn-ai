@@ -22,7 +22,7 @@ export default function WidgetPage() {
         description: "Your widget has been updated successfully",
       });
       resetStore();
-      push("/dashboard");
+      push("/");
     });
   };
 

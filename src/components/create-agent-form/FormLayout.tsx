@@ -10,8 +10,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
 import { useAgentForm } from "../../hooks/useAgentForm";
 import { AGENT_STEPS, AgentStep } from "../../hooks/useAgentStore";
 
@@ -21,14 +19,6 @@ export const CreateAgentFormLayout: React.FC<{
   onPrevStep: () => void;
 }> = ({ children, onSubmit, onPrevStep }) => {
   const { agentFormStep, isSettingUpAgent } = useAgentForm();
-  const router = useRouter();
-  const pathName = usePathname();
-
-  useEffect(() => {
-    if (!pathName.includes(agentFormStep)) {
-      router.push(`/create-agent/${agentFormStep}`);
-    }
-  }, [agentFormStep]);
 
   const handlePrevStep = () => {
     onPrevStep();
@@ -52,14 +42,6 @@ export const UpdateAgentFormLayout: React.FC<{
   onPrevStep: () => void;
 }> = ({ children, onSubmit, onPrevStep }) => {
   const { agentFormStep, isSettingUpAgent } = useAgentForm();
-  const pathName = usePathname();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!pathName.includes(agentFormStep)) {
-      router.push(`/update-agent/${agentFormStep}`);
-    }
-  }, [agentFormStep]);
 
   return (
     <FormLayoutComponent

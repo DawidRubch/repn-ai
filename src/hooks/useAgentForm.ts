@@ -1,10 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { trpc } from "../trpc/client";
 import { isValidUrl } from "../utils/validateURL";
 import { useAgentFormStore } from "./useAgentStore";
-import { useState } from "react";
 
 const identityFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -149,8 +149,6 @@ export const useAgentForm = () => {
       avatarPhotoUrl: identity.avatarURL,
       introMessage: widget.introMessage,
     })
-
-
   }
 
   return {

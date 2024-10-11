@@ -122,7 +122,9 @@ export function AvatarUploadField({ form, name }: AvatarUploadFieldProps) {
           ia[i] = byteString.charCodeAt(i);
         }
         const blob = new Blob([ab], { type: mimeString });
-        const file = new File([blob], "avatar.jpg", { type: "image/jpeg" });
+        const file = new File([blob], `avatar-${crypto.randomUUID()}.jpg`, {
+          type: "image/jpeg",
+        });
 
         form.setValue(name, file);
         setIsCropperOpen(false);
