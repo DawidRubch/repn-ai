@@ -5,6 +5,17 @@ import { stripe } from "../../server/stripe";
 export const createOrRetrieveCustomer = async (email: string) => {
 
     let customerID: string
+
+    const existingCustomer = await checkIfCustomerExists(email)
+
+    if (existingCustomer) {
+        customerID = existingCustomer.id
+    } else {
+        const customer = await stripe.customers.create({ email })
+        customerID = customer.id
+    }
+
+    return customerID
 }
 
 
@@ -28,4 +39,12 @@ const checkIfCustomerExists = async (email: string) => {
     });
 
     return customer.data[0]
+}
+const checkIfSubscriptionExists = async (customerID: string) => {
+    const subscription = await stripe.subscriptions.list({
+        customer: customerID,
+        status: "active"
+    });
+
+    return subscription.data[0]
 }
