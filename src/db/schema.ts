@@ -4,6 +4,7 @@ import { boolean, integer, pgEnum, pgTable, text, timestamp } from "drizzle-orm/
 export const usersTable = pgTable('users', {
     id: text('id').primaryKey(),
     email: text('email').notNull(),
+
 });
 
 export type Users = typeof usersTable.$inferSelect;
@@ -39,6 +40,7 @@ export const customersTable = pgTable('customers', {
     stripeCustomerId: text('stripe_customer_id').notNull(),
     email: text('email').notNull(),
     createdAt: timestamp('created_at').defaultNow(),
+    billingThreshold: integer('billing_threshold').default(0),
 });
 
 export type Customers = typeof customersTable.$inferSelect;

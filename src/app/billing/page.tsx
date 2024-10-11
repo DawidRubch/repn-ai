@@ -8,10 +8,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Clock, Calendar, AlertTriangle, Loader2 } from "lucide-react";
+import {
+  Clock,
+  Calendar,
+  AlertTriangle,
+  Loader2,
+  AlertCircle,
+} from "lucide-react";
 import { trpc } from "../../trpc/client";
 import { useRouter } from "next/navigation";
 import { FullPageLoader } from "../../components/FullPageLoader";
+import { Progress } from "../../components/ui/progress";
 
 export default function BillingPage() {
   const { data: activeSubscription, isLoading: subscriptionLoading } =
@@ -96,33 +103,11 @@ function BillingDetails() {
           </Button>
         </CardContent>
       </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>Billing Maximum</CardTitle>
-          <CardDescription>
-            {billingMaximum && billingMaximum.maximum > 0
-              ? `Usage limit: ${billingMaximum.maximum}`
-              : "No maximum set"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {billingMaximum && billingMaximum.maximum > 0 ? (
-            <div className="space-y-2">
-              <Progress value={usagePercentage} className="w-full" />
-              <div className="flex justify-between text-sm text-muted-foreground">
-                <span>Current usage: {totalUsage}</span>
-                <span>{usagePercentage.toFixed(1)}%</span>
-              </div>
-            </div>
-          ) : (
-            <div className="flex items-center text-muted-foreground">
-              <AlertCircle className="mr-2 h-5 w-5" />
-              <span>Billing maximum is turned off</span>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-      {billingThreshold ? (
+      <BillingMaximum
+        usagePercentage={usagePercentage}
+        totalUsage={totalUsage}
+      />
+      {billingThreshold && billingThreshold.billingThreshold > 0 ? (
         <Card>
           <CardHeader>
             <CardTitle>Billing Threshold</CardTitle>
@@ -132,7 +117,7 @@ function BillingDetails() {
             <div className="flex items-center justify-between">
               <span>Threshold amount:</span>
               <span className="font-semibold">
-                ${billingThreshold.amount_gte}
+                ${billingThreshold.billingThreshold}
               </span>
             </div>
           </CardContent>
@@ -141,6 +126,45 @@ function BillingDetails() {
     </div>
   );
 }
+
+const BillingMaximum: React.FC<{
+  usagePercentage: number;
+  totalUsage: number;
+}> = ({ usagePercentage, totalUsage }) => {
+  const { data: billingThreshold, isLoading: billingThresholdLoading } =
+    trpc.stripe.billingThreshold.useQuery();
+
+  if (billingThresholdLoading || !billingThreshold) return null;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Billing Maximum</CardTitle>
+        <CardDescription>
+          {billingThreshold && billingThreshold.billingThreshold > 0
+            ? `Usage limit: ${billingThreshold.billingThreshold}`
+            : "No maximum set"}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {billingThreshold && billingThreshold.billingThreshold > 0 ? (
+          <div className="space-y-2">
+            <Progress value={usagePercentage} className="w-full" />
+            <div className="flex justify-between text-sm text-muted-foreground">
+              <span>Current usage: {totalUsage}</span>
+              <span>{usagePercentage.toFixed(1)}%</span>
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-center text-muted-foreground">
+            <AlertCircle className="mr-2 h-5 w-5" />
+            <span>Billing maximum is turned off</span>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
 
 const UpgradePlan = () => {
   const { mutateAsync: createSetupIntent, isPending } =
