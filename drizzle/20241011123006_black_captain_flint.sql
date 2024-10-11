@@ -1,0 +1,1 @@
+ALTER TABLE "customers" RENAME COLUMN "billing_threshold" TO "billing_limit";
