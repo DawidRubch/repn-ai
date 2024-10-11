@@ -5,6 +5,9 @@ import { stripe } from "../../server/stripe";
 import { createTRPCRouter, protectedProcedutre } from "../init";
 import { createOrRetrieveCustomer, createOrRetrieveSubscription } from '../../server/stripe/utils';
 import { z } from 'zod';
+import { db } from '../../db';
+import { customersTable, usersTable } from '../../db/schema';
+import { eq } from 'drizzle-orm';
 
 
 export const stripeRouter = createTRPCRouter({
@@ -118,11 +121,6 @@ export const stripeRouter = createTRPCRouter({
         const periodEnd = subscription.current_period_end
         const periodStart = subscription.current_period_start
 
-        const meetingsUsage = await stripe.billing.meters.listEventSummaries(env.STRIPE_AGENT_USAGE_MEETINGS_METER_ID, {
-            customer: existingCustomer.id,
-            start_time: periodStart,
-            end_time: periodEnd,
-        })
 
         const minutesUsage = await stripe.billing.meters.listEventSummaries(env.STRIPE_AGENT_USAGE_MINUTES_METER_ID, {
             customer: existingCustomer.id,
@@ -131,7 +129,6 @@ export const stripeRouter = createTRPCRouter({
         })
 
         return {
-            meetings: meetingsUsage.data.length > 0 ? meetingsUsage.data[0].aggregated_value : 0,
             minutes: minutesUsage.data.length > 0 ? minutesUsage.data[0].aggregated_value : 0
         }
     }),
@@ -153,7 +150,7 @@ export const stripeRouter = createTRPCRouter({
         }
 
         return subscription.status === "active"
-    }), billingThreshold: protectedProcedutre.query(async ({ ctx }) => {
+    }), billingInfo: protectedProcedutre.query(async ({ ctx }) => {
         const userEmail = ctx.user.emailAddresses[0].emailAddress
 
         const existingCustomer = await checkIfCustomerExists(userEmail)
@@ -174,11 +171,6 @@ export const stripeRouter = createTRPCRouter({
                 message: "Subscription not found"
             })
         }
-
-
-
-        const billingThreshold = subscription.billing_thresholds?.amount_gte || 0
-
         const periodStart = subscription.current_period_start
         const periodEnd = subscription.current_period_end
 
@@ -188,15 +180,31 @@ export const stripeRouter = createTRPCRouter({
             end_time: periodEnd,
         })
 
+        const { unit_amount } = await stripe.prices.retrieve(subscription.items.data[0].price.id)
 
+
+        if (!unit_amount) {
+            throw new TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+                message: "Price not found"
+            })
+        }
+
+
+        const [{ billingLimit }] = await db.select({
+            billingLimit: customersTable.billingLimit
+        }).from(customersTable).where(eq(customersTable.id, existingCustomer.id))
+
+
+        const budgetUsed = (unit_amount / 100) * (minutesUsage.data.length > 0 ? minutesUsage.data[0].aggregated_value : 0) / 60
         return {
-            minutesUsage: minutesUsage.data.length > 0 ? minutesUsage.data[0].aggregated_value : 0,
-            billingThreshold
+            budgetUsed,
+            billingLimit: billingLimit === null ? 0 : billingLimit,
+            percentageUsed: (budgetUsed / (billingLimit === null ? 1 : billingLimit)) * 100
         }
 
 
 
-        //TODO: create custom billing treshold, we can't use the one from stripe as it's for generating invoices.
     }), setBillingThreshold: protectedProcedutre.input(z.object({
         billingThreshold: z.number()
     })).mutation(async ({ ctx, input }) => {
@@ -223,20 +231,16 @@ export const stripeRouter = createTRPCRouter({
             })
         }
 
-        if (input.billingThreshold === 0) {
-            await stripe.subscriptions.update(subscription.id, {
-                billing_thresholds: ''
-            })
-        } else {
-            await stripe.subscriptions.update(subscription.id, {
-                billing_thresholds: {
-                    amount_gte: input.billingThreshold
-                }
-            })
-        }
+
+
+        await db.update(customersTable).set({
+            billingLimit: input.billingThreshold
+        }).where(eq(customersTable.id, existingCustomer.id))
+
 
         return {
-            success: true
+            success: true,
+            billingLimit: input.billingThreshold
         }
 
 

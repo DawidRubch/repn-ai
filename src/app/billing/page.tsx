@@ -28,52 +28,119 @@ import {
 } from "../../components/ui/dialog";
 import { useState } from "react";
 import { Input } from "../../components/ui/input";
+import { useQueryClient } from "@tanstack/react-query";
+
+interface BillingInfo {
+  billingLimit: number;
+  percentageUsed: number;
+  budgetUsed: number;
+}
+
+interface Usage {
+  minutes: number;
+}
+
+interface BillingThresholdResponse {
+  billingLimit: number;
+}
 
 export default function BillingPage() {
   const { data: activeSubscription, isLoading: subscriptionLoading } =
     trpc.stripe.activeSubscription.useQuery();
+  const { data: usage, isLoading: usageLoading } =
+    trpc.stripe.getUsageForThisPeriod.useQuery<Usage>();
+  const {
+    data: billingInfo,
+    isLoading: billingInfoLoading,
+    refetch,
+    isRefetching: billingInfoRefetching,
+  } = trpc.stripe.billingInfo.useQuery<BillingInfo>();
 
-  if (subscriptionLoading) return <FullPageLoader />;
+  const setBillingThreshold =
+    trpc.stripe.setBillingThreshold.useMutation<BillingThresholdResponse>({
+      onSuccess: (data) => {
+        refetch();
+      },
+    });
+
+  const isLoading =
+    subscriptionLoading ||
+    usageLoading ||
+    billingInfoLoading ||
+    billingInfoRefetching ||
+    setBillingThreshold.isPending;
+
+  if (isLoading) return <FullPageLoader />;
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Billing</h1>
-      {activeSubscription ? <BillingDetails /> : <UpgradePlan />}
+      {activeSubscription ? (
+        <BillingDetails
+          usage={usage}
+          billingInfo={billingInfo}
+          setBillingThreshold={setBillingThreshold}
+        />
+      ) : (
+        <UpgradePlan />
+      )}
     </div>
   );
 }
 
-function BillingDetails() {
-  const { data: usage, isLoading: usageLoading } =
-    trpc.stripe.getUsageForThisPeriod.useQuery();
-  const { data: billingThreshold, isLoading: billingThresholdLoading } =
-    trpc.stripe.billingThreshold.useQuery();
-  const router = useRouter();
+interface BillingDetailsProps {
+  usage: Usage | undefined;
+  billingInfo: BillingInfo | undefined;
+  setBillingThreshold: ReturnType<
+    typeof trpc.stripe.setBillingThreshold.useMutation
+  >;
+}
 
-  const { mutateAsync: createBillingSession } =
-    trpc.stripe.createBillingSession.useMutation({
-      onSuccess: (data) => {
-        if (data.url) {
-          router.push(data.url);
-        }
-      },
-      onError: (error) => {
-        console.error(error);
-      },
-    });
+function BillingDetails({
+  usage,
+  billingInfo,
+  setBillingThreshold,
+}: BillingDetailsProps) {
+  const router = useRouter();
+  const [newThreshold, setNewThreshold] = useState<number>(
+    billingInfo?.billingLimit || 0
+  );
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const { mutateAsync } = trpc.stripe.createBillingSession.useMutation();
 
   const handleOpenStripePortal = () => {
-    createBillingSession();
+    mutateAsync().then((data) => {
+      if (data.url) {
+        router.push(data.url);
+      }
+    });
   };
 
-  if (usageLoading || billingThresholdLoading || !usage || !billingThreshold)
-    return <div>Loading...</div>;
+  const handleSetThreshold = () => {
+    if (!isNaN(newThreshold) && newThreshold > 0) {
+      setBillingThreshold.mutate(
+        { billingThreshold: newThreshold },
+        {
+          onSuccess: ({ billingLimit }: BillingThresholdResponse) => {
+            setIsDialogOpen(false);
+            setNewThreshold(billingLimit);
+          },
+        }
+      );
+    }
+  };
 
-  const totalUsage = (usage?.minutes || 0) + (usage?.meetings || 0);
-  const usagePercentage =
-    billingThreshold && billingThreshold?.billingThreshold > 0
-      ? (totalUsage / billingThreshold.billingThreshold) * 100
-      : 0;
+  const handleRemoveThreshold = () => {
+    setBillingThreshold.mutate(
+      { billingThreshold: 0 },
+      {
+        onSuccess: ({ billingLimit }: BillingThresholdResponse) => {
+          setNewThreshold(billingLimit);
+        },
+      }
+    );
+  };
 
   return (
     <div className="grid gap-8 md:grid-cols-2">
@@ -91,13 +158,6 @@ function BillingDetails() {
               </div>
               <span className="font-semibold">{usage?.minutes || 0}</span>
             </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <Calendar className="mr-2 h-5 w-5 text-muted-foreground" />
-                <span>Meetings booked</span>
-              </div>
-              <span className="font-semibold">{usage?.meetings || 0}</span>
-            </div>
           </div>
         </CardContent>
       </Card>
@@ -113,85 +173,55 @@ function BillingDetails() {
         </CardContent>
       </Card>
       <BillingMaximum
-        usagePercentage={usagePercentage}
-        totalUsage={totalUsage}
+        billingInfo={billingInfo}
+        newThreshold={newThreshold}
+        setNewThreshold={setNewThreshold}
+        isDialogOpen={isDialogOpen}
+        setIsDialogOpen={setIsDialogOpen}
+        handleSetThreshold={handleSetThreshold}
+        handleRemoveThreshold={handleRemoveThreshold}
       />
-      {billingThreshold && billingThreshold.billingThreshold > 0 ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>Billing Threshold</CardTitle>
-            <CardDescription>Automatic payment trigger</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <span>Threshold amount:</span>
-              <span className="font-semibold">
-                ${billingThreshold.billingThreshold}
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-      ) : null}
     </div>
   );
 }
 
-export function BillingMaximum({
-  usagePercentage,
-  totalUsage,
-}: {
-  usagePercentage: number;
-  totalUsage: number;
-}) {
-  const { data: billingThreshold, isLoading: billingThresholdLoading } =
-    trpc.stripe.billingThreshold.useQuery();
+interface BillingMaximumProps {
+  billingInfo: BillingInfo | undefined;
+  newThreshold: number;
+  setNewThreshold: React.Dispatch<React.SetStateAction<number>>;
+  isDialogOpen: boolean;
+  setIsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  handleSetThreshold: () => void;
+  handleRemoveThreshold: () => void;
+}
 
-  const [newThreshold, setNewThreshold] = useState<string>("");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  const { mutateAsync: setBillingThreshold } =
-    trpc.stripe.setBillingThreshold.useMutation({
-      onSuccess: () => {
-        setIsDialogOpen(false);
-        setNewThreshold("");
-      },
-    });
-
-  if (billingThresholdLoading) return <div>Loading...</div>;
-
-  const onUpdateBillingThreshold = (value: number) => {
-    setBillingThreshold({ billingThreshold: value });
-  };
-
-  const handleSetThreshold = () => {
-    const value = parseInt(newThreshold, 10);
-    if (!isNaN(value) && value > 0) {
-      onUpdateBillingThreshold(value);
-    }
-  };
-
-  const handleRemoveThreshold = () => {
-    onUpdateBillingThreshold(0);
-  };
-
+function BillingMaximum({
+  billingInfo,
+  newThreshold,
+  setNewThreshold,
+  isDialogOpen,
+  setIsDialogOpen,
+  handleSetThreshold,
+  handleRemoveThreshold,
+}: BillingMaximumProps) {
   return (
     <Card>
       <CardHeader>
         <CardTitle>Billing Maximum</CardTitle>
         <CardDescription>
-          {billingThreshold && billingThreshold.billingThreshold > 0
-            ? `Usage limit: ${billingThreshold.billingThreshold}`
+          {billingInfo?.billingLimit && billingInfo?.billingLimit > 0
+            ? `Usage limit: ${billingInfo.billingLimit}$`
             : "No maximum set"}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {billingThreshold && billingThreshold.billingThreshold > 0 ? (
+        {billingInfo?.billingLimit && billingInfo?.billingLimit > 0 ? (
           <>
             <div className="space-y-2">
-              <Progress value={usagePercentage} className="w-full" />
+              <Progress value={billingInfo.percentageUsed} className="w-full" />
               <div className="flex justify-between text-sm text-muted-foreground">
-                <span>Current usage: {totalUsage}</span>
-                <span>{usagePercentage.toFixed(1)}%</span>
+                <span>Current usage: ${billingInfo.budgetUsed}</span>
+                <span>{billingInfo.percentageUsed.toFixed(1)}%</span>
               </div>
             </div>
             <div className="flex space-x-2">
@@ -208,7 +238,10 @@ export function BillingMaximum({
                       type="number"
                       placeholder="New threshold"
                       value={newThreshold}
-                      onChange={(e) => setNewThreshold(e.target.value)}
+                      min={0}
+                      onChange={(e) =>
+                        setNewThreshold(parseInt(e.target.value))
+                      }
                     />
                     <Button onClick={handleSetThreshold}>Set</Button>
                   </div>
@@ -238,7 +271,8 @@ export function BillingMaximum({
                     type="number"
                     placeholder="New threshold"
                     value={newThreshold}
-                    onChange={(e) => setNewThreshold(e.target.value)}
+                    min={0}
+                    onChange={(e) => setNewThreshold(parseInt(e.target.value))}
                   />
                   <Button onClick={handleSetThreshold}>Set</Button>
                 </div>
@@ -251,14 +285,14 @@ export function BillingMaximum({
   );
 }
 
-const UpgradePlan = () => {
-  const { mutateAsync: createSetupIntent, isPending } =
-    trpc.stripe.createSetupIntent.useMutation();
-
+function UpgradePlan() {
   const router = useRouter();
 
+  const { mutateAsync, isPending } =
+    trpc.stripe.createSetupIntent.useMutation();
+
   const handleOpenStripePortal = () => {
-    createSetupIntent().then((data) => {
+    mutateAsync().then((data) => {
       if (data.url) {
         router.push(data.url);
       }
@@ -289,4 +323,4 @@ const UpgradePlan = () => {
       </CardContent>
     </Card>
   );
-};
+}

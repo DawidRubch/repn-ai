@@ -41,11 +41,6 @@ export async function POST(req: Request) {
                         }
                     );
                     break;
-                case "invoice.payment_succeeded":
-                    const invoice = event.data.object as Stripe.Invoice;
-
-
-
 
                 case 'checkout.session.completed':
                     const checkoutSession = event.data.object as Stripe.Checkout.Session;
