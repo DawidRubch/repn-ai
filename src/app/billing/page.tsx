@@ -19,6 +19,15 @@ import { trpc } from "../../trpc/client";
 import { useRouter } from "next/navigation";
 import { FullPageLoader } from "../../components/FullPageLoader";
 import { Progress } from "../../components/ui/progress";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../../components/ui/dialog";
+import { useState } from "react";
+import { Input } from "../../components/ui/input";
 
 export default function BillingPage() {
   const { data: activeSubscription, isLoading: subscriptionLoading } =
@@ -127,14 +136,43 @@ function BillingDetails() {
   );
 }
 
-const BillingMaximum: React.FC<{
+export function BillingMaximum({
+  usagePercentage,
+  totalUsage,
+}: {
   usagePercentage: number;
   totalUsage: number;
-}> = ({ usagePercentage, totalUsage }) => {
+}) {
   const { data: billingThreshold, isLoading: billingThresholdLoading } =
     trpc.stripe.billingThreshold.useQuery();
 
-  if (billingThresholdLoading || !billingThreshold) return null;
+  const [newThreshold, setNewThreshold] = useState<string>("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const { mutateAsync: setBillingThreshold } =
+    trpc.stripe.setBillingThreshold.useMutation({
+      onSuccess: () => {
+        setIsDialogOpen(false);
+        setNewThreshold("");
+      },
+    });
+
+  if (billingThresholdLoading) return <div>Loading...</div>;
+
+  const onUpdateBillingThreshold = (value: number) => {
+    setBillingThreshold({ billingThreshold: value });
+  };
+
+  const handleSetThreshold = () => {
+    const value = parseInt(newThreshold, 10);
+    if (!isNaN(value) && value > 0) {
+      onUpdateBillingThreshold(value);
+    }
+  };
+
+  const handleRemoveThreshold = () => {
+    onUpdateBillingThreshold(0);
+  };
 
   return (
     <Card>
@@ -146,25 +184,72 @@ const BillingMaximum: React.FC<{
             : "No maximum set"}
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-4">
         {billingThreshold && billingThreshold.billingThreshold > 0 ? (
-          <div className="space-y-2">
-            <Progress value={usagePercentage} className="w-full" />
-            <div className="flex justify-between text-sm text-muted-foreground">
-              <span>Current usage: {totalUsage}</span>
-              <span>{usagePercentage.toFixed(1)}%</span>
+          <>
+            <div className="space-y-2">
+              <Progress value={usagePercentage} className="w-full" />
+              <div className="flex justify-between text-sm text-muted-foreground">
+                <span>Current usage: {totalUsage}</span>
+                <span>{usagePercentage.toFixed(1)}%</span>
+              </div>
             </div>
-          </div>
+            <div className="flex space-x-2">
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline">Upgrade</Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Upgrade Billing Threshold</DialogTitle>
+                  </DialogHeader>
+                  <div className="flex items-center space-x-2">
+                    <Input
+                      type="number"
+                      placeholder="New threshold"
+                      value={newThreshold}
+                      onChange={(e) => setNewThreshold(e.target.value)}
+                    />
+                    <Button onClick={handleSetThreshold}>Set</Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+              <Button variant="destructive" onClick={handleRemoveThreshold}>
+                Remove
+              </Button>
+            </div>
+          </>
         ) : (
-          <div className="flex items-center text-muted-foreground">
-            <AlertCircle className="mr-2 h-5 w-5" />
-            <span>Billing maximum is turned off</span>
+          <div className="space-y-4">
+            <div className="flex items-center text-muted-foreground">
+              <AlertCircle className="mr-2 h-5 w-5" />
+              <span>Billing maximum is turned off</span>
+            </div>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button>Set Billing Threshold</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Set Billing Threshold</DialogTitle>
+                </DialogHeader>
+                <div className="flex items-center space-x-2">
+                  <Input
+                    type="number"
+                    placeholder="New threshold"
+                    value={newThreshold}
+                    onChange={(e) => setNewThreshold(e.target.value)}
+                  />
+                  <Button onClick={handleSetThreshold}>Set</Button>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         )}
       </CardContent>
     </Card>
   );
-};
+}
 
 const UpgradePlan = () => {
   const { mutateAsync: createSetupIntent, isPending } =

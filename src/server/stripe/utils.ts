@@ -96,7 +96,10 @@ export const manageSubscriptionStatusChange = async ({
         createdAt: new Date()
     }
 
-    await db.insert(subscriptionsTable).values(subscriptionData)
+    await db.insert(subscriptionsTable).values(subscriptionData).onConflictDoUpdate({
+        target: [subscriptionsTable.id],
+        set: subscriptionData
+    })
 
 
     if (shouldCopyBillingDetails && subscription.default_payment_method && customer.id) {
