@@ -5,10 +5,6 @@ import { stripe } from "../../server/stripe";
 export const createOrRetrieveCustomer = async (email: string) => {
 
     let customerID: string
-
-
-
-
 }
 
 
