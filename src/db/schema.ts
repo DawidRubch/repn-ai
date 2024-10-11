@@ -26,7 +26,6 @@ export const agentsTable = pgTable('agents', {
     introMessage: text('intro_message '),
     calendlyUrl: text('calendly_url'),
     voice: text('voice').notNull(),
-    websites: text('websites').array()
 })
 
 export type Agents = typeof agentsTable.$inferSelect;

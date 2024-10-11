@@ -64,8 +64,9 @@ export const useAgentForm = () => {
 
   const { mutateAsync: createAgentMutation, isPending: isAgentCreating } = trpc.agent.createAgent.useMutation()
   const { mutateAsync: scrapeWebsite, isPending: isScrapingWebsite, } = trpc.scrape.scrapeWebsite.useMutation()
+  const { mutateAsync: updateAgentMutation, isPending: isUpdatingAgent } = trpc.agent.updateAgent.useMutation()
 
-
+  const { data: currentAgent } = trpc.agent.getAgent.useQuery()
   const identityForm = useForm<IdentityForm>({
     resolver: zodResolver(identityFormSchema),
     defaultValues: formValues.identity,
@@ -124,6 +125,34 @@ export const useAgentForm = () => {
       setIsCreatingAgent(false);
     }
   };
+
+
+  const updateAgent = async () => {
+    const identity = identityForm.getValues();
+    const behaviour = behaviourForm.getValues();
+    const knowledge = knowledgeForm.getValues();
+    const widget = widgetForm.getValues();
+
+    if (!currentAgent?.id) return;
+
+
+    await updateAgentMutation({
+      id: currentAgent?.id,
+      voice: identity.voice,
+      displayName: identity.name,
+      description: identity.name,
+      greeting: behaviour.greeting,
+      prompt: behaviour.introduction,
+      position: widget.position,
+      criticalKnowledge: knowledge.criticalKnowledge || "",
+      answerOnlyFromCriticalKnowledge: knowledge.onlyAnwserFromKnowledge,
+      calendlyUrl: widget.calendlyURL || null,
+      avatarPhotoUrl: identity.avatarURL,
+      introMessage: widget.introMessage,
+    })
+
+
+  }
 
   return {
     agentFormStep,

@@ -37,7 +37,6 @@ export default function KnowledgePage() {
       knowledgeForm.reset({
         criticalKnowledge: data.criticalKnowledge,
         onlyAnwserFromKnowledge: data.answerOnlyFromCriticalKnowledge,
-        websites: (data.websites || []).map((url) => ({ url })),
       });
     }
   }, [data]);

@@ -18,14 +18,11 @@ const AgentSchema = z.object({
     introMessage: z.string().optional(),
     calendlyUrl: z.string().nullable(),
     voice: z.string(),
-    websites: z.array(z.string()).optional(),
 })
 
 const AgentSchemaWithID = AgentSchema.extend({
     id: z.string(),
 })
-
-
 
 export const agentRouter = createTRPCRouter({
     createAgent: protectedProcedutre.input(AgentSchema).mutation(async ({ ctx, input }) => {
@@ -121,7 +118,6 @@ export const agentRouter = createTRPCRouter({
             answerOnlyFromCriticalKnowledge: agentsTable.answerOnlyFromCriticalKnowledge,
             calendlyUrl: agentsTable.calendlyUrl,
             introMessage: agentsTable.introMessage,
-            websites: agentsTable.websites,
         }).from(agentsTable).where(eq(agentsTable.userId, userID)).limit(1)
 
         if (!agent) {
@@ -170,7 +166,6 @@ export const agentRouter = createTRPCRouter({
             position: input.position,
             calendlyUrl: input.calendlyUrl,
             avatarPhotoUrl: input.avatarPhotoUrl,
-            websites: input.websites,
         }).where(and(eq(agentsTable.userId, userID), eq(agentsTable.id, input.id)))
 
         return input.id
