@@ -27,9 +27,11 @@ export default function BillingPage() {
   );
 }
 
-const BillingDetails = () => {
+function BillingDetails() {
   const { data: usage, isLoading: usageLoading } =
     trpc.stripe.getUsageForThisPeriod.useQuery();
+  const { data: billingThreshold, isLoading: billingThresholdLoading } =
+    trpc.stripe.billingThreshold.useQuery();
   const router = useRouter();
 
   const { mutateAsync: createBillingSession } =
@@ -48,7 +50,14 @@ const BillingDetails = () => {
     createBillingSession();
   };
 
-  if (usageLoading) return <div>Loading...</div>;
+  if (usageLoading || billingThresholdLoading || !usage || !billingThreshold)
+    return <div>Loading...</div>;
+
+  const totalUsage = (usage?.minutes || 0) + (usage?.meetings || 0);
+  const usagePercentage =
+    billingThreshold && billingThreshold?.billingThreshold > 0
+      ? (totalUsage / billingThreshold.billingThreshold) * 100
+      : 0;
 
   return (
     <div className="grid gap-8 md:grid-cols-2">
@@ -87,9 +96,51 @@ const BillingDetails = () => {
           </Button>
         </CardContent>
       </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Billing Maximum</CardTitle>
+          <CardDescription>
+            {billingMaximum && billingMaximum.maximum > 0
+              ? `Usage limit: ${billingMaximum.maximum}`
+              : "No maximum set"}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {billingMaximum && billingMaximum.maximum > 0 ? (
+            <div className="space-y-2">
+              <Progress value={usagePercentage} className="w-full" />
+              <div className="flex justify-between text-sm text-muted-foreground">
+                <span>Current usage: {totalUsage}</span>
+                <span>{usagePercentage.toFixed(1)}%</span>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center text-muted-foreground">
+              <AlertCircle className="mr-2 h-5 w-5" />
+              <span>Billing maximum is turned off</span>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+      {billingThreshold ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Billing Threshold</CardTitle>
+            <CardDescription>Automatic payment trigger</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <span>Threshold amount:</span>
+              <span className="font-semibold">
+                ${billingThreshold.amount_gte}
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+      ) : null}
     </div>
   );
-};
+}
 
 const UpgradePlan = () => {
   const { mutateAsync: createSetupIntent, isPending } =

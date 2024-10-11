@@ -152,6 +152,52 @@ export const stripeRouter = createTRPCRouter({
         }
 
         return subscription.status === "active"
+    }), billingThreshold: protectedProcedutre.query(async ({ ctx }) => {
+        const userEmail = ctx.user.emailAddresses[0].emailAddress
+
+        const existingCustomer = await checkIfCustomerExists(userEmail)
+
+
+        if (!existingCustomer) {
+            throw new TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+                message: "Customer not found"
+            })
+        }
+
+        const subscription = await checkIfSubscriptionExists(existingCustomer.id)
+
+        if (!subscription) {
+            throw new TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+                message: "Subscription not found"
+            })
+        }
+
+
+
+        const billingThreshold = subscription.billing_thresholds?.amount_gte
+
+        const periodStart = subscription.current_period_start
+        const periodEnd = subscription.current_period_end
+
+        const minutesUsage = await stripe.billing.meters.listEventSummaries(env.STRIPE_AGENT_USAGE_MINUTES_METER_ID, {
+            customer: existingCustomer.id,
+            start_time: periodStart,
+            end_time: periodEnd,
+        })
+
+
+        return {
+            minutesUsage: minutesUsage.data.length > 0 ? minutesUsage.data[0].aggregated_value : 0,
+            billingThreshold
+        }
+
+
+
+
+    }), setBillingThreshold: protectedProcedutre.mutation(async ({ ctx }) => {
+
     })
 });
 
