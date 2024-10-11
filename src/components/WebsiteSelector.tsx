@@ -7,18 +7,21 @@ import {
   FormItem,
   FormLabel,
 } from "./ui/form";
-import { KnowledgeForm } from "../hooks/useAgentForm";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { X } from "lucide-react";
 import clsx from "clsx";
 
+type FormType = {
+  websites: { url: string }[];
+};
+
 export const WebsiteSelector = ({
   form,
 }: {
-  form: UseFormReturn<KnowledgeForm>;
+  form: UseFormReturn<FormType>;
 }) => {
-  const { fields, append, remove } = useFieldArray<KnowledgeForm>({
+  const { fields, append, remove } = useFieldArray<FormType>({
     control: form.control,
     name: "websites",
   });
