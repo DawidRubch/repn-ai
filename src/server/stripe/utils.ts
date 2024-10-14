@@ -32,7 +32,7 @@ export const createOrRetrieveCustomer = async (email: string, userId: string) =>
 }
 
 
-export const createOrRetrieveSubscription = async (customerID: string) => {
+export const createSubscription = async (customerID: string) => {
     const existingSubscription = await checkIfSubscriptionIsActive(customerID)
 
     if (existingSubscription) {

@@ -3,7 +3,7 @@ import { TRPCError } from "@trpc/server";
 import { env } from "../../env";
 import { stripe } from "../../server/stripe";
 import { createTRPCRouter, protectedProcedutre } from "../init";
-import { createOrRetrieveCustomer, createOrRetrieveSubscription } from '../../server/stripe/utils';
+import { createOrRetrieveCustomer, createSubscription } from '../../server/stripe/utils';
 import { z } from 'zod';
 import { db } from '../../db';
 import { customersTable, usersTable } from '../../db/schema';
@@ -19,7 +19,7 @@ export const stripeRouter = createTRPCRouter({
 
         const customerID = await createOrRetrieveCustomer(userEmail, ctx.user.id)
 
-        const subscription = await createOrRetrieveSubscription(customerID)
+        const subscription = await createSubscription(customerID)
 
 
         if ("error" in subscription) {
@@ -46,6 +46,7 @@ export const stripeRouter = createTRPCRouter({
             customer: customerID,
             success_url: "http://localhost:3000/dashboard",
             cancel_url: "http://localhost:3000/dashboard",
+
         })
 
         if (!clientSecret) {
@@ -145,11 +146,13 @@ export const stripeRouter = createTRPCRouter({
 
         const subscription = await checkIfSubscriptionExists(existingCustomer.id)
 
+
+
         if (!subscription) {
             return false
         }
 
-        return subscription.status === "active"
+        return subscription
     }), billingInfo: protectedProcedutre.query(async ({ ctx }) => {
         const userEmail = ctx.user.emailAddresses[0].emailAddress
 
@@ -276,7 +279,6 @@ const checkIfCustomerExists = async (email: string) => {
 const checkIfSubscriptionExists = async (customerID: string) => {
     const subscription = await stripe.subscriptions.list({
         customer: customerID,
-        status: "active"
     });
 
     return subscription.data[0]

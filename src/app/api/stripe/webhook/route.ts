@@ -7,7 +7,8 @@ const relevantEvents = new Set([
     'checkout.session.completed',
     'customer.subscription.created',
     'customer.subscription.updated',
-    'customer.subscription.deleted'
+    'customer.subscription.deleted',
+    "invoice.paid"
 ]);
 
 export async function POST(req: Request) {
@@ -44,6 +45,8 @@ export async function POST(req: Request) {
 
                 case 'checkout.session.completed':
                     const checkoutSession = event.data.object as Stripe.Checkout.Session;
+
+
                     if (checkoutSession.mode === 'subscription') {
                         const subscriptionId = checkoutSession.subscription;
                         await manageSubscriptionStatusChange(
@@ -53,6 +56,23 @@ export async function POST(req: Request) {
                                 shouldCopyBillingDetails: true
                             }
                         );
+                    }
+
+                    //Attaching payment method to customer
+                    if (checkoutSession.mode === "setup") {
+                        const paymentMethodID = checkoutSession.payment_method_configuration_details?.id
+
+                        if (paymentMethodID) {
+                            await stripe.paymentMethods.attach(paymentMethodID, {
+                                customer: checkoutSession.customer as string,
+                            })
+
+                            await stripe.customers.update(checkoutSession.customer as string, {
+                                invoice_settings: {
+                                    default_payment_method: paymentMethodID
+                                }
+                            })
+                        }
                     }
                     break;
                 default:

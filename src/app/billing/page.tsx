@@ -47,6 +47,18 @@ interface BillingThresholdResponse {
 export default function BillingPage() {
   const { data: activeSubscription, isLoading: subscriptionLoading } =
     trpc.stripe.activeSubscription.useQuery();
+
+  if (subscriptionLoading) return <FullPageLoader />;
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8">Billing</h1>
+      {activeSubscription ? <BillingDetails /> : <UpgradePlan />}
+    </div>
+  );
+}
+
+function BillingDetails() {
   const { data: usage, isLoading: usageLoading } =
     trpc.stripe.getUsageForThisPeriod.useQuery<Usage>();
   const {
@@ -63,44 +75,6 @@ export default function BillingPage() {
       },
     });
 
-  const isLoading =
-    subscriptionLoading ||
-    usageLoading ||
-    billingInfoLoading ||
-    billingInfoRefetching ||
-    setBillingThreshold.isPending;
-
-  if (isLoading) return <FullPageLoader />;
-
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Billing</h1>
-      {activeSubscription ? (
-        <BillingDetails
-          usage={usage}
-          billingInfo={billingInfo}
-          setBillingThreshold={setBillingThreshold}
-        />
-      ) : (
-        <UpgradePlan />
-      )}
-    </div>
-  );
-}
-
-interface BillingDetailsProps {
-  usage: Usage | undefined;
-  billingInfo: BillingInfo | undefined;
-  setBillingThreshold: ReturnType<
-    typeof trpc.stripe.setBillingThreshold.useMutation
-  >;
-}
-
-function BillingDetails({
-  usage,
-  billingInfo,
-  setBillingThreshold,
-}: BillingDetailsProps) {
   const router = useRouter();
   const [newThreshold, setNewThreshold] = useState<number>(
     billingInfo?.billingLimit || 0
@@ -141,6 +115,10 @@ function BillingDetails({
       }
     );
   };
+
+  const isLoading = billingInfoLoading || usageLoading || billingInfoRefetching;
+
+  if (isLoading) return <FullPageLoader />;
 
   return (
     <div className="grid gap-8 md:grid-cols-2">
