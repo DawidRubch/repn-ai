@@ -52,7 +52,10 @@ const getConversationsFromPlay = async (agentId: string) => {
 
     const data = await response.json() as ConversationsResponse
 
-    return data
+    // Sort the conversations by startedAt in descending order (newest first)
+    const sortedData = data.sort((a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime())
+
+    return sortedData
 }
 
 
