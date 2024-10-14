@@ -13,6 +13,14 @@ export const conversationRouter = createTRPCRouter({
 
 
     }),
+    getConversationTranscript: protectedProcedutre.input(z.object({
+        conversationId: z.string(),
+        agentId: z.string(),
+    })).query(async ({ ctx, input }) => {
+        const { conversationId, agentId } = input
+
+        return await getConversationTranscript({ conversationId, agentId })
+    }),
     getConversationDetails: protectedProcedutre.input(z.object({
         conversationId: z.string(),
         agentId: z.string(),
@@ -59,15 +67,17 @@ const getConversationsFromPlay = async (agentId: string) => {
 }
 
 
-type ConversationTranscriptResponse = {
+
+type ConversationTranscript = {
     id: string,
     role: "assistant" | "user"
     content: string
     timestamp: string
 }
 
+type ConversationTranscriptResponse = ConversationTranscript[]
 
-const getConversationDetailsFromPlay = async ({ conversationId, agentId, pageSize = 50 }: { conversationId: string, agentId: string, pageSize?: number }) => {
+const getConversationTranscript = async ({ conversationId, agentId, pageSize = 50 }: { conversationId: string, agentId: string, pageSize?: number }) => {
 
     const response = await fetch(`https://api.play.ai/api/v1/agents/${agentId}/conversations/${conversationId}/transcript?pageSize=${pageSize}`, {
         headers: {
@@ -83,6 +93,26 @@ const getConversationDetailsFromPlay = async ({ conversationId, agentId, pageSiz
     }
 
     const data = await response.json() as ConversationTranscriptResponse
+
+    return data
+}
+
+
+const getConversationDetailsFromPlay = async ({ conversationId, agentId }: { conversationId: string, agentId: string }) => {
+    const response = await fetch(`https://api.play.ai/api/v1/agents/${agentId}/conversations/${conversationId}`, {
+        headers: {
+            'Content-Type': 'application/json',
+            'AUTHORIZATION': `${env.PLAY_AI_API_KEY}`,
+            'X-USER-ID': `${env.PLAY_AI_USER_ID}`,
+        }
+    })
+
+    if (!response.ok) {
+        console.error(await response.json())
+        return null
+    }
+
+    const data = await response.json() as Conversation
 
     return data
 }
