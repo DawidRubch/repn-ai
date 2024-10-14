@@ -1,0 +1,85 @@
+import { z } from "zod";
+import { createTRPCRouter, protectedProcedutre } from "../init";
+import { env } from "../../env";
+
+export const conversationRouter = createTRPCRouter({
+    getConversations: protectedProcedutre.input(z.object({
+        agentId: z.string(),
+    })).query(async ({ ctx, input }) => {
+
+        const { agentId } = input
+
+        return await getConversationsFromPlay(agentId)
+
+
+    }),
+    getConversationDetails: protectedProcedutre.input(z.object({
+        conversationId: z.string(),
+        agentId: z.string(),
+    })).query(async ({ ctx, input }) => {
+        const { conversationId, agentId } = input
+
+        return await getConversationDetailsFromPlay({ conversationId, agentId })
+    }),
+})
+
+type Conversation = {
+    id: string;
+    source: string;
+    callerEmail: string;
+    startedAt: string;
+    endedAt: string;
+    durationInSeconds: number;
+};
+
+type ConversationsResponse = Conversation[];
+
+
+
+const getConversationsFromPlay = async (agentId: string) => {
+    const response = await fetch(`https://api.play.ai/api/v1/agents/${agentId}/conversations`, {
+        headers: {
+            'Content-Type': 'application/json',
+            'AUTHORIZATION': `${env.PLAY_AI_API_KEY}`,
+            'X-USER-ID': `${env.PLAY_AI_USER_ID}`,
+        }
+    })
+
+    if (!response.ok) {
+        console.error(await response.json())
+        return []
+    }
+
+    const data = await response.json() as ConversationsResponse
+
+    return data
+}
+
+
+type ConversationTranscriptResponse = {
+    id: string,
+    role: "assistant" | "user"
+    content: string
+    timestamp: string
+}
+
+
+const getConversationDetailsFromPlay = async ({ conversationId, agentId, pageSize = 50 }: { conversationId: string, agentId: string, pageSize?: number }) => {
+
+    const response = await fetch(`https://api.play.ai/api/v1/agents/${agentId}/conversations/${conversationId}/transcript?pageSize=${pageSize}`, {
+        headers: {
+            'Content-Type': 'application/json',
+            'AUTHORIZATION': `${env.PLAY_AI_API_KEY}`,
+            'X-USER-ID': `${env.PLAY_AI_USER_ID}`,
+        }
+    })
+
+    if (!response.ok) {
+        console.error(await response.json())
+        return null
+    }
+
+    const data = await response.json() as ConversationTranscriptResponse
+
+    return data
+}
