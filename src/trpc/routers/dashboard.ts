@@ -41,7 +41,7 @@ export const dashboardRouter = createTRPCRouter({
         return {
             numberOfConversations,
             numberOfSecondsTalked,
-            conversationsThisMonth,
+            conversationsThisMonth: conversationsThisMonth.length,
             numberOfSecondsTalkedThisMonth
         }
     }),
