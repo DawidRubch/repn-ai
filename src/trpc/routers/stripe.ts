@@ -46,7 +46,6 @@ export const stripeRouter = createTRPCRouter({
             customer: customerID,
             success_url: "http://localhost:3000/dashboard",
             cancel_url: "http://localhost:3000/dashboard",
-
         })
 
         if (!clientSecret) {

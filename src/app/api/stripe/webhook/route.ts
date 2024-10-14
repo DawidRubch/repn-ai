@@ -1,7 +1,7 @@
 import Stripe from 'stripe';
+import { env } from '../../../../env';
 import { stripe } from '../../../../server/stripe';
 import { manageSubscriptionStatusChange } from '../../../../server/stripe/utils';
-import { env } from '../../../../env';
 
 const relevantEvents = new Set([
     'checkout.session.completed',
@@ -60,21 +60,21 @@ export async function POST(req: Request) {
 
                     //Attaching payment method to customer
                     if (checkoutSession.mode === "setup") {
-                        const paymentMethodID = checkoutSession.payment_method_configuration_details?.id
+                        const setupIntent = await stripe.setupIntents.retrieve(checkoutSession.setup_intent as string);
 
-                        if (paymentMethodID) {
-                            await stripe.paymentMethods.attach(paymentMethodID, {
-                                customer: checkoutSession.customer as string,
-                            })
+
+                        if (setupIntent.payment_method) {
 
                             await stripe.customers.update(checkoutSession.customer as string, {
                                 invoice_settings: {
-                                    default_payment_method: paymentMethodID
+                                    default_payment_method: setupIntent.payment_method as string
                                 }
                             })
                         }
                     }
                     break;
+
+
                 default:
                     throw new Error('Unhandled relevant event!');
             }
