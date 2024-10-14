@@ -5,6 +5,7 @@ import { agentsTable } from "../../db/schema"
 import { TRPCError } from "@trpc/server"
 import { and, eq } from "drizzle-orm"
 import { db } from "../../db"
+import { createNewAgent, updateAgent } from "../../server/playai/utils"
 
 const AgentSchema = z.object({
     displayName: z.string(),
@@ -195,83 +196,3 @@ export const agentRouter = createTRPCRouter({
 
 
 
-type AgentWithID = z.infer<typeof AgentSchema> & { id: string }
-
-
-
-type CreateNewAgentInput = {
-    voice: string,
-    voiceSpeed: number,
-    displayName: string,
-    description: string,
-    greeting: string,
-    prompt: string,
-    criticalKnowledge: string,
-    answerOnlyFromCriticalKnowledge: boolean,
-    visibility: string,
-}
-
-const createNewAgent = async (agent: CreateNewAgentInput): Promise<string> => {
-    const response = await fetch('https://api.play.ai/api/v1/agents', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'AUTHORIZATION': `${env.PLAY_AI_API_KEY}`,
-            'X-USER-ID': `${env.PLAY_AI_USER_ID}`,
-        },
-        body: JSON.stringify(agent)
-    })
-
-    if (!response.ok) {
-        throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: await response.json()
-        })
-    }
-
-    const data = await response.json() as AgentWithID
-
-    return data.id
-}
-
-
-type UpdateAgentInput = {
-    id: string,
-    voice: string,
-    displayName: string,
-    greeting: string,
-    prompt: string,
-    criticalKnowledge: string,
-    answerOnlyFromCriticalKnowledge: boolean,
-}
-
-
-const updateAgent = async (agent: UpdateAgentInput): Promise<void> => {
-    const response = await fetch(`https://api.play.ai/api/v1/agents/${agent.id}`, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json',
-            'AUTHORIZATION': `${env.PLAY_AI_API_KEY}`,
-            'X-USER-ID': `${env.PLAY_AI_USER_ID}`,
-        },
-        body: JSON.stringify({
-            voice: agent.voice,
-            displayName: agent.displayName,
-            greeting: agent.greeting,
-            prompt: agent.prompt,
-            criticalKnowledge: agent.criticalKnowledge,
-            answerOnlyFromCriticalKnowledge: agent.answerOnlyFromCriticalKnowledge,
-        })
-    })
-
-    if (!response.ok) {
-
-        const res = await response.json()
-
-        console.log(res)
-        throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: res
-        })
-    }
-}
