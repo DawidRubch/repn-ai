@@ -160,3 +160,30 @@ export const getConversationDetailsFromPlay = async ({ conversationId, agentId }
 
     return data
 }
+
+
+
+type AgentStats = {
+    id: string,
+    numberOfConversations: number,
+    numberOfPhoneConversations: number,
+    numberOfSecondsTalked: number
+}
+
+export const getAgentStats = async ({ agentId }: { agentId: string }) => {
+    const response = await fetch(`${playai.baseURL}/agent-stats/${agentId}`, {
+        headers: playai.headers
+    })
+
+    if (!response.ok) {
+        console.error(await response.json())
+        return null
+    }
+
+    const data = await response.json() as AgentStats
+
+
+    return data
+
+
+}

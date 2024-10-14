@@ -1,8 +1,6 @@
 import { z } from "zod";
+import { getConversationDetailsFromPlay, getConversationsFromPlay, getConversationTranscript } from "../../server/playai/utils";
 import { createTRPCRouter, protectedProcedutre } from "../init";
-import { env } from "../../env";
-import { getConversationDetailsFromPlay, getConversationsFromPlay } from "../../server/playai/utils";
-import { getConversationTranscript } from "../../server/playai/utils";
 
 export const conversationRouter = createTRPCRouter({
     getConversations: protectedProcedutre.input(z.object({

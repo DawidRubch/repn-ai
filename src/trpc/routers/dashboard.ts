@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { getConversationsFromPlay } from "../../server/playai/utils";
+import { getAgentStats, getConversationsFromPlay } from "../../server/playai/utils";
 import { createTRPCRouter, protectedProcedutre } from "../init";
 
 export const dashboardRouter = createTRPCRouter({
@@ -8,19 +8,41 @@ export const dashboardRouter = createTRPCRouter({
     })).query(async ({ ctx, input }) => {
         const { agentId } = input
 
-        const totalAgentConversations = await getConversationsFromPlay(agentId)
 
-        const totalAgentConversationsThisMonth = totalAgentConversations.filter((conversation) => {
+
+        const data = await getAgentStats({ agentId })
+
+        if (!data) {
+            return null
+        }
+
+        const { numberOfConversations, numberOfSecondsTalked } = data
+
+
+        const conversations = await getConversationsFromPlay(agentId)
+
+        const conversationsThisMonth = conversations.filter((conversation) => {
             const conversationDate = new Date(conversation.startedAt)
             const currentDate = new Date()
             return conversationDate.getMonth() === currentDate.getMonth() && conversationDate.getFullYear() === currentDate.getFullYear()
         })
 
 
+        const numberOfSecondsTalkedThisMonth = conversationsThisMonth.reduce((acc, conversation) => {
+            return acc + conversation.durationInSeconds
+        }, 0)
+
+
+
+
+
+
 
         return {
-            totalAgentConversations,
-            totalAgentConversationsThisMonth
+            numberOfConversations,
+            numberOfSecondsTalked,
+            conversationsThisMonth,
+            numberOfSecondsTalkedThisMonth
         }
     }),
 })
