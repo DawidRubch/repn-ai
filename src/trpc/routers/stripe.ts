@@ -177,10 +177,11 @@ export const stripeRouter = createTRPCRouter({
             end_time: periodEnd,
         })
 
-        const { unit_amount } = await stripe.prices.retrieve(subscription.items.data[0].price.id)
+        const { unit_amount_decimal, ...rest } = await stripe.prices.retrieve(subscription.items.data[0].price.id)
 
+        console.log(rest)
 
-        if (!unit_amount) {
+        if (!unit_amount_decimal) {
             throw new TRPCError({
                 code: "INTERNAL_SERVER_ERROR",
                 message: "Price not found"
@@ -193,8 +194,11 @@ export const stripeRouter = createTRPCRouter({
         }).from(customersTable).where(eq(customersTable.id, existingCustomer.id))
 
 
+        const unitAmount = Number(unit_amount_decimal)
+
+
         // Convert unit_amount from cents to dollars
-        const unitAmountInDollars = unit_amount / 100;
+        const unitAmountInDollars = unitAmount / 100;
 
         const totalSecondsUsed = secondsUsage.data.length > 0 ? secondsUsage.data[0].aggregated_value : 0;
 
