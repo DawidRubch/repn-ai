@@ -85,19 +85,6 @@ export function DashboardComponent() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Total Talk Time
-            </CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {formatSeconds(data?.numberOfSecondsTalked ?? 0)}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
               Conversations This Month
             </CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
@@ -105,19 +92,6 @@ export function DashboardComponent() {
           <CardContent>
             <div className="text-2xl font-bold">
               {data?.conversationsThisMonth ?? 0}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Talk Time This Month
-            </CardTitle>
-            <CalendarDays className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {formatSeconds(data?.numberOfSecondsTalkedThisMonth ?? 0)}
             </div>
           </CardContent>
         </Card>

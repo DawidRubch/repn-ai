@@ -16,7 +16,7 @@ export const dashboardRouter = createTRPCRouter({
             return null
         }
 
-        const { numberOfConversations, numberOfSecondsTalked } = data
+        const { numberOfConversations } = data
 
 
         const conversations = await getConversationsFromPlay(agentId, 9999999)
@@ -31,16 +31,11 @@ export const dashboardRouter = createTRPCRouter({
         })
 
 
-        const numberOfSecondsTalkedThisMonth = conversationsThisMonth.reduce((acc, conversation) => {
-            return acc + conversation.durationInSeconds
-        }, 0)
 
 
         return {
             numberOfConversations,
-            numberOfSecondsTalked,
             conversationsThisMonth: conversationsThisMonth.length,
-            numberOfSecondsTalkedThisMonth
         }
     }),
 })

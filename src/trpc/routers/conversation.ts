@@ -9,7 +9,7 @@ export const conversationRouter = createTRPCRouter({
 
         const { agentId } = input
 
-        return await getConversationsFromPlay(agentId)
+        return await getConversationsFromPlay(agentId, 999999)
 
 
     }),

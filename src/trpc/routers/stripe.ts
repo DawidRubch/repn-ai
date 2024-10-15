@@ -38,9 +38,6 @@ export const stripeRouter = createTRPCRouter({
             })
         }
 
-        const clientSecret = setupIntent?.client_secret
-
-
         const url = ctx.headers.get("origin")
 
         const checkoutSession = await stripe.checkout.sessions.create({
@@ -51,12 +48,6 @@ export const stripeRouter = createTRPCRouter({
             cancel_url: `${url}/create-agent`,
         })
 
-        if (!clientSecret) {
-            throw new TRPCError({
-                code: "INTERNAL_SERVER_ERROR",
-                message: "Client secret not found"
-            })
-        }
 
         return {
             url: checkoutSession.url
