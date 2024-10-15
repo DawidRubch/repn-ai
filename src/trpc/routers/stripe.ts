@@ -177,9 +177,8 @@ export const stripeRouter = createTRPCRouter({
             end_time: periodEnd,
         })
 
-        const { unit_amount_decimal, ...rest } = await stripe.prices.retrieve(subscription.items.data[0].price.id)
 
-        console.log(rest)
+        const { unit_amount_decimal, ...rest } = await stripe.prices.retrieve(subscription.items.data[0].price.id)
 
         if (!unit_amount_decimal) {
             throw new TRPCError({

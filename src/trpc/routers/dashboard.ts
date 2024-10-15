@@ -8,8 +8,6 @@ export const dashboardRouter = createTRPCRouter({
     })).query(async ({ ctx, input }) => {
         const { agentId } = input
 
-
-
         const data = await getAgentStats({ agentId })
 
         if (!data) {
@@ -25,13 +23,8 @@ export const dashboardRouter = createTRPCRouter({
             const conversationDate = new Date(conversation.startedAt)
             const currentDate = new Date()
 
-
-
             return conversationDate.getMonth() === currentDate.getMonth() && conversationDate.getFullYear() === currentDate.getFullYear()
         })
-
-
-
 
         return {
             numberOfConversations,

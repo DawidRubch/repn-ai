@@ -37,7 +37,7 @@ interface BillingInfo {
 }
 
 interface Usage {
-  minutes: number;
+  seconds: number;
 }
 
 interface BillingThresholdResponse {
@@ -132,9 +132,9 @@ function BillingDetails() {
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <Clock className="mr-2 h-5 w-5 text-muted-foreground" />
-                <span>Minutes used</span>
+                <span>Total seconds used</span>
               </div>
-              <span className="font-semibold">{usage?.minutes || 0}</span>
+              <span className="font-semibold">{usage?.seconds || 0}</span>
             </div>
           </div>
         </CardContent>
