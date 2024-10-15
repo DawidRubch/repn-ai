@@ -40,12 +40,15 @@ export const stripeRouter = createTRPCRouter({
 
         const clientSecret = setupIntent?.client_secret
 
+
+        const url = ctx.headers.get("origin")
+
         const checkoutSession = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             mode: "setup",
             customer: customerID,
-            success_url: "http://localhost:3000/dashboard",
-            cancel_url: "http://localhost:3000/dashboard",
+            success_url: `${url}/create-agent`,
+            cancel_url: `${url}/create-agent`,
         })
 
         if (!clientSecret) {
@@ -62,8 +65,6 @@ export const stripeRouter = createTRPCRouter({
     }),
 
     createBillingSession: protectedProcedutre.mutation(async ({ ctx }) => {
-
-
         const userEmail = ctx.user.emailAddresses[0].emailAddress
 
 
@@ -76,8 +77,11 @@ export const stripeRouter = createTRPCRouter({
             })
         }
 
+
+        const url = ctx.headers.get("origin")
+
         const billingSession = await stripe.billingPortal.sessions.create({
-            return_url: "http://localhost:3000/dashboard",
+            return_url: `${url}/billing`,
             customer: existingCustomer.id,
         })
 
@@ -122,14 +126,14 @@ export const stripeRouter = createTRPCRouter({
         const periodStart = subscription.current_period_start
 
 
-        const minutesUsage = await stripe.billing.meters.listEventSummaries(env.STRIPE_AGENT_USAGE_MINUTES_METER_ID, {
+        const secondsUsage = await stripe.billing.meters.listEventSummaries(env.STRIPE_AGENT_USAGE_SECONDS_METER_ID, {
             customer: existingCustomer.id,
             start_time: periodStart,
             end_time: periodEnd,
         })
 
         return {
-            minutes: minutesUsage.data.length > 0 ? minutesUsage.data[0].aggregated_value : 0
+            seconds: secondsUsage.data.length > 0 ? secondsUsage.data[0].aggregated_value : 0
         }
     }),
     activeSubscription: protectedProcedutre.query(async ({ ctx }) => {
@@ -176,7 +180,7 @@ export const stripeRouter = createTRPCRouter({
         const periodStart = subscription.current_period_start
         const periodEnd = subscription.current_period_end
 
-        const minutesUsage = await stripe.billing.meters.listEventSummaries(env.STRIPE_AGENT_USAGE_MINUTES_METER_ID, {
+        const secondsUsage = await stripe.billing.meters.listEventSummaries(env.STRIPE_AGENT_USAGE_SECONDS_METER_ID, {
             customer: existingCustomer.id,
             start_time: periodStart,
             end_time: periodEnd,
@@ -201,11 +205,11 @@ export const stripeRouter = createTRPCRouter({
         // Convert unit_amount from cents to dollars
         const unitAmountInDollars = unit_amount / 100;
 
-        const totalMinutesUsed = minutesUsage.data.length > 0 ? minutesUsage.data[0].aggregated_value : 0;
+        const totalSecondsUsed = secondsUsage.data.length > 0 ? secondsUsage.data[0].aggregated_value : 0;
 
 
         // Calculate budget used in dollars
-        const budgetUsed = Number((unitAmountInDollars * totalMinutesUsed).toFixed(2));
+        const budgetUsed = Number((unitAmountInDollars * totalSecondsUsed).toFixed(2));
 
 
         // Ensure billingLimit is a number, defaulting to 0 if null

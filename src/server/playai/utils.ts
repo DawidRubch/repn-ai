@@ -100,8 +100,11 @@ type ConversationsResponse = Conversation[];
 
 
 
-export const getConversationsFromPlay = async (agentId: string) => {
-    const response = await fetch(`${playai.baseURL}/agents/${agentId}/conversations`, {
+export const getConversationsFromPlay = async (agentId: string, pageSize: number = 50) => {
+
+
+
+    const response = await fetch(`${playai.baseURL}/agents/${agentId}/conversations?pageSize=${pageSize}`, {
         headers: playai.headers
     })
 

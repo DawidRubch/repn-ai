@@ -45,7 +45,7 @@ export const createSubscription = async (customerID: string) => {
         customer: customerID,
         items: [
             {
-                price: env.STRIPE_AGENT_MINUTES_PRICE_ID,
+                price: env.STRIPE_AGENT_SECONDS_PRICE_ID,
             },
         ],
         expand: ['pending_setup_intent'],

@@ -5,12 +5,6 @@ export const env = createEnv({
     server: {
         CLERK_SECRET_KEY: z.string().min(1),
         STRIPE_SECRET_KEY: z.string().min(1),
-        STRIPE_AGENT_MINUTES_PRICE_ID: z.string().min(1),
-        STRIPE_AGENT_MEETINGS_PRICE_ID: z.string().min(1),
-        STRIPE_AGENT_USAGE_MINUTES_EVENT_NAME: z.string().min(1),
-        STRIPE_AGENT_USAGE_MEETINGS_EVENT_NAME: z.string().min(1),
-        STRIPE_AGENT_USAGE_MINUTES_METER_ID: z.string().min(1),
-        STRIPE_AGENT_USAGE_MEETINGS_METER_ID: z.string().min(1),
         GOOGLE_OAUTH_CLIENT_ID: z.string().min(1),
         GOOGLE_OAUTH_CLIENT_SECRET: z.string().min(1),
         GOOGLE_OAUTH_REDIRECT_URI: z.string().min(1),
@@ -29,6 +23,8 @@ export const env = createEnv({
         APIFY_WEBHOOK_URL: z.string().min(1),
         PLAY_AI_USER_ID: z.string().min(1),
         STRIPE_WEBHOOK_SECRET: z.string().min(1),
+        STRIPE_AGENT_SECONDS_PRICE_ID: z.string().min(1),
+        STRIPE_AGENT_USAGE_SECONDS_METER_ID: z.string().min(1),
     },
     client: {
         NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1),
@@ -42,12 +38,6 @@ export const env = createEnv({
         NEXT_PUBLIC_CLERK_SIGN_UP_URL: process.env.NEXT_PUBLIC_CLERK_SIGN_UP_URL,
         CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
         STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
-        STRIPE_AGENT_MINUTES_PRICE_ID: process.env.STRIPE_AGENT_MINUTES_PRICE_ID,
-        STRIPE_AGENT_MEETINGS_PRICE_ID: process.env.STRIPE_AGENT_MEETINGS_PRICE_ID,
-        STRIPE_AGENT_USAGE_MINUTES_EVENT_NAME: process.env.STRIPE_AGENT_USAGE_MINUTES_EVENT_NAME,
-        STRIPE_AGENT_USAGE_MEETINGS_EVENT_NAME: process.env.STRIPE_AGENT_USAGE_MEETINGS_EVENT_NAME,
-        STRIPE_AGENT_USAGE_MINUTES_METER_ID: process.env.STRIPE_AGENT_USAGE_MINUTES_METER_ID,
-        STRIPE_AGENT_USAGE_MEETINGS_METER_ID: process.env.STRIPE_AGENT_USAGE_MEETINGS_METER_ID,
         GOOGLE_OAUTH_CLIENT_ID: process.env.GOOGLE_OAUTH_CLIENT_ID,
         GOOGLE_OAUTH_CLIENT_SECRET: process.env.GOOGLE_OAUTH_CLIENT_SECRET,
         GOOGLE_OAUTH_REDIRECT_URI: process.env.GOOGLE_OAUTH_REDIRECT_URI,
@@ -66,6 +56,8 @@ export const env = createEnv({
         APIFY_ACT_ID: process.env.APIFY_ACT_ID,
         APIFY_WEBHOOK_URL: process.env.APIFY_WEBHOOK_URL,
         PLAY_AI_USER_ID: process.env.PLAY_AI_USER_ID,
+        STRIPE_AGENT_SECONDS_PRICE_ID: process.env.STRIPE_AGENT_SECONDS_PRICE_ID,
+        STRIPE_AGENT_USAGE_SECONDS_METER_ID: process.env.STRIPE_AGENT_USAGE_SECONDS_METER_ID,
     },
     // For Next.js >= 13.4.4, you only need to destructure client variables:
     // experimental__runtimeEnv: {

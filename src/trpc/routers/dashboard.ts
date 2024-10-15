@@ -19,11 +19,14 @@ export const dashboardRouter = createTRPCRouter({
         const { numberOfConversations, numberOfSecondsTalked } = data
 
 
-        const conversations = await getConversationsFromPlay(agentId)
+        const conversations = await getConversationsFromPlay(agentId, 9999999)
 
         const conversationsThisMonth = conversations.filter((conversation) => {
             const conversationDate = new Date(conversation.startedAt)
             const currentDate = new Date()
+
+
+
             return conversationDate.getMonth() === currentDate.getMonth() && conversationDate.getFullYear() === currentDate.getFullYear()
         })
 

@@ -10,6 +10,7 @@ export const createTRPCContext = cache(async (req?: NextRequest) => {
     if (!req) {
         return {
             auth: null,
+            headers: null
         };
     }
 
@@ -17,7 +18,8 @@ export const createTRPCContext = cache(async (req?: NextRequest) => {
 
     return {
         auth,
-        db: db
+        db: db,
+        headers: req.headers
     };
 });
 
