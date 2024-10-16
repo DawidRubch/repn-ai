@@ -21,17 +21,6 @@ export function DashboardComponent() {
     }
   );
 
-  const formatSeconds = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-
-    if (hours === 0 && minutes === 0) {
-      return `${seconds}s`;
-    }
-
-    return `${hours}h ${minutes}m`;
-  };
-
   if (isLoading) {
     return (
       <div className="flex-1 p-8 space-y-4">
@@ -92,6 +81,32 @@ export function DashboardComponent() {
           <CardContent>
             <div className="text-2xl font-bold">
               {data?.conversationsThisMonth ?? 0}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Meetings Booked
+            </CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {data?.meetingsBooked ?? 0}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Meetings This Month
+            </CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {data?.meetingsThisMonth ?? 0}
             </div>
           </CardContent>
         </Card>
