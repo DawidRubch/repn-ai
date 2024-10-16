@@ -76,7 +76,7 @@ export type NewSubscriptions = typeof subscriptionsTable.$inferInsert;
 export const meetingsBookedTable = pgTable('meetings_booked', {
     id: uuid('id').primaryKey().defaultRandom(),
     userId: text('user_id').references(() => usersTable.id).notNull(),
-    date: timestamp('date').defaultNow(),
+    date: timestamp('date').defaultNow().notNull(),
 });
 
 export type MeetingsBooked = typeof meetingsBookedTable.$inferSelect;
