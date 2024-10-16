@@ -131,7 +131,6 @@ export const stripeRouter = createTRPCRouter({
 
         const userEmail = ctx.user.emailAddresses[0].emailAddress
 
-
         const existingCustomer = await checkIfCustomerExists(userEmail)
 
         if (!existingCustomer) {

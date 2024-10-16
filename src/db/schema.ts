@@ -72,12 +72,12 @@ export const subscriptionsTable = pgTable('subscriptions', {
 export type Subscriptions = typeof subscriptionsTable.$inferSelect;
 export type NewSubscriptions = typeof subscriptionsTable.$inferInsert;
 
-export const usageMinutesTable = pgTable('usage_minutes', {
+
+export const meetingsBookedTable = pgTable('meetings_booked', {
     id: text('id').primaryKey(),
-    subscriptionId: text('subscription_id').references(() => subscriptionsTable.id).notNull(),
-    minutes: integer('minutes').notNull(),
-    date: timestamp('date').notNull(),
+    userId: text('user_id').references(() => usersTable.id).notNull(),
+    date: timestamp('date').defaultNow(),
 });
 
-export type UsageMinutes = typeof usageMinutesTable.$inferSelect;
-export type NewUsageMinutes = typeof usageMinutesTable.$inferInsert;
+export type MeetingsBooked = typeof meetingsBookedTable.$inferSelect;
+export type NewMeetingsBooked = typeof meetingsBookedTable.$inferInsert;
