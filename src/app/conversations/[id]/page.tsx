@@ -77,8 +77,8 @@ export default function ConversationPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0 h-full">
-          <ScrollArea className="h-full">
-            <div className="space-y-4 p-4">
+          <ScrollArea className="h-[calc(100%-50px)]">
+            <div className="space-y-4 p-4 pb-8">
               {conversationHistory.map(
                 (message: ConversationTranscriptResponse) => (
                   <Card

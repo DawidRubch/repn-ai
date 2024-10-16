@@ -19,7 +19,33 @@ export const conversationRouter = createTRPCRouter({
     })).query(async ({ ctx, input }) => {
         const { conversationId, agentId } = input
 
-        return await getConversationTranscript({ conversationId, agentId })
+
+
+        const transcript = await getConversationTranscript({ conversationId, agentId })
+
+        if (!transcript) {
+            return []
+        }
+
+        const sortedTranscript = transcript.sort((a, b) => {
+            return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+        })
+
+        // Enforce AI/USER alternating order
+        const orderedTranscript: typeof sortedTranscript = []
+        let aiMessages = sortedTranscript.filter(msg => msg.role === 'assistant')
+        let userMessages = sortedTranscript.filter(msg => msg.role === 'user')
+
+        while (aiMessages.length > 0 || userMessages.length > 0) {
+            if (aiMessages.length > 0) {
+                orderedTranscript.push(aiMessages.shift()!)
+            }
+            if (userMessages.length > 0) {
+                orderedTranscript.push(userMessages.shift()!)
+            }
+        }
+
+        return orderedTranscript
     }),
     getConversationDetails: protectedProcedutre.input(z.object({
         conversationId: z.string(),
