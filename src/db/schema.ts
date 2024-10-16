@@ -1,4 +1,4 @@
-import { boolean, integer, pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, integer, pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 // Existing tables and enums (unchanged)
 export const usersTable = pgTable('users', {
@@ -74,7 +74,7 @@ export type NewSubscriptions = typeof subscriptionsTable.$inferInsert;
 
 
 export const meetingsBookedTable = pgTable('meetings_booked', {
-    id: text('id').primaryKey(),
+    id: uuid('id').primaryKey().defaultRandom(),
     userId: text('user_id').references(() => usersTable.id).notNull(),
     date: timestamp('date').defaultNow(),
 });
