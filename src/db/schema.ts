@@ -41,6 +41,7 @@ export const customersTable = pgTable('customers', {
     email: text('email').notNull(),
     createdAt: timestamp('created_at').defaultNow(),
     billingLimit: integer('billing_limit').default(0),
+    billingUsed: integer('billing_used').default(0),
 });
 
 export type Customers = typeof customersTable.$inferSelect;
