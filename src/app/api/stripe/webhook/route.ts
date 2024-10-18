@@ -2,6 +2,9 @@ import Stripe from 'stripe';
 import { env } from '../../../../env';
 import { stripe } from '../../../../server/stripe';
 import { manageSubscriptionStatusChange } from '../../../../server/stripe/utils';
+import { db } from '../../../../db';
+import { customersTable } from '../../../../db/schema';
+import { eq } from 'drizzle-orm';
 
 const relevantEvents = new Set([
     'checkout.session.completed',
@@ -74,7 +77,12 @@ export async function POST(req: Request) {
                     }
                     break;
 
-
+                case "invoice.paid":
+                    const invoice = event.data.object as Stripe.Invoice;
+                    await db.update(customersTable).set({
+                        billingUsed: 0
+                    }).where(eq(customersTable.stripeCustomerId, invoice.customer as string))
+                    break;
                 default:
                     throw new Error('Unhandled relevant event!');
             }
