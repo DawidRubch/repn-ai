@@ -17,7 +17,10 @@ export const POST = async (req: Request) => {
     }).from(agentsTable).where(and(eq(agentsTable.id, agentId), eq(agentsTable.userId, userId))).limit(1)
 
 
-    const newKnowledge = criticalKnowledge + "\n" + text
+    const websiteContent = `Website content: ${text}`
+
+
+    const newKnowledge = criticalKnowledge + "\n" + websiteContent
 
 
     await db.update(agentsTable).set({

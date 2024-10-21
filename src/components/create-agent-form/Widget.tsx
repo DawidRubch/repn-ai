@@ -132,7 +132,7 @@ export function Widget({ form }: { form: UseFormReturn<WidgetForm> }) {
                   </label>
                   {field.value !== null && (
                     <Input
-                      placeholder="Enter your Calendly URL"
+                      placeholder="Enter your Calendly URL: https://calendly.com/username/meeting-name"
                       className="bg-zinc-900 border-zinc-700 text-white"
                       {...field}
                       value={field.value || ""}
