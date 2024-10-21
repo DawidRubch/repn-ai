@@ -46,6 +46,7 @@ export function Widget({ form }: { form: UseFormReturn<WidgetForm> }) {
                 <FormLabel>Intro message</FormLabel>
                 <FormControl>
                   <Textarea
+                    rows={5}
                     placeholder="Enter the agent's greeting message"
                     className="bg-zinc-900 border-zinc-700 text-white"
                     {...field}
