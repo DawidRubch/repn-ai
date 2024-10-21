@@ -83,6 +83,15 @@ export function Widget({ form }: { form: UseFormReturn<WidgetForm> }) {
                     <FormControl>
                       <RadioGroupItem
                         className="text-white border-white"
+                        value="center"
+                      />
+                    </FormControl>
+                    <FormLabel className="font-normal">Center</FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem
+                        className="text-white border-white"
                         value="right"
                       />
                     </FormControl>

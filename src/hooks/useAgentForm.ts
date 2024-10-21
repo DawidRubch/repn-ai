@@ -43,7 +43,7 @@ const widgetFormSchema = z.object({
   calendlyURL: z.string().nullable(),
   introMessage: z.string().optional(),
   showIntroMessage: z.boolean().default(true),
-  position: z.enum(["right", "left"]).default("right"),
+  position: z.enum(["right", "left", "center"]).default("right"),
 });
 
 export type WidgetForm = z.infer<typeof widgetFormSchema>;
