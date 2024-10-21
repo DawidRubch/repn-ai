@@ -44,6 +44,7 @@ export const Behaviour = ({ form }: { form: UseFormReturn<BehaviourForm> }) => {
               <FormLabel>Agent Instructions</FormLabel>
               <FormControl>
                 <Textarea
+                  rows={10}
                   placeholder="Enter instructions for the agent"
                   className="bg-zinc-900 border-zinc-700 text-white"
                   {...field}
