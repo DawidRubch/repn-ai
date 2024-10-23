@@ -17,10 +17,15 @@ export const POST = async (req: Request) => {
     }).from(agentsTable).where(and(eq(agentsTable.id, agentId), eq(agentsTable.userId, userId))).limit(1)
 
 
-    const websiteContent = `Website content: ${text}`
+    const websiteContent = `WEBSITE CONTENT:\n${text}`
 
 
-    const newKnowledge = criticalKnowledge + "\n" + websiteContent
+    let newKnowledge = criticalKnowledge + "\n" + websiteContent
+
+
+    if (newKnowledge.length > 30000) {
+        newKnowledge = newKnowledge.substring(0, 30000)
+    }
 
 
     await db.update(agentsTable).set({

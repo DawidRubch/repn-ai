@@ -15,18 +15,19 @@ import { UserButton } from "@clerk/nextjs";
 import { trpc } from "../trpc/client";
 import { useRouter } from "next/navigation";
 import { useAgentFormStore } from "../hooks/useAgentStore";
-
+import Image from "next/image";
 export const Sidebar = () => {
   return (
     <div className="w-64 bg-zinc-900 p-4 flex flex-col">
-      <div className="mb-8">
-        <svg
-          viewBox="0 0 24 24"
-          className="w-8 h-8 text-white"
-          fill="currentColor"
-        >
-          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
-        </svg>
+      <div className="mb-8 flex items-center gap-2">
+        <Image
+          src="/logo.jpg"
+          alt="Logo"
+          width={50}
+          height={50}
+          className="rounded-full"
+        />
+        <span className="text-white text-lg font-bold">RepnAI</span>
       </div>
       <nav className="space-y-2 flex-1">
         <AgentComponent />

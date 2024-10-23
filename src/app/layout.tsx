@@ -51,5 +51,9 @@ export default function RootLayout({
 const UnAuthenticatedLayout: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  return <main className="flex  h-screen bg-black text-white">{children}</main>;
+  return (
+    <main className="flex h-screen bg-black text-white justify-center items-center">
+      {children}
+    </main>
+  );
 };
