@@ -23,7 +23,7 @@ export default function CreatingPage() {
   return <CreatingComponent isWebsiteScraping={isWebsiteScraping} />;
 }
 
-export const useWebsiteScraping = () => {
+const useWebsiteScraping = () => {
   const runId = useAgentFormStore((store) => store.apifyRunId);
 
   const { data: runStatus } = trpc.scrape.statusPolling.useQuery(
