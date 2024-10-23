@@ -31,6 +31,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body
+          id="root"
           className={`${geistSans.variable} ${geistMono.variable} antialiased `}
         >
           <TRPCProvider>

@@ -1,21 +1,18 @@
 "use client";
+import { UserButton } from "@clerk/nextjs";
 import {
   CreditCard,
   Loader2,
   MessageSquare,
-  PlusCircle,
   User,
   UserPen,
-  Users,
-  Zap,
 } from "lucide-react";
-import { Button } from "./ui/button";
+import Image from "next/image";
 import Link from "next/link";
-import { UserButton } from "@clerk/nextjs";
-import { trpc } from "../trpc/client";
 import { useRouter } from "next/navigation";
 import { useAgentFormStore } from "../hooks/useAgentStore";
-import Image from "next/image";
+import { trpc } from "../trpc/client";
+import { Button } from "./ui/button";
 export const Sidebar = () => {
   const { data: isActiveSubscription, isLoading: isActiveSubscriptionLoading } =
     trpc.stripe.activeSubscription.useQuery();
