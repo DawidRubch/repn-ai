@@ -1,9 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useAgentFormStore } from "../../hooks/useAgentStore";
-import { trpc } from "../../trpc/client";
-import { Loader2, AlertCircle, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,13 +9,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { AlertCircle, Copy, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useToast } from "../../hooks/use-toast";
-import { PopupButton, PopupWidget } from "react-calendly";
+import { useEffect, useState } from "react";
 import { CalendlyPopup } from "../../components/CalendlyPopup";
+import { useToast } from "../../hooks/use-toast";
+import { useAgentFormStore } from "../../hooks/useAgentStore";
+import { getScriptCode } from "../../lib/getScriptCode";
+import { trpc } from "../../trpc/client";
 
 export default function CreatingPage() {
-  const formValues = useAgentFormStore((store) => store.formValues);
   const { isWebsiteScraping } = useWebsiteScraping();
   return <CreatingComponent isWebsiteScraping={isWebsiteScraping} />;
 }
@@ -59,23 +58,9 @@ export const useWebsiteScraping = () => {
 
 type LoadingState = "website" | "success" | "error";
 
-const CreatingComponent: React.FC<{
-  isWebsiteScraping: boolean;
-}> = ({ isWebsiteScraping }) => {
-  const [loadingState, setLoadingState] = useState<LoadingState>("website");
+const DeploymentInstructions: React.FC<{ agentId: string }> = ({ agentId }) => {
   const { toast } = useToast();
-  const store = useAgentFormStore();
-  const router = useRouter();
-  useEffect(() => {
-    if (isWebsiteScraping) {
-      setLoadingState("website");
-    } else {
-      setLoadingState("success");
-      store.resetStore();
-    }
-  }, [isWebsiteScraping]);
-
-  const scriptCode = `<script src="https://your-agent-url.com/agent.js"></script>`;
+  const scriptCode = getScriptCode(agentId);
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(scriptCode);
@@ -87,8 +72,48 @@ const CreatingComponent: React.FC<{
   };
 
   return (
+    <div className="space-y-4 w-full">
+      <h3 className="font-semibold">Integration Steps:</h3>
+      <ol className="list-decimal list-inside space-y-2">
+        <li>Copy the following script tag:</li>
+        <div className="bg-muted p-2 rounded-md flex justify-between items-center">
+          <code>{scriptCode}</code>
+          <Button variant="ghost" size="icon" onClick={copyToClipboard}>
+            <Copy className="h-4 w-4" />
+          </Button>
+        </div>
+        <li>Paste it into the {"<body>"} tag of your website.</li>
+        <li>Save and deploy your changes.</li>
+      </ol>
+    </div>
+  );
+};
+
+const CreatingComponent: React.FC<{
+  isWebsiteScraping: boolean;
+}> = ({ isWebsiteScraping }) => {
+  const [loadingState, setLoadingState] = useState<LoadingState>("website");
+  const resetStore = useAgentFormStore((store) => store.resetStore);
+  const agentId = useAgentFormStore((store) => store.agentId);
+  const router = useRouter();
+  useEffect(() => {
+    if (isWebsiteScraping) {
+      setLoadingState("website");
+    } else {
+      setLoadingState("success");
+      resetStore();
+    }
+  }, [isWebsiteScraping]);
+
+  useEffect(() => {
+    if (!agentId) {
+      router.push("/");
+    }
+  }, [agentId]);
+
+  return (
     <div className="flex items-center justify-center min-h-screen w-full">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-screen-lg">
         <Card>
           <CardHeader>
             <CardTitle>Agent Setup</CardTitle>
@@ -125,24 +150,7 @@ const CreatingComponent: React.FC<{
                 <p className="text-center font-semibold">
                   Your agent is live and you can use it on your website.
                 </p>
-                <div className="space-y-4 w-full">
-                  <h3 className="font-semibold">Integration Steps:</h3>
-                  <ol className="list-decimal list-inside space-y-2">
-                    <li>Copy the following script tag:</li>
-                    <div className="bg-muted p-2 rounded-md flex justify-between items-center">
-                      <code>{scriptCode}</code>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={copyToClipboard}
-                      >
-                        <Copy className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <li>Paste it into the {"<body>"} tag of your website.</li>
-                    <li>Save and deploy your changes.</li>
-                  </ol>
-                </div>
+                <DeploymentInstructions agentId={agentId || ""} />
               </>
             )}
             {loadingState === "error" && (
@@ -163,7 +171,6 @@ const CreatingComponent: React.FC<{
                 <CalendlyPopup
                   url="https://calendly.com/dawid-niegrebecki/meeting-with-dawid"
                   text="Need help with setup?"
-                  rootElement={document.getElementById("root") as HTMLElement}
                 />
               </>
             )}

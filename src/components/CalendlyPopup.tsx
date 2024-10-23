@@ -5,7 +5,6 @@ import dynamic from "next/dynamic";
 const CalendlyPopupComponent: React.FC<{
   url: string;
   text: string;
-  rootElement: HTMLElement;
 }> = ({ url, text }) => {
   const rootElement = document ? document.getElementById("root") : null;
 

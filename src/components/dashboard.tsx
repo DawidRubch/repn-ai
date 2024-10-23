@@ -6,6 +6,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
 import { trpc } from "../trpc/client";
 import { MessageSquare, Clock, TrendingUp, CalendarDays } from "lucide-react";
+import { DeploymentInstructions } from "./DeploymentInstructions";
+import { CalendlyPopup } from "./CalendlyPopup";
 
 export function DashboardComponent() {
   const { push } = useRouter();
@@ -35,7 +37,7 @@ export function DashboardComponent() {
     );
   }
 
-  if (agent === null) {
+  if (agent === null || !agent) {
     return (
       <div className="flex-1 p-8 flex flex-col items-center justify-center">
         <h1 className="text-3xl font-bold mb-4">
@@ -113,6 +115,16 @@ export function DashboardComponent() {
       </div>
 
       <Button onClick={() => push("/update-agent")}>Update Agent</Button>
+      <div className="mt-20"></div>
+      <DeploymentInstructions agentId={agent.id} />
+      <div className="flex justify-center">
+        <Button variant="outline">
+          <CalendlyPopup
+            url="https://calendly.com/dawid-niegrebecki/meeting-with-dawid"
+            text="Need help with setup?"
+          />
+        </Button>
+      </div>
     </div>
   );
 }
