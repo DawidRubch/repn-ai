@@ -17,6 +17,11 @@ import { useRouter } from "next/navigation";
 import { useAgentFormStore } from "../hooks/useAgentStore";
 import Image from "next/image";
 export const Sidebar = () => {
+  const { data: isActiveSubscription, isLoading } =
+    trpc.stripe.activeSubscription.useQuery();
+
+  if (isActiveSubscription === undefined && isLoading) return null;
+
   return (
     <div className="w-64 bg-zinc-900 p-4 flex flex-col">
       <div className="mb-8 flex items-center gap-2">
@@ -30,14 +35,17 @@ export const Sidebar = () => {
         <span className="text-white text-lg font-bold">RepnAI</span>
       </div>
       <nav className="space-y-2 flex-1">
-        <AgentComponent />
-
-        <Link href="/conversations" passHref>
-          <Button variant="ghost" className="w-full justify-start">
-            <MessageSquare className="mr-2 h-4 w-4" />
-            Conversations
-          </Button>
-        </Link>
+        {isActiveSubscription && (
+          <>
+            <AgentComponent />
+            <Link href="/conversations" passHref>
+              <Button variant="ghost" className="w-full justify-start">
+                <MessageSquare className="mr-2 h-4 w-4" />
+                Conversations
+              </Button>
+            </Link>
+          </>
+        )}
 
         <Link href="/billing" passHref>
           <Button variant="ghost" className="w-full justify-start">

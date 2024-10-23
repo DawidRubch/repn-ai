@@ -127,9 +127,8 @@ export const stripeRouter = createTRPCRouter({
             return false
         }
 
-        return subscription
+        return subscription.status === "active"
     }), billingInfo: paywallProcedure.query(async ({ ctx }) => {
-
 
         const { subscription, customer } = ctx
 
@@ -144,7 +143,7 @@ export const stripeRouter = createTRPCRouter({
         })
 
 
-        const { unit_amount_decimal, ...rest } = await stripe.prices.retrieve(subscription.items.data[0].price.id)
+        const { unit_amount_decimal } = await stripe.prices.retrieve(subscription.items.data[0].price.id)
 
         if (!unit_amount_decimal) {
             throw new TRPCError({

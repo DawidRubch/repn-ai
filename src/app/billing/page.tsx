@@ -118,7 +118,12 @@ function BillingDetails() {
 
   const isLoading = billingInfoLoading || usageLoading || billingInfoRefetching;
 
-  if (isLoading) return <FullPageLoader />;
+  if (isLoading)
+    return (
+      <div className="flex items-start justify-center ">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
 
   return (
     <div className="grid gap-8 md:grid-cols-2">
