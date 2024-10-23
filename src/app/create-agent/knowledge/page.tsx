@@ -5,8 +5,9 @@ import { useEffect } from "react";
 import { CreateAgentFormLayout } from "../../../components/create-agent-form/FormLayout";
 import { Knowledge } from "../../../components/create-agent-form/Knowledge";
 import { KnowledgeForm, useAgentForm } from "../../../hooks/useAgentForm";
+import { withPaywallProtection } from "../../../layouts/ProtectPaywallProvider";
 
-export default function KnowledgePage() {
+function KnowledgePage() {
   const { knowledgeForm, setFormValues, nextStep, prevStep } = useAgentForm();
   const { push } = useRouter();
 
@@ -38,3 +39,5 @@ export default function KnowledgePage() {
     </CreateAgentFormLayout>
   );
 }
+
+export default withPaywallProtection(KnowledgePage);

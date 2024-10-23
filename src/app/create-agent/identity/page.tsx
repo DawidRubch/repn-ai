@@ -7,8 +7,9 @@ import { IdentityForm, useAgentForm } from "../../../hooks/useAgentForm";
 import { usePreventReload } from "../../../hooks/usePreventReload";
 import { useUploadFiles } from "../../../hooks/useUploadFiles";
 import { useEffect } from "react";
+import { withPaywallProtection } from "../../../layouts/ProtectPaywallProvider";
 
-export default function IdentityPage() {
+function IdentityPage() {
   usePreventReload();
   const { identityForm, setFormValues, nextStep, prevStep } = useAgentForm();
   const { push } = useRouter();
@@ -48,3 +49,5 @@ export default function IdentityPage() {
     </CreateAgentFormLayout>
   );
 }
+
+export default withPaywallProtection(IdentityPage);

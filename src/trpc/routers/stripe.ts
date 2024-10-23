@@ -122,7 +122,6 @@ export const stripeRouter = createTRPCRouter({
         const subscription = await checkIfSubscriptionExists(existingCustomer.id)
 
 
-
         if (!subscription) {
             return false
         }
