@@ -129,7 +129,7 @@ export const stripeRouter = createTRPCRouter({
 
         return subscription
     }), billingInfo: paywallProcedure.query(async ({ ctx }) => {
-        const userEmail = ctx.user.emailAddresses[0].emailAddress
+
 
         const { subscription, customer } = ctx
 
