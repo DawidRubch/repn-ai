@@ -130,14 +130,14 @@ const copyBillingDetails = async (customerId: string, paymentMethod: Stripe.Paym
     })
 }
 
-const checkIfCustomerExists = async (email: string) => {
+export const checkIfCustomerExists = async (email: string) => {
     const customer = await stripe.customers.search({
         query: `email:"${email}"`
     });
 
     return customer.data[0]
 }
-const checkIfSubscriptionIsActive = async (customerID: string) => {
+export const checkIfSubscriptionIsActive = async (customerID: string) => {
     const subscription = await stripe.subscriptions.list({
         customer: customerID,
         status: "active"
@@ -145,3 +145,18 @@ const checkIfSubscriptionIsActive = async (customerID: string) => {
 
     return subscription.data[0]
 }
+
+
+
+
+export const checkIfSubscriptionExists = async (customerID: string) => {
+    const subscription = await stripe.subscriptions.list({
+        customer: customerID,
+    });
+
+    return subscription.data[0]
+}
+
+
+
+

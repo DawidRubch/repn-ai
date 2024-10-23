@@ -3,7 +3,7 @@ import { TRPCError } from "@trpc/server";
 import { env } from "../../env";
 import { stripe } from "../../server/stripe";
 import { createTRPCRouter, protectedProcedutre } from "../init";
-import { createOrRetrieveCustomer, createSubscription } from '../../server/stripe/utils';
+import { checkIfCustomerExists, checkIfSubscriptionExists, createOrRetrieveCustomer, createSubscription } from '../../server/stripe/utils';
 import { z } from 'zod';
 import { db } from '../../db';
 import { customersTable, usersTable } from '../../db/schema';
@@ -262,21 +262,4 @@ export const stripeRouter = createTRPCRouter({
 
     })
 });
-
-const checkIfCustomerExists = async (email: string) => {
-    const customer = await stripe.customers.search({
-        query: `email:"${email}"`
-    });
-
-    return customer.data[0]
-}
-
-
-const checkIfSubscriptionExists = async (customerID: string) => {
-    const subscription = await stripe.subscriptions.list({
-        customer: customerID,
-    });
-
-    return subscription.data[0]
-}
 

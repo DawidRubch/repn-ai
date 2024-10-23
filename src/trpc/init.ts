@@ -66,5 +66,30 @@ const isAuthed = t.middleware(async (opts) => {
     });
 });
 
+const isPaywalled = t.middleware(async (opts) => {
+    if (!opts.ctx.auth?.userId) {
+        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Unauthorized' });
+    }
+
+    const user = await currentUser()
+
+    if (!user) {
+        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Unauthorized' });
+    }
+
+
+
+
+    return opts.next({
+        ctx: {
+            ...opts.ctx,
+            auth: opts.ctx.auth,
+        },
+    });
+})
+
 
 export const protectedProcedutre = t.procedure.use(isAuthed);
+
+
+export const paywallProcedure = t.procedure.use(isPaywalled);
