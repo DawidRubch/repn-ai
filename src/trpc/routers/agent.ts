@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { createTRPCRouter, protectedProcedutre } from "../init"
+import { createTRPCRouter, paywallProcedure, protectedProcedutre } from "../init"
 import { env } from "../../env"
 import { agentsTable } from "../../db/schema"
 import { TRPCError } from "@trpc/server"
@@ -26,7 +26,7 @@ const AgentSchemaWithID = AgentSchema.extend({
 })
 
 export const agentRouter = createTRPCRouter({
-    createAgent: protectedProcedutre.input(AgentSchema).mutation(async ({ ctx, input }) => {
+    createAgent: paywallProcedure.input(AgentSchema).mutation(async ({ ctx, input }) => {
         try {
             const agentId = await createNewAgent({
                 voice: input.voice,
@@ -155,7 +155,7 @@ export const agentRouter = createTRPCRouter({
 
         return agent
     }),
-    updateAgent: protectedProcedutre.input(AgentSchemaWithID).mutation(async ({ ctx, input }) => {
+    updateAgent: paywallProcedure.input(AgentSchemaWithID).mutation(async ({ ctx, input }) => {
         try {
             const userID = ctx.auth.userId
 

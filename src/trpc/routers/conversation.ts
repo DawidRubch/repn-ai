@@ -1,19 +1,17 @@
 import { z } from "zod";
 import { getConversationDetailsFromPlay, getConversationsFromPlay, getConversationTranscript } from "../../server/playai/utils";
-import { createTRPCRouter, protectedProcedutre } from "../init";
+import { createTRPCRouter, paywallProcedure, protectedProcedutre } from "../init";
 
 export const conversationRouter = createTRPCRouter({
-    getConversations: protectedProcedutre.input(z.object({
+    getConversations: paywallProcedure.input(z.object({
         agentId: z.string(),
     })).query(async ({ ctx, input }) => {
 
         const { agentId } = input
 
         return await getConversationsFromPlay(agentId, 999999)
-
-
     }),
-    getConversationTranscript: protectedProcedutre.input(z.object({
+    getConversationTranscript: paywallProcedure.input(z.object({
         conversationId: z.string(),
         agentId: z.string(),
     })).query(async ({ ctx, input }) => {
@@ -47,7 +45,7 @@ export const conversationRouter = createTRPCRouter({
 
         return orderedTranscript
     }),
-    getConversationDetails: protectedProcedutre.input(z.object({
+    getConversationDetails: paywallProcedure.input(z.object({
         conversationId: z.string(),
         agentId: z.string(),
     })).query(async ({ ctx, input }) => {

@@ -2,7 +2,7 @@ import { currentUser } from '@clerk/nextjs/server';
 import { TRPCError } from "@trpc/server";
 import { env } from "../../env";
 import { stripe } from "../../server/stripe";
-import { createTRPCRouter, protectedProcedutre } from "../init";
+import { createTRPCRouter, paywallProcedure, protectedProcedutre } from "../init";
 import { checkIfCustomerExists, checkIfSubscriptionExists, createOrRetrieveCustomer, createSubscription } from '../../server/stripe/utils';
 import { z } from 'zod';
 import { db } from '../../db';
@@ -89,36 +89,18 @@ export const stripeRouter = createTRPCRouter({
 
 
 
-    }), getUsageForThisPeriod: protectedProcedutre.query(async ({ ctx }) => {
+    }), getUsageForThisPeriod: paywallProcedure.query(async ({ ctx }) => {
 
 
-        const userEmail = ctx.user.emailAddresses[0].emailAddress
+        const { subscription, customer } = ctx
 
-
-        const existingCustomer = await checkIfCustomerExists(userEmail)
-
-        if (!existingCustomer) {
-            throw new TRPCError({
-                code: "INTERNAL_SERVER_ERROR",
-                message: "Customer not found"
-            })
-        }
-
-        const subscription = await checkIfSubscriptionExists(existingCustomer.id)
-
-        if (!subscription) {
-            throw new TRPCError({
-                code: "INTERNAL_SERVER_ERROR",
-                message: "Subscription not found"
-            })
-        }
 
         const periodEnd = subscription.current_period_end
         const periodStart = subscription.current_period_start
 
 
         const secondsUsage = await stripe.billing.meters.listEventSummaries(env.STRIPE_AGENT_USAGE_SECONDS_METER_ID, {
-            customer: existingCustomer.id,
+            customer: customer.id,
             start_time: periodStart,
             end_time: periodEnd,
         })
@@ -146,32 +128,17 @@ export const stripeRouter = createTRPCRouter({
         }
 
         return subscription
-    }), billingInfo: protectedProcedutre.query(async ({ ctx }) => {
+    }), billingInfo: paywallProcedure.query(async ({ ctx }) => {
         const userEmail = ctx.user.emailAddresses[0].emailAddress
 
-        const existingCustomer = await checkIfCustomerExists(userEmail)
+        const { subscription, customer } = ctx
 
 
-        if (!existingCustomer) {
-            throw new TRPCError({
-                code: "INTERNAL_SERVER_ERROR",
-                message: "Customer not found"
-            })
-        }
-
-        const subscription = await checkIfSubscriptionExists(existingCustomer.id)
-
-        if (!subscription) {
-            throw new TRPCError({
-                code: "INTERNAL_SERVER_ERROR",
-                message: "Subscription not found"
-            })
-        }
         const periodStart = subscription.current_period_start
         const periodEnd = subscription.current_period_end
 
         const secondsUsage = await stripe.billing.meters.listEventSummaries(env.STRIPE_AGENT_USAGE_SECONDS_METER_ID, {
-            customer: existingCustomer.id,
+            customer: customer.id,
             start_time: periodStart,
             end_time: periodEnd,
         })
@@ -189,7 +156,7 @@ export const stripeRouter = createTRPCRouter({
 
         const [{ billingLimit }] = await db.select({
             billingLimit: customersTable.billingLimit
-        }).from(customersTable).where(eq(customersTable.id, existingCustomer.id))
+        }).from(customersTable).where(eq(customersTable.id, customer.id))
 
 
         const unitAmount = Number(unit_amount_decimal)
@@ -221,37 +188,16 @@ export const stripeRouter = createTRPCRouter({
 
 
 
-    }), setBillingThreshold: protectedProcedutre.input(z.object({
+    }), setBillingThreshold: paywallProcedure.input(z.object({
         billingThreshold: z.number()
     })).mutation(async ({ ctx, input }) => {
 
-
-        const userEmail = ctx.user.emailAddresses[0].emailAddress
-
-
-        const existingCustomer = await checkIfCustomerExists(userEmail)
-
-        if (!existingCustomer) {
-            throw new TRPCError({
-                code: "INTERNAL_SERVER_ERROR",
-                message: "Customer not found"
-            })
-        }
-
-        const subscription = await checkIfSubscriptionExists(existingCustomer.id)
-
-        if (!subscription) {
-            throw new TRPCError({
-                code: "INTERNAL_SERVER_ERROR",
-                message: "Subscription not found"
-            })
-        }
-
+        const { customer } = ctx
 
 
         await db.update(customersTable).set({
             billingLimit: input.billingThreshold
-        }).where(eq(customersTable.id, existingCustomer.id))
+        }).where(eq(customersTable.id, customer.id))
 
 
         return {

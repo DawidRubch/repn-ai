@@ -4,6 +4,7 @@ import { NextRequest } from 'next/server';
 import { cache } from 'react';
 import superjson from 'superjson';
 import { db } from '../db';
+import { checkIfCustomerExists, checkIfSubscriptionExists } from '../server/stripe/utils';
 
 
 export const createTRPCContext = cache(async (req?: NextRequest) => {
@@ -78,12 +79,27 @@ const isPaywalled = t.middleware(async (opts) => {
     }
 
 
+    const customer = await checkIfCustomerExists(user.emailAddresses[0].emailAddress)
+
+    if (!customer) {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'Customer not found' });
+    }
+
+    const subscription = await checkIfSubscriptionExists(customer.id)
+
+    if (!subscription) {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'Subscription not found' });
+    }
+
 
 
     return opts.next({
         ctx: {
             ...opts.ctx,
             auth: opts.ctx.auth,
+            user,
+            customer,
+            subscription
         },
     });
 })

@@ -17,7 +17,6 @@ export const createOrRetrieveCustomer = async (email: string, userId: string) =>
     } else {
         const customer = await stripe.customers.create({ email })
 
-
         await db.insert(customersTable).values({
             id: customer.id,
             email,
@@ -156,7 +155,6 @@ export const checkIfSubscriptionExists = async (customerID: string) => {
 
     return subscription.data[0]
 }
-
 
 
 
