@@ -7,27 +7,39 @@ import { eq } from "drizzle-orm";
 import Stripe from 'stripe';
 
 export const createOrRetrieveCustomer = async (email: string, userId: string) => {
+    let customerID: string;
+    let customer: Stripe.Customer;
 
-    let customerID: string
-
-    const existingCustomer = await checkIfCustomerExists(email)
+    const existingCustomer = await checkIfCustomerExists(email);
 
     if (existingCustomer) {
-        customerID = existingCustomer.id
+        customerID = existingCustomer.id;
+        customer = await stripe.customers.retrieve(customerID) as Stripe.Customer;
     } else {
-        const customer = await stripe.customers.create({ email })
-
-        await db.insert(customersTable).values({
-            id: customer.id,
-            email,
-            stripeCustomerId: customer.id,
-            userId
-        })
-
-        customerID = customer.id
+        customer = await stripe.customers.create({ email });
+        customerID = customer.id;
     }
 
-    return customerID
+
+
+    // Upsert customer into the database
+    await db.insert(customersTable)
+        .values({
+            id: customerID,
+            email,
+            stripeCustomerId: customerID,
+            userId
+        })
+        .onConflictDoUpdate({
+            target: customersTable.id,
+            set: {
+                stripeCustomerId: customerID,
+                userId,
+                email
+            }
+        });
+
+    return customerID;
 }
 
 

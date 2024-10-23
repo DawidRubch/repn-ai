@@ -8,6 +8,7 @@ import { trpc } from "../trpc/client";
 import { MessageSquare, Clock, TrendingUp, CalendarDays } from "lucide-react";
 import { DeploymentInstructions } from "./DeploymentInstructions";
 import { CalendlyPopup } from "./CalendlyPopup";
+import { useEffect } from "react";
 
 export function DashboardComponent() {
   const { push } = useRouter();
@@ -23,7 +24,16 @@ export function DashboardComponent() {
     }
   );
 
-  if (isLoading) {
+  const { data: activeSubscription, isLoading: isLoadingSubscription } =
+    trpc.stripe.activeSubscription.useQuery();
+
+  useEffect(() => {
+    if (activeSubscription === false) {
+      push("/billing");
+    }
+  }, [activeSubscription, push]);
+
+  if (isLoading || isLoadingSubscription) {
     return (
       <div className="flex-1 p-8 space-y-4">
         <Skeleton className="h-8 w-[200px]" />

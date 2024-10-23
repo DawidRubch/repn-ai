@@ -11,7 +11,8 @@ const relevantEvents = new Set([
     'customer.subscription.created',
     'customer.subscription.updated',
     'customer.subscription.deleted',
-    "invoice.paid"
+    "invoice.paid",
+    "customer.created"
 ]);
 
 export async function POST(req: Request) {
@@ -83,6 +84,7 @@ export async function POST(req: Request) {
                         billingUsed: 0
                     }).where(eq(customersTable.stripeCustomerId, invoice.customer as string))
                     break;
+
                 default:
                     throw new Error('Unhandled relevant event!');
             }
