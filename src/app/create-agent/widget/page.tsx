@@ -14,7 +14,7 @@ export default function WidgetPage() {
     setFormValues({ widget: data });
 
     createAgent().then((id) => {
-      push(`/creating`);
+      push(`/creating?id=${id}`);
     });
   };
 

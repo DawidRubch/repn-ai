@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { AlertCircle, Copy, Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { CalendlyPopup } from "../../components/CalendlyPopup";
 import { useToast } from "../../hooks/use-toast";
@@ -94,7 +94,8 @@ const CreatingComponent: React.FC<{
 }> = ({ isWebsiteScraping }) => {
   const [loadingState, setLoadingState] = useState<LoadingState>("website");
   const resetStore = useAgentFormStore((store) => store.resetStore);
-  const agentId = useAgentFormStore((store) => store.agentId);
+  const searchParams = useSearchParams();
+  const agentId = searchParams.get("id");
   const router = useRouter();
   useEffect(() => {
     if (isWebsiteScraping) {
@@ -104,12 +105,6 @@ const CreatingComponent: React.FC<{
       resetStore();
     }
   }, [isWebsiteScraping]);
-
-  useEffect(() => {
-    if (!agentId) {
-      router.push("/");
-    }
-  }, [agentId]);
 
   return (
     <div className="flex items-center justify-center min-h-screen w-full">
